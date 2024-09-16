@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:paddingBottom="@dimen/_20sdp"
+    android:orientation="vertical"
+    android:background="@drawable/other_background"
+    tools:context=".LoginActivity">
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="@dimen/_23sdp"
+            android:fontFamily="@font/segoebold"
+            android:text="Login"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:paddingBottom="@dimen/_30sdp"
+            android:layout_centerInParent="true"/>
+
+    <EditText
+        android:id="@+id/editTextId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginHorizontal="@dimen/_50sdp"
+        android:background="@drawable/button_background3"
+        android:fontFamily="@font/segoebold"
+        android:gravity="center"
+        android:hint="ID"
+        android:inputType="textPassword"
+        android:padding="@dimen/_7sdp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray_hint"
+        android:textSize="@dimen/_18sdp"
+        android:layout_marginBottom="@dimen/_15sdp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/editTextPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginHorizontal="@dimen/_50sdp"
+        android:background="@drawable/button_background3"
+        android:fontFamily="@font/segoebold"
+        android:gravity="center"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="@dimen/_7sdp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray_hint"
+        android:textSize="@dimen/_18sdp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/buttonLogin"
+        android:layout_width="@dimen/_170sdp"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:layout_below="@+id/password"
+        android:layout_centerHorizontal="true"
+        android:textAllCaps="false"
+        android:background="@drawable/button_background4"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:textSize="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:padding="@dimen/_7sdp"/>
+
+</LinearLayout>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/other_background"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingVertical="0dp">
+
+
+        <include
+            android:id="@+id/header"
+            layout="@layout/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"/>
+
+
+        <Button
+            android:id="@+id/mosab2a"
+            style="@style/main_button"
+            android:text="Mosab2a"
+            android:background="@drawable/t1"/>
+
+        <Button
+            android:id="@+id/lineup"
+            style="@style/main_button"
+            android:text="Lineup"
+            android:background="@drawable/t2"/>
+
+        <Button
+            android:id="@+id/myCard"
+            style="@style/main_button"
+            android:text="My Card"
+            android:background="@drawable/r1"/>
+
+        <Button
+            android:id="@+id/leaderboard"
+            style="@style/main_button"
+            android:text="Leaderboard"
+            android:background="@drawable/t4"/>
+
+
+        <Button
+            android:id="@+id/admin"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_width="@dimen/_150sdp"
+            android:text="Admin Settings"
+            android:textAllCaps="false"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_15sdp"
+            android:fontFamily="@font/segoebold"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            android:layout_marginBottom="@dimen/_7sdp"
+            android:background="@drawable/button_background"/>
+
+    </LinearLayout>
+
+
+</ScrollView>

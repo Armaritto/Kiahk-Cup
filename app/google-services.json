@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "406323866428",
+    "project_id": "quiz-fut-draft",
+    "storage_bucket": "quiz-fut-draft.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406323866428:android:0d2314c59ccbc17a3a0c39",
+        "android_client_info": {
+          "package_name": "com.example.quiz_fut_draft"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT6U9sz_3_dYCNB0fXAjugNlnE-jrxNEc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
