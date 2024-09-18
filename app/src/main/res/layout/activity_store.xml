@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".StoreActivity"
+    android:background="@drawable/other_background"
+    android:gravity="center">
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"/>
+
+    <!-- <TableRow
+         android:layout_width="match_parent"
+         android:layout_height="100dp"
+         android:gravity="center">
+
+
+
+         <TextView
+             android:id="@+id/obj1"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="8dp"
+             android:text="Object 1"
+             android:textSize="18sp" />
+
+         <TextView
+             android:id="@+id/obj1_amount"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="8dp"
+             android:text="Amount: " />
+
+         <TextView
+             android:id="@+id/obj1_price"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="8dp"
+             android:text="Price: " />
+
+         <Button
+             android:id="@+id/purchase_obj1"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="8dp"
+             android:text="Purchase" />
+     </TableRow>
+
+     <TableRow
+         android:layout_width="match_parent"
+         android:layout_height="100dp"
+         android:gravity="center">
+
+         <TextView
+             android:id="@+id/obj2"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="8dp"
+             android:text="Object 2"
+             android:textSize="18sp" />
+
+         <TextView
+             android:id="@+id/obj2_amount"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="8dp"
+             android:text="Amount: " />
+
+         <TextView
+             android:id="@+id/obj2_price"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="8dp"
+             android:text="Price: " />
+
+         <Button
+             android:id="@+id/purchase_obj2"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="8dp"
+             android:text="Purchase" />
+     </TableRow>
+
+     <TableRow
+         android:layout_width="match_parent"
+         android:layout_height="100dp"
+         android:gravity="center">
+
+         <TextView
+             android:id="@+id/obj3"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="8dp"
+             android:text="Object 3"
+             android:textSize="18sp" />
+
+         <TextView
+             android:id="@+id/obj3_amount"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="8dp"
+             android:text="Amount: " />
+
+         <TextView
+             android:id="@+id/obj3_price"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="8dp"
+             android:text="Price: " />
+
+         <Button
+             android:id="@+id/purchase_obj3"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="8dp"
+             android:text="Purchase" />
+     </TableRow>-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="-20dp"
+        android:padding="16dp"
+        android:id="@+id/recycler_view" />
+
+
+</LinearLayout>
