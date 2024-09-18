@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <include
+        layout="@layout/activity_card_icon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
+    <include
+        layout="@layout/activity_card_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/_80sdp"
+        android:layout_gravity="center" />
+
+    <include
+        layout="@layout/activity_card_name"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/_160sdp"
+        android:layout_gravity="center" />
+
+    <include
+        layout="@layout/activity_card_position"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="@dimen/_130sdp"
+        android:layout_marginBottom="@dimen/_125sdp"
+        android:layout_gravity="center" />
+
+    <include
+        layout="@layout/activity_card_rating"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="@dimen/_130sdp"
+        android:layout_marginBottom="@dimen/_170sdp"
+        android:layout_gravity="center" />
+</RelativeLayout>
