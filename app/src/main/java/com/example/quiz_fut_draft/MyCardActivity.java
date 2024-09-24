@@ -34,7 +34,6 @@ public class MyCardActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Toast.makeText(MyCardActivity.this, "My Card Activity", Toast.LENGTH_SHORT).show();
 
         Intent intent1 = getIntent();
         ID = intent1.getStringExtra("ID");
@@ -42,9 +41,9 @@ public class MyCardActivity extends AppCompatActivity {
 
         setupHeader(FirebaseDatabase.getInstance().getReference("/Login"));
 
-        Button position = findViewById(R.id.position);
-        Button card = findViewById(R.id.card);
-        Button rating = findViewById(R.id.rating);
+        Button position = findViewById(R.id.position_btn);
+        Button card = findViewById(R.id.card_btn);
+        Button rating = findViewById(R.id.rating_btn);
         
         card.setOnClickListener(v-> {
             Intent intent = new Intent(MyCardActivity.this, CardStoreActivity.class);

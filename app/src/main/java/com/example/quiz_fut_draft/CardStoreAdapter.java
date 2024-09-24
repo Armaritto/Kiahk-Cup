@@ -2,7 +2,6 @@ package com.example.quiz_fut_draft;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,29 +18,25 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
+public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.ViewHolder> {
 
-    private ArrayList<Card> cards;
-    private LayoutInflater mInflater;
-    private Context context;
-    private int points;
-    private FirebaseDatabase database;
-    private String team;
-    private String cardStoreCheck;
-    private String ID;
+    private final ArrayList<CardIcon> cards;
+    private final LayoutInflater mInflater;
+    private final Context context;
+    private final FirebaseDatabase database;
+    private final String ID;
 
     // data is passed into the constructor
-    MyRecyclerViewAdapter(Context context, ArrayList<Card> data, int points, FirebaseDatabase database, String team, String cardStoreCheck, String ID) {
+    CardStoreAdapter(Context context, ArrayList<CardIcon> cards,
+                     FirebaseDatabase database, String ID) {
         this.mInflater = LayoutInflater.from(context);
-        this.cards = data;
+        this.cards = cards;
         this.context = context;
-        this.points = points;
         this.database = database;
-        this.team = team;
-        this.cardStoreCheck = cardStoreCheck;
         this.ID = ID;
     }
 
@@ -57,9 +52,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.price.setText(cards.get(position).getPrice()+"$");
-        Drawable drawable = context.getResources().getDrawable(context.getResources()
-                .getIdentifier(cards.get(position).getImage(), "drawable", context.getPackageName()));
-        holder.img.setImageDrawable(drawable);
+        Picasso.get().load(cards.get(position).getLink()).into(holder.img);
         holder.button.setOnClickListener(v-> {
             purchaseObject(getItem(position));
         });
@@ -72,11 +65,10 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     }
 
     // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView img;
         TextView price;
         Button button;
-
         ViewHolder(View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.img);
@@ -91,38 +83,26 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     }
 
     // convenience method for getting data at click position
-    Card getItem(int id) {
+    CardIcon getItem(int id) {
         return cards.get(id);
     }
 
-    // allows clicks events to be caught
-//    void setClickListener(ItemClickListener itemClickListener) {
-//        this.mClickListener = itemClickListener;
-//    }
-//
-//    // parent activity will implement this method to respond to click events
-//    public interface ItemClickListener {
-//        void onItemClick(View view, int position);
-//    }
+    public void purchaseObject(CardIcon card) {
 
-    public void purchaseObject(Card card) {
-
-        DatabaseReference ref = database.getReference("/Store").child("Card "+card.getID());
+        DatabaseReference ref = database.getReference("Login").child(ID);
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                int price = Integer.parseInt(snapshot.child("Price").getValue().toString());
 
-                if (points >= price) {
-                    points -= price;
-                    database.getReference("/Login").child(ID).child("Coins").setValue(points);
-                    ref.child("Owner").setValue(ID);
-                    Toast.makeText(context, "Purchased " + card.getImage(), Toast.LENGTH_SHORT).show();
-                    if(cardStoreCheck != null)
-                        ((Activity) context).finish();
+                double stars = Double.parseDouble(snapshot.child("Stars").getValue().toString());
+                if (stars>=card.getPrice()) {
+                    stars -= card.getPrice();
+                    ref.child("Stars").setValue(stars);
+                    ref.child("Card").child("Type").setValue(card.getCard());
+                    ((Activity) context).finish();
                 } else {
-                    Toast.makeText(context, "Not enough coins", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Not enough stars", Toast.LENGTH_SHORT).show();
                 }
 
             }

@@ -2,6 +2,7 @@ package com.example.quiz_fut_draft;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,18 +54,21 @@ public class CardStoreActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        ArrayList<String> links = new ArrayList<>();
-                        ArrayList<Double> prices = new ArrayList<>();
+                        ArrayList<CardIcon> cards = new ArrayList<>();
                         for (DataSnapshot card : snapshot.getChildren()) {
                             String cardName = card.getKey();
                             if (!ownedCard.equals(cardName)) {
-                                links.add(card.child("Link").getValue().toString());
-                                prices.add(Double.parseDouble(card.child("Price").getValue().toString()));
+                                Log.d("C", card.toString());
+                                CardIcon c = new CardIcon();
+                                c.setCard(cardName);
+                                c.setLink(card.child("Link").getValue().toString());
+                                c.setPrice(Double.parseDouble(card.child("Price").getValue().toString()));
+                                cards.add(c);
                             }
                         }
 
                          CardStoreAdapter adapter = new CardStoreAdapter(
-                             CardStoreActivity.this, finalList, coins, database, team, cardStoreCheck, ID);
+                             CardStoreActivity.this, cards, database, ID);
                         recyclerView.setAdapter(adapter);
 
                     }

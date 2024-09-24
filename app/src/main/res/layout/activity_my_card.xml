@@ -12,18 +12,17 @@
     tools:context=".LoginActivity">
 
     <include layout="@layout/header" />
-    <include layout="@layout/activity_card_all_in_one"
-     android:id="@+id/card"/>
+    <include layout="@layout/activity_card_all_in_one" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_alignParentBottom="true"
-        android:paddingBottom="@dimen/_70sdp">
+        android:layout_marginBottom="@dimen/_70sdp">
 
         <Button
-            android:id="@+id/position"
+            android:id="@+id/position_btn"
             android:layout_width="@dimen/_90sdp"
             android:layout_height="wrap_content"
             android:text="Position"
@@ -35,8 +34,9 @@
             android:textSize="@dimen/_15sdp"
             android:padding="@dimen/_7sdp"
             android:layout_marginRight="@dimen/_10sdp"/>
+
         <Button
-            android:id="@+id/card"
+            android:id="@+id/card_btn"
             android:layout_width="@dimen/_90sdp"
             android:layout_height="wrap_content"
             android:text="Card"
@@ -49,8 +49,9 @@
             android:textSize="@dimen/_15sdp"
             android:padding="@dimen/_7sdp"
             android:layout_marginRight="@dimen/_10sdp"/>
+
         <Button
-            android:id="@+id/rating"
+            android:id="@+id/rating_btn"
             android:layout_width="@dimen/_90sdp"
             android:layout_height="wrap_content"
             android:text="Rating"
