@@ -11,6 +11,58 @@
     android:background="@drawable/other_background"
     tools:context=".LoginActivity">
 
-    <include layout="@layout/activity_card_all_in_one" />
+    <include layout="@layout/header" />
+    <include layout="@layout/activity_card_all_in_one"
+     android:id="@+id/card"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="@dimen/_70sdp">
+
+        <Button
+            android:id="@+id/position"
+            android:layout_width="@dimen/_90sdp"
+            android:layout_height="wrap_content"
+            android:text="Position"
+            android:layout_centerHorizontal="true"
+            android:textAllCaps="false"
+            android:background="@drawable/button_background4"
+            android:fontFamily="@font/segoebold"
+            android:textStyle="bold"
+            android:textSize="@dimen/_15sdp"
+            android:padding="@dimen/_7sdp"
+            android:layout_marginRight="@dimen/_10sdp"/>
+        <Button
+            android:id="@+id/card"
+            android:layout_width="@dimen/_90sdp"
+            android:layout_height="wrap_content"
+            android:text="Card"
+            android:layout_below="@+id/password"
+            android:layout_centerHorizontal="true"
+            android:textAllCaps="false"
+            android:background="@drawable/button_background4"
+            android:fontFamily="@font/segoebold"
+            android:textStyle="bold"
+            android:textSize="@dimen/_15sdp"
+            android:padding="@dimen/_7sdp"
+            android:layout_marginRight="@dimen/_10sdp"/>
+        <Button
+            android:id="@+id/rating"
+            android:layout_width="@dimen/_90sdp"
+            android:layout_height="wrap_content"
+            android:text="Rating"
+            android:layout_below="@+id/password"
+            android:layout_centerHorizontal="true"
+            android:textAllCaps="false"
+            android:background="@drawable/button_background4"
+            android:fontFamily="@font/segoebold"
+            android:textStyle="bold"
+            android:textSize="@dimen/_15sdp"
+            android:padding="@dimen/_7sdp"/>
+    </LinearLayout>
+
 
 </RelativeLayout>
