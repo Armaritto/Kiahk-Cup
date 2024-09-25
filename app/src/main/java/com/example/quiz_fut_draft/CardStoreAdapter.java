@@ -99,6 +99,7 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
                 if (stars>=card.getPrice()) {
                     stars -= card.getPrice();
                     ref.child("Stars").setValue(stars);
+                    ref.child("Card").child("CardIcon").setValue(card.getLink());
                     ref.child("Card").child("Type").setValue(card.getCard());
                     ((Activity) context).finish();
                 } else {

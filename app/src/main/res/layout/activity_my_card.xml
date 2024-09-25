@@ -12,7 +12,8 @@
     tools:context=".LoginActivity">
 
     <include layout="@layout/header" />
-    <include layout="@layout/activity_card_all_in_one" />
+
+    <include layout="@layout/activity_card_all_in_one"/>
 
     <LinearLayout
         android:layout_width="match_parent"
