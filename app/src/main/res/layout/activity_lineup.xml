@@ -7,6 +7,9 @@
     android:background="@drawable/lineup_background"
     tools:context=".LineupActivity">
 
+    <include layout="@layout/activity_card_all_in_one"
+        android:visibility="invisible"/>
+
     <RelativeLayout
         android:id="@+id/scores_panel"
         android:layout_width="match_parent"
@@ -125,14 +128,14 @@
             <ImageView
                 android:id="@+id/ls"
                 android:layout_width="100dp"
-                android:layout_height="130dp"
+                android:layout_height="129dp"
                 android:src="@drawable/empty"
                 android:layout_marginRight="5dp"/>
 
             <ImageView
                 android:id="@+id/cs"
                 android:layout_width="100dp"
-                android:layout_height="130dp"
+                android:layout_height="129dp"
                 android:src="@drawable/empty"
                 android:layout_marginRight="5dp"
                 android:layout_marginBottom="10dp"/>
@@ -140,7 +143,7 @@
             <ImageView
                 android:id="@+id/rs"
                 android:layout_width="100dp"
-                android:layout_height="130dp"
+                android:layout_height="129dp"
                 android:src="@drawable/empty"/>
 
         </LinearLayout>
@@ -157,26 +160,26 @@
             <ImageView
                 android:id="@+id/lm"
                 android:layout_width="100dp"
-                android:layout_height="130dp"
+                android:layout_height="129dp"
                 android:src="@drawable/empty"
                 android:layout_marginLeft="20dp"/>
 
             <ImageView
                 android:id="@+id/lcm"
                 android:layout_width="100dp"
-                android:layout_height="130dp"
+                android:layout_height="129dp"
                 android:src="@drawable/empty"/>
 
             <ImageView
                 android:id="@+id/rcm"
                 android:layout_width="100dp"
-                android:layout_height="130dp"
+                android:layout_height="129dp"
                 android:src="@drawable/empty"/>
 
             <ImageView
                 android:id="@+id/rm"
                 android:layout_width="100dp"
-                android:layout_height="130dp"
+                android:layout_height="129dp"
                 android:src="@drawable/empty"
                 android:layout_marginRight="20dp"/>
 
@@ -193,21 +196,21 @@
             <ImageView
                 android:id="@+id/lb"
                 android:layout_width="100dp"
-                android:layout_height="130dp"
+                android:layout_height="129dp"
                 android:src="@drawable/empty"
                 android:layout_marginRight="5dp"/>
 
             <ImageView
                 android:id="@+id/cb"
                 android:layout_width="100dp"
-                android:layout_height="130dp"
+                android:layout_height="129dp"
                 android:src="@drawable/empty"
                 android:layout_marginRight="5dp"/>
 
             <ImageView
                 android:id="@+id/rb"
                 android:layout_width="100dp"
-                android:layout_height="130dp"
+                android:layout_height="129dp"
                 android:src="@drawable/empty"/>
 
         </LinearLayout>
@@ -215,7 +218,7 @@
         <ImageView
             android:id="@+id/gk"
             android:layout_width="100dp"
-            android:layout_height="130dp"
+            android:layout_height="129dp"
             android:src="@drawable/empty"
             android:layout_marginTop="15dp"/>
 

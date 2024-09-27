@@ -1,26 +1,39 @@
 package com.example.quiz_fut_draft;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class LineupActivity extends AppCompatActivity {
     private String Name;
@@ -318,6 +331,8 @@ public class LineupActivity extends AppCompatActivity {
         });
     }
 
+    int imagesToLoad = 2;
+
     private void setCardImage(String p, ImageView imageView,
                               ArrayList<String> pos, ArrayList<Card> cards) {
         if (pos.contains(p)) {
@@ -326,7 +341,109 @@ public class LineupActivity extends AppCompatActivity {
                     .getIdentifier(card.getImage(), "drawable", getPackageName()));
             imageView.setImageDrawable(drawable);
         }
+        else if (Objects.equals(Position, p)) {
+
+//            View v = getLayoutInflater().inflate(R.layout.activity_card_all_in_one, null);
+            RelativeLayout v = findViewById(R.id.main);
+            ImageView icon = findViewById(R.id.card_icon);
+            ImageView img = findViewById(R.id.img);
+            TextView name = findViewById(R.id.name);
+            TextView rating = findViewById(R.id.card_rating);
+            TextView position = findViewById(R.id.position);
+
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference ref = database.getReference("Login").child(ID);
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    imagesToLoad = 2;
+
+                    if (snapshot.child("Card").hasChild("CardIcon")) {
+                        String cardIconLink = snapshot.child("Card").child("CardIcon").getValue().toString();
+                        Picasso.get().load(cardIconLink).into(icon, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                imagesToLoad--;
+                                checkIfAllImagesLoaded(v, imageView);
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                imagesToLoad--;
+                                checkIfAllImagesLoaded(v, imageView);
+                            }
+                        });
+                    } else {
+                        imagesToLoad--;
+                        checkIfAllImagesLoaded(v, imageView);
+                    }
+                    if (snapshot.hasChild("Pic")) {
+                        String imgLink = snapshot.child("Pic").getValue().toString();
+                        Picasso.get().load(imgLink).into(img, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                imagesToLoad--;
+                                checkIfAllImagesLoaded(v, imageView);
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                imagesToLoad--;
+                                checkIfAllImagesLoaded(v, imageView);
+                            }
+                        });
+                    } else {
+                        imagesToLoad--;
+                        checkIfAllImagesLoaded(v, imageView);
+                    }
+                    if (snapshot.hasChild("Name")) {
+                        name.setText(snapshot.child("Name").getValue().toString());
+                    }
+                    if (snapshot.child("Card").hasChild("Position")) {
+                        position.setText(snapshot.child("Card").child("Position").getValue().toString());
+                    }
+                    if (snapshot.child("Card").hasChild("Rating")) {
+                        rating.setText(snapshot.child("Card").child("Rating").getValue().toString());
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {}
+            });
+
+
+
+        }
     }
+
+    private void checkIfAllImagesLoaded(View v, ImageView imageView) {
+        if (imagesToLoad==0) {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                RelativeLayout layout = v.findViewById(R.id.main);
+
+                layout.measure(View.MeasureSpec.makeMeasureSpec(
+                                layout.getWidth(), View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec(
+                                layout.getHeight(), View.MeasureSpec.EXACTLY));
+
+                layout.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
+
+                int totalHeight = v.getMeasuredHeight();
+                int totalWidth  = v.getMeasuredWidth();
+
+                Log.d("D", "Height: " + totalHeight);
+                Log.d("D", "Width: " + totalWidth);
+                Bitmap bitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                v.draw(canvas);
+                imageView.setImageBitmap(bitmap);
+                imageView.setScaleX(1.05F);
+//                imageView.setScaleY(1.05F);
+            }, 1000);
+        }
+    }
+
     private void updateOVR() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("/");

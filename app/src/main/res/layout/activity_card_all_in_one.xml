@@ -1,53 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/_15sdp">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/main">
 
     <ImageView
         android:id="@+id/card_icon"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginHorizontal="@dimen/_32sdp"
-        android:scaleType="centerInside"/>
+        android:layout_height="@dimen/_455sdp"
+        android:src="@drawable/icon12"
+        android:scaleType="fitCenter"/>
 
     <ImageView
         android:id="@+id/img"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/_350sdp"
         android:scaleType="centerInside"
-        android:layout_marginHorizontal="@dimen/_80sdp"
-        android:layout_marginBottom="@dimen/_60sdp"/>
+        android:layout_centerInParent="true"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
+        android:paddingBottom="@dimen/_30sdp"/>
 
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/_18sdp"
+        android:textSize="@dimen/_30sdp"
         android:fontFamily="@font/segoebold"
         android:textStyle="bold"
+        android:text="Patrick Remon"
         android:layout_centerInParent="true"
-        android:paddingTop="@dimen/_160sdp"/>
+        android:paddingTop="@dimen/_220sdp"/>
 
     <TextView
         android:id="@+id/position"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/_12sdp"
+        android:textSize="@dimen/_20sdp"
         android:fontFamily="@font/segoebold"
-        android:layout_centerInParent="true"
-        android:paddingRight="@dimen/_120sdp"
-        android:paddingBottom="@dimen/_150sdp"/>
+        android:textStyle="bold"
+        android:layout_marginLeft="@dimen/_58sdp"
+        android:layout_marginTop="@dimen/_107sdp"
+        android:text="ST"/>
 
     <TextView
         android:id="@+id/card_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/_22sdp"
+        android:textSize="@dimen/_37sdp"
         android:fontFamily="@font/segoebold"
         android:textStyle="bold"
-        android:layout_centerInParent="true"
-        android:paddingRight="@dimen/_120sdp"
-        android:paddingBottom="@dimen/_185sdp"/>
+        android:text="99"
+        android:layout_marginLeft="@dimen/_50sdp"
+        android:layout_marginTop="@dimen/_62sdp"/>
 
 </RelativeLayout>
