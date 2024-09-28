@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -365,6 +366,7 @@ public class LineupActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess() {
                                 imagesToLoad--;
+                                TextColor.setColor(icon, name, position, rating);
                                 checkIfAllImagesLoaded(v, imageView);
                             }
 
@@ -439,6 +441,7 @@ public class LineupActivity extends AppCompatActivity {
                 v.draw(canvas);
                 imageView.setImageBitmap(bitmap);
                 imageView.setScaleX(1.05F);
+
 //                imageView.setScaleY(1.05F);
             }, 1000);
         }

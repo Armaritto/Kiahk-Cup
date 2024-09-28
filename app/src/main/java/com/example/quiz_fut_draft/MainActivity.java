@@ -1,6 +1,7 @@
 package com.example.quiz_fut_draft;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         buttons[2] = findViewById(R.id.myCard);
         buttons[3] = findViewById(R.id.leaderboard);
         Button admin = findViewById(R.id.admin);
+        Button logout = findViewById(R.id.logout);
         if(Objects.equals(ID, "9999")){
             admin.setVisibility(View.VISIBLE);
             admin.setOnClickListener(v-> {
@@ -72,7 +74,14 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("Name",Name);
             startActivity(intent);
         });
-
+        logout.setOnClickListener(v-> {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            SharedPreferences.Editor editor = getSharedPreferences("Login", MODE_PRIVATE).edit();
+            editor.clear();
+            editor.apply();
+            startActivity(intent);
+            finish();
+        });
     }
 
     private void setupHeader(DatabaseReference ref) {

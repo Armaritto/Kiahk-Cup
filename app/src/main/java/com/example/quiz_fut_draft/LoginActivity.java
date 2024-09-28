@@ -1,6 +1,7 @@
 package com.example.quiz_fut_draft;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText editTextId;
     private EditText editTextPassword;
     private Button buttonLogin;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,15 @@ public class LoginActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        sharedPreferences = getSharedPreferences("Login", MODE_PRIVATE);
+        if (sharedPreferences.contains("ID") && sharedPreferences.contains("Password")) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.putExtra("ID", sharedPreferences.getString("ID", ""));
+            intent.putExtra("Name", sharedPreferences.getString("Name", ""));
+            startActivity(intent);
+            finish();
+        }
 
         editTextId = findViewById(R.id.editTextId);
         editTextPassword = findViewById(R.id.editTextPassword);
@@ -63,6 +74,13 @@ public class LoginActivity extends AppCompatActivity {
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         intent.putExtra("ID", id);
                         intent.putExtra("Name", dataSnapshot.child("Name").getValue(String.class));
+
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("ID", id);
+                        editor.putString("Password", password);
+                        editor.putString("Name", dataSnapshot.child("Name").getValue(String.class));
+                        editor.apply();
+
                         startActivity(intent);
                         finish();
                     } else {

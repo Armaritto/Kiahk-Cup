@@ -15,6 +15,9 @@
         android:theme="@style/Theme.QuizFUTDraft"
         tools:targetApi="31">
         <activity
+            android:name=".FormActivity"
+            android:exported="false" />
+        <activity
             android:name=".helperCard"
             android:exported="false" />
         <activity

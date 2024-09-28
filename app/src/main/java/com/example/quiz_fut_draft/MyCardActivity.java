@@ -62,7 +62,17 @@ public class MyCardActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.child("Card").hasChild("CardIcon")) {
                     String cardIconLink = snapshot.child("Card").child("CardIcon").getValue().toString();
-                    Picasso.get().load(cardIconLink).into(cardIcon);
+                    Picasso.get().load(cardIconLink).into(cardIcon, new com.squareup.picasso.Callback() {
+                        @Override
+                        public void onSuccess() {
+                            TextColor.setColor(cardIcon, name, position, card_rating);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e("Picasso", e.getMessage());
+                        }
+                    });
                 }
                 if (snapshot.hasChild("Pic")) {
                     String imgLink = snapshot.child("Pic").getValue().toString();

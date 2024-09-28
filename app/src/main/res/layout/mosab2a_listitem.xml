@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/mosab2a"
+    style="@style/home_button"
+android:layout_width="match_parent"
+android:layout_height="@dimen/_150sdp">
+
+<ImageView
+    android:id="@+id/pic1"
+    style="@style/pic_home_btn"
+    android:src="@drawable/lock"/>
+
+<TextView
+    android:id="@+id/coins"
+    style="@style/sub_home_btn"/>
+
+<TextView
+    style="@style/title_home_btn"
+    android:id="@+id/title"
+    android:paddingTop="@dimen/_10sdp"
+    android:layout_above="@+id/coins"
+    android:layout_below="@+id/pic1"/>
+
+</RelativeLayout>

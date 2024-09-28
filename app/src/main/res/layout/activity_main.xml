@@ -47,6 +47,12 @@
             android:text="Leaderboard"
             android:background="@drawable/t4"/>
 
+        <Button
+            android:id="@+id/logout"
+            style="@style/main_button"
+            android:text="logout"
+            android:background="@drawable/t4"/>
+
 
         <Button
             android:id="@+id/admin"
