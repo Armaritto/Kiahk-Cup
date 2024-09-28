@@ -40,8 +40,9 @@ public class CardStoreActivity extends AppCompatActivity {
         Intent intent1 = getIntent();
         ID = intent1.getStringExtra("ID");
         Name = intent1.getStringExtra("Name");
-
-        setupHeader(FirebaseDatabase.getInstance().getReference("/Login"));
+        String grade = intent1.getStringExtra("Grade");
+        assert grade != null;
+        setupHeader(FirebaseDatabase.getInstance().getReference(Users_Path.getPath(grade)));
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -49,7 +50,7 @@ public class CardStoreActivity extends AppCompatActivity {
         int numberOfColumns = 2;
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
 
-        DatabaseReference ref = database.getReference("/CardIcon");
+        DatabaseReference ref = database.getReference("/elmilad25/CardIcon");
 
         ref.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -68,7 +69,7 @@ public class CardStoreActivity extends AppCompatActivity {
                         }
 
                          CardStoreAdapter adapter = new CardStoreAdapter(
-                             CardStoreActivity.this, cards, database, ID);
+                             CardStoreActivity.this, cards, database, ID, grade);
                         recyclerView.setAdapter(adapter);
 
                     }

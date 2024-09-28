@@ -1,9 +1,7 @@
 package com.example.quiz_fut_draft;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -35,8 +33,9 @@ public class Mosab2aActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        String ID = getIntent().getStringExtra("ID");
+        Intent intent = getIntent();
+        String ID = intent.getStringExtra("ID");
+        String grade = intent.getStringExtra("Grade");
 
         RecyclerView mosab2at_list = findViewById(R.id.mosab2at_list);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -50,7 +49,8 @@ public class Mosab2aActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<Mosab2a> mosab2at = new ArrayList<>();
                 ArrayList<String> mosab2atIDs = new ArrayList<>();
-                DataSnapshot mosab2atData = snapshot.child("Mosab2at");
+                assert grade != null;
+                DataSnapshot mosab2atData = snapshot.child(Mosab2a_Path.getPath(grade));
                 for (DataSnapshot mosab2a : mosab2atData.getChildren()) {
                     Mosab2a m = new Mosab2a();
                     mosab2atIDs.add(mosab2a.getKey());
@@ -60,7 +60,7 @@ public class Mosab2aActivity extends AppCompatActivity {
                     m.setLink(mosab2a.child("Link").getValue(String.class));
                     mosab2at.add(m);
                 }
-                DataSnapshot userM = snapshot.child("Login").child(ID).child("Mosab2at");
+                DataSnapshot userM = snapshot.child(Users_Path.getPath(grade)).child(ID).child("Mosab2at");
                 for (DataSnapshot mosab2a : userM.getChildren()) {
                     if (mosab2atIDs.contains(mosab2a.getKey())) mosab2at.remove(mosab2atIDs.indexOf(mosab2a.getKey()));
                 }

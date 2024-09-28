@@ -42,6 +42,24 @@
         android:textStyle="bold" />
 
     <EditText
+        android:id="@+id/editTextGrade"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginHorizontal="@dimen/_50sdp"
+        android:background="@drawable/button_background3"
+        android:fontFamily="@font/segoebold"
+        android:gravity="center"
+        android:hint="Grade"
+        android:inputType="textPassword"
+        android:padding="@dimen/_7sdp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray_hint"
+        android:textSize="@dimen/_18sdp"
+        android:layout_marginBottom="@dimen/_15sdp"
+        android:textStyle="bold" />
+
+    <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

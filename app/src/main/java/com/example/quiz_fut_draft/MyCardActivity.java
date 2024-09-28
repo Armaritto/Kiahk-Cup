@@ -42,8 +42,10 @@ public class MyCardActivity extends AppCompatActivity {
         Intent intent1 = getIntent();
         ID = intent1.getStringExtra("ID");
         Name = intent1.getStringExtra("Name");
+        String grade = intent1.getStringExtra("Grade");
 
-        setupHeader(FirebaseDatabase.getInstance().getReference("/Login"));
+        assert grade != null;
+        setupHeader(FirebaseDatabase.getInstance().getReference(Users_Path.getPath(grade)));
 
         Button positionBtn = findViewById(R.id.position_btn);
         Button cardBtn = findViewById(R.id.card_btn);
@@ -56,7 +58,7 @@ public class MyCardActivity extends AppCompatActivity {
         TextView card_rating = findViewById(R.id.card_rating);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("Login").child(ID);
+        DatabaseReference ref = database.getReference(Users_Path.getPath(grade)).child(ID);
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -99,6 +101,7 @@ public class MyCardActivity extends AppCompatActivity {
             Intent intent = new Intent(MyCardActivity.this, CardStoreActivity.class);
             intent.putExtra("ID",ID);
             intent.putExtra("Name",Name);
+            intent.putExtra("Grade",grade);
             startActivity(intent);
         });
 

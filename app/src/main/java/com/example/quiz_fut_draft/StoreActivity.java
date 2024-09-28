@@ -32,6 +32,7 @@ public class StoreActivity extends AppCompatActivity {
     private ArrayList<Card> cards;
     private String cardStoreCheck = "";
     private String OVR;
+    private String grade;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +47,8 @@ public class StoreActivity extends AppCompatActivity {
         Name = intent1.getStringExtra("Name");
         OVR = intent1.getStringExtra("Score");
         team = intent1.getStringExtra("Team");
+        grade = intent1.getStringExtra("Grade");
+
         try{
             cardStoreCheck = getIntent().getStringExtra("Card");
         }
@@ -58,9 +61,9 @@ public class StoreActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("/Store");
+        DatabaseReference ref = database.getReference("/elmilad25/Store");
 
-        setupHeader(database.getReference("/Login"));
+        setupHeader(database.getReference(Users_Path.getPath(grade)));
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -90,7 +93,7 @@ public class StoreActivity extends AppCompatActivity {
                 for (Card c : cards) {
                     if (!ownedPositions.contains(c.getPosition())) finalList.add(c);
                 }
-                adapter = new MyRecyclerViewAdapter(StoreActivity.this, finalList, coins, database, team, cardStoreCheck, ID);
+                adapter = new MyRecyclerViewAdapter(StoreActivity.this, finalList, coins, database, team, cardStoreCheck, ID, grade);
 //                adapter.setClickListener(StoreActivity.this);
                 recyclerView.setAdapter(adapter);
             }

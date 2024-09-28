@@ -32,9 +32,11 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     private String team;
     private String cardStoreCheck;
     private String ID;
+    private String grade;
 
     // data is passed into the constructor
-    MyRecyclerViewAdapter(Context context, ArrayList<Card> data, int points, FirebaseDatabase database, String team, String cardStoreCheck, String ID) {
+    MyRecyclerViewAdapter(Context context, ArrayList<Card> data, int points, FirebaseDatabase database, String team, String cardStoreCheck
+            , String ID, String grade) {
         this.mInflater = LayoutInflater.from(context);
         this.cards = data;
         this.context = context;
@@ -43,6 +45,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         this.team = team;
         this.cardStoreCheck = cardStoreCheck;
         this.ID = ID;
+        this.grade = grade;
     }
 
     // inflates the cell layout from xml when needed
@@ -107,7 +110,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     public void purchaseObject(Card card) {
 
-        DatabaseReference ref = database.getReference("/Store").child("Card "+card.getID());
+        DatabaseReference ref = database.getReference("/elmilad25/Store").child("Card "+card.getID());
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -116,7 +119,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
                 if (points >= price) {
                     points -= price;
-                    database.getReference("/Login").child(ID).child("Coins").setValue(points);
+                    database.getReference(Users_Path.getPath(grade)).child(ID).child("Coins").setValue(points);
                     ref.child("Owner").setValue(ID);
                     Toast.makeText(context, "Purchased " + card.getImage(), Toast.LENGTH_SHORT).show();
                     if(cardStoreCheck != null)

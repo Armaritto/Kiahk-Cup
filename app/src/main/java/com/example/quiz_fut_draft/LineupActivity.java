@@ -41,6 +41,7 @@ public class LineupActivity extends AppCompatActivity {
     private String ID;
     private String Position;
     private String OVR; //Points in database
+    private String grade;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,7 @@ public class LineupActivity extends AppCompatActivity {
         Intent intent1 = getIntent();
         ID = intent1.getStringExtra("ID");
         Name = intent1.getStringExtra("Name");
+        grade = intent1.getStringExtra("Grade");
         OVR = "0";
 
         ImageView gk = findViewById(R.id.gk);
@@ -73,9 +75,9 @@ public class LineupActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child("Login").child(ID).exists()) {
-                    Position = snapshot.child("Login").child(ID).child("Card").child("Position").getValue().toString();
-                    OVR = snapshot.child("Login").child(ID).child("Points").getValue().toString();
+                if (snapshot.child(Users_Path.getPath(grade)).child(ID).exists()) {
+                    Position = snapshot.child(Users_Path.getPath(grade)).child(ID).child("Card").child("Position").getValue().toString();
+                    OVR = snapshot.child(Users_Path.getPath(grade)).child(ID).child("Points").getValue().toString();
                 }
                 points.setText(OVR);
             }
@@ -98,6 +100,7 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Card", "GK");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
+            int1.putExtra("Grade", grade);
             startActivity(int1);
         });
         lb.setOnClickListener(v-> {
@@ -112,6 +115,7 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Card", "LB");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
+            int1.putExtra("Grade", grade);
             startActivity(int1);
         });
         rb.setOnClickListener(v-> {
@@ -126,6 +130,7 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Card", "RB");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
+            int1.putExtra("Grade", grade);
             startActivity(int1);
         });
         cb.setOnClickListener(v-> {
@@ -140,6 +145,7 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Card", "CB");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
+            int1.putExtra("Grade", grade);
             startActivity(int1);
         });
         lc.setOnClickListener(v-> {
@@ -154,6 +160,7 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Card", "LC");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
+            int1.putExtra("Grade", grade);
             startActivity(int1);
         });
         rc.setOnClickListener(v-> {
@@ -168,6 +175,7 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Card", "RC");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
+            int1.putExtra("Grade", grade);
             startActivity(int1);
         });
         lcm.setOnClickListener(v-> {
@@ -182,6 +190,7 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Card", "LCM");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
+            int1.putExtra("Grade", grade);
             startActivity(int1);
         });
         rcm.setOnClickListener(v-> {
@@ -196,6 +205,7 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Card", "RCM");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
+            int1.putExtra("Grade", grade);
             startActivity(int1);
         });
         LF.setOnClickListener(v-> {
@@ -210,6 +220,7 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Card", "LW");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
+            int1.putExtra("Grade", grade);
             startActivity(int1);
         });
         RF.setOnClickListener(v-> {
@@ -224,6 +235,7 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Card", "RW");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
+            int1.putExtra("Grade", grade);
             startActivity(int1);
         });
         CF.setOnClickListener(v-> {
@@ -238,12 +250,13 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Card", "CF");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
+            int1.putExtra("Grade", grade);
             startActivity(int1);
         });
 
         FirebaseDatabase database2 = FirebaseDatabase.getInstance();
         DatabaseReference ref1 = database2.getReference("/");
-        ref1.child("Store").addValueEventListener(new ValueEventListener() {
+        ref1.child("elmilad25/Store").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<Card> teamCards = new ArrayList<>();
@@ -353,7 +366,7 @@ public class LineupActivity extends AppCompatActivity {
             TextView position = findViewById(R.id.position);
 
             FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference ref = database.getReference("Login").child(ID);
+            DatabaseReference ref = database.getReference(Users_Path.getPath(grade)).child(ID);
             ref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -450,6 +463,6 @@ public class LineupActivity extends AppCompatActivity {
     private void updateOVR() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("/");
-        ref.child("Login").child(ID).child("Points").setValue(OVR);
+        ref.child(Users_Path.getPath(grade)).child(ID).child("Points").setValue(OVR);
     }
 }

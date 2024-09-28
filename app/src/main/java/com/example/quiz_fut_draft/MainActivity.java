@@ -29,6 +29,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
     private String Name;
     private String ID;
+    private String grade;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
         Intent intent1 = getIntent();
         ID = intent1.getStringExtra("ID");
         Name = intent1.getStringExtra("Name");
-        setupHeader(FirebaseDatabase.getInstance().getReference("/Login"));
+        grade = intent1.getStringExtra("Grade");
+        setupHeader(FirebaseDatabase.getInstance().getReference(Users_Path.getPath(grade)));
         Button[] buttons = new Button[4];
         buttons[0] = findViewById(R.id.mosab2a);
         buttons[1] = findViewById(R.id.lineup);
@@ -54,24 +56,28 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, Mosab2aActivity.class);
             intent.putExtra("ID",ID);
             intent.putExtra("Name",Name);
+            intent.putExtra("Grade",grade);
             startActivity(intent);
         });
         buttons[1].setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, LineupActivity.class);
             intent.putExtra("ID",ID);
             intent.putExtra("Name",Name);
+            intent.putExtra("Grade",grade);
             startActivity(intent);
         });
         buttons[2].setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, MyCardActivity.class);
             intent.putExtra("ID",ID);
             intent.putExtra("Name",Name);
+            intent.putExtra("Grade",grade);
             startActivity(intent);
         });
         buttons[3].setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, LeaderboardActivity.class);
             intent.putExtra("ID",ID);
             intent.putExtra("Name",Name);
+            intent.putExtra("Grade",grade);
             startActivity(intent);
         });
         logout.setOnClickListener(v-> {
