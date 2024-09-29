@@ -58,24 +58,34 @@ public class MyCardActivity extends AppCompatActivity {
         TextView card_rating = findViewById(R.id.card_rating);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference(Users_Path.getPath(grade)).child(ID);
+        DatabaseReference ref = database.getReference();
         ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child("Card").hasChild("CardIcon")) {
-                    String cardIconLink = snapshot.child("Card").child("CardIcon").getValue().toString();
-                    Picasso.get().load(cardIconLink).into(cardIcon, new com.squareup.picasso.Callback() {
-                        @Override
-                        public void onSuccess() {
-                            TextColor.setColor(cardIcon, name, position, card_rating);
-                        }
+            public void onDataChange(@NonNull DataSnapshot data) {
+                if (data.child(Users_Path.getPath(grade)).child(ID)
+                        .child("Owned Card Icons").hasChild("Selected")) {
+                    String selected = data.child(Users_Path.getPath(grade)).child(ID).child("Owned Card Icons").child("Selected").getValue().toString();
 
-                        @Override
-                        public void onError(Exception e) {
-                            Log.e("Picasso", e.getMessage());
-                        }
-                    });
+                    DataSnapshot cardRef = data.child("elmilad25").child("CardIcon").child(selected);
+
+                    if (cardRef.hasChild("Link")) {
+                        String cardIconLink = cardRef.child("Link").getValue().toString();
+                        Picasso.get().load(cardIconLink).into(cardIcon, new com.squareup.picasso.Callback() {
+                            @Override
+                            public void onSuccess() {
+                                TextColor.setColor(cardIcon, name, position, card_rating);
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                Log.e("Picasso", e.getMessage());
+                            }
+                        });
+                    }
+
                 }
+
+                DataSnapshot snapshot = data.child(Users_Path.getPath(grade)).child(ID);
                 if (snapshot.hasChild("Pic")) {
                     String imgLink = snapshot.child("Pic").getValue().toString();
                     Picasso.get().load(imgLink).into(img);

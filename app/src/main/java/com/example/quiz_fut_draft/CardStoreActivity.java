@@ -26,7 +26,6 @@ import java.util.Objects;
 public class CardStoreActivity extends AppCompatActivity {
     private String Name;
     private String ID;
-    private String ownedCard = "icon1";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,35 +49,48 @@ public class CardStoreActivity extends AppCompatActivity {
         int numberOfColumns = 2;
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
 
-        DatabaseReference ref = database.getReference("/elmilad25/CardIcon");
+        DatabaseReference ref = database.getReference();
 
         ref.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        ArrayList<CardIcon> cards = new ArrayList<>();
-                        for (DataSnapshot card : snapshot.getChildren()) {
-                            String cardName = card.getKey();
-                            if (!ownedCard.equals(cardName)) {
-                                Log.d("C", card.toString());
-                                CardIcon c = new CardIcon();
-                                c.setCard(cardName);
-                                c.setLink(card.child("Link").getValue().toString());
-                                c.setPrice(Double.parseDouble(card.child("Price").getValue().toString()));
-                                cards.add(c);
+            @Override
+            public void onDataChange(@NonNull DataSnapshot data) {
+                DataSnapshot snapshot = data.child("elmilad25").child("CardIcon");
+                ArrayList<CardIcon> cards = new ArrayList<>();
+                ArrayList<String> cardsNames = new ArrayList<>();
+                for (DataSnapshot card : snapshot.getChildren()) {
+                    String cardName = card.getKey();
+                    CardIcon c = new CardIcon();
+                    c.setCard(cardName);
+                    c.setLink(card.child("Link").getValue().toString());
+                    c.setPrice(Double.parseDouble(card.child("Price").getValue().toString()));
+                    cards.add(c);
+                    cardsNames.add(c.getCard());
+                }
+
+                DataSnapshot ownedIconsData = data.child(
+                        Users_Path.getPath(grade)).child(ID).child("Owned Card Icons");
+                for (DataSnapshot icon : ownedIconsData.getChildren()) {
+                    if (!icon.getKey().equals("Selected")) {
+                        if (Boolean.parseBoolean(icon.child("Owned").getValue().toString())) {
+                            String card = icon.getKey();
+                            if (cardsNames.contains(card)) {
+                                cards.get(cardsNames.indexOf(card)).setOwned(true);
                             }
                         }
-
-                         CardStoreAdapter adapter = new CardStoreAdapter(
-                             CardStoreActivity.this, cards, database, ID, grade);
-                        recyclerView.setAdapter(adapter);
-
                     }
+                }
 
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                        Toast.makeText(CardStoreActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                CardStoreAdapter adapter = new CardStoreAdapter(
+                        CardStoreActivity.this, cards, database, ID, grade);
+                recyclerView.setAdapter(adapter);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Toast.makeText(CardStoreActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
     private void setupHeader(DatabaseReference ref) {
@@ -97,6 +109,6 @@ public class CardStoreActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+         });
     }
 }

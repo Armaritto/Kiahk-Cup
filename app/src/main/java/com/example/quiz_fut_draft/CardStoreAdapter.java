@@ -58,6 +58,9 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
         holder.button.setOnClickListener(v-> {
             purchaseObject(getItem(position));
         });
+        if (cards.get(position).isOwned()) {
+            holder.button.setText("Select");
+        }
     }
 
     // total number of cells
@@ -97,15 +100,22 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
-                double stars = Double.parseDouble(snapshot.child("Stars").getValue().toString());
-                if (stars>=card.getPrice()) {
-                    stars -= card.getPrice();
-                    ref.child("Stars").setValue(stars);
-                    ref.child("Card").child("CardIcon").setValue(card.getLink());
-                    ref.child("Card").child("Type").setValue(card.getCard());
+                if (card.isOwned()) {
+                    ref.child("Owned Card Icons").child("Selected").setValue(card.getCard());
                     ((Activity) context).finish();
                 } else {
-                    Toast.makeText(context, "Not enough stars", Toast.LENGTH_SHORT).show();
+                    double stars = Double.parseDouble(snapshot.child("Stars").getValue().toString());
+                    if (stars>=card.getPrice()) {
+                        stars -= card.getPrice();
+                        ref.child("Stars").setValue(stars);
+                        ref.child("Owned Card Icons").child(card.getCard()).child("Owned").setValue(true);
+//                    ref.child("Card").child("CardIcon").setValue(card.getLink());
+//                    ref.child("Card").child("Type").setValue(card.getCard());
+                        ref.child("Owned Card Icons").child("Selected").setValue(card.getCard());
+                        ((Activity) context).finish();
+                    } else {
+                        Toast.makeText(context, "Not enough stars", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
             }

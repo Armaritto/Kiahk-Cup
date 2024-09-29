@@ -110,31 +110,44 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     public void purchaseObject(Card card) {
 
-        DatabaseReference ref = database.getReference("/elmilad25/Store").child("Card "+card.getID());
+        DatabaseReference userRef = database.getReference(Users_Path.getPath(grade)).child(ID);
+        DatabaseReference cardRef = userRef.child("Owned Cards").child("Card "+card.getID());
 
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                int price = Integer.parseInt(snapshot.child("Price").getValue().toString());
+        int price = card.getPrice();
+        if (points >= price) {
+            points -= price;
+        }
 
-                if (points >= price) {
-                    points -= price;
-                    database.getReference(Users_Path.getPath(grade)).child(ID).child("Coins").setValue(points);
-                    ref.child("Owner").setValue(ID);
-                    Toast.makeText(context, "Purchased " + card.getImage(), Toast.LENGTH_SHORT).show();
-                    if(cardStoreCheck != null)
-                        ((Activity) context).finish();
-                } else {
-                    Toast.makeText(context, "Not enough coins", Toast.LENGTH_SHORT).show();
-                }
+        userRef.child("Coins").setValue(points);
+        cardRef.setValue(true);
 
-            }
+        userRef.child("Lineup").child(card.getPosition()).setValue("Card "+card.getID());
 
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        ((Activity) context).finish();
+
+//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot snapshot) {
+//                int price = Integer.parseInt(snapshot.child("Price").getValue().toString());
+//
+//                if (points >= price) {
+//                    points -= price;
+//                    database.getReference(Users_Path.getPath(grade)).child(ID).child("Coins").setValue(points);
+//                    ref.child("Owner").setValue(ID);
+//                    Toast.makeText(context, "Purchased " + card.getImage(), Toast.LENGTH_SHORT).show();
+//                    if(cardStoreCheck != null)
+//                        ((Activity) context).finish();
+//                } else {
+//                    Toast.makeText(context, "Not enough coins", Toast.LENGTH_SHORT).show();
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//                Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
 }

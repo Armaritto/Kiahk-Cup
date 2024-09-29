@@ -5,6 +5,7 @@ public class CardIcon {
     private String card;
     private String link;
     private double price;
+    private boolean owned;
 
     public CardIcon() {
     }
@@ -31,5 +32,13 @@ public class CardIcon {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public boolean isOwned() {
+        return owned;
+    }
+
+    public void setOwned(boolean owned) {
+        this.owned = owned;
     }
 }

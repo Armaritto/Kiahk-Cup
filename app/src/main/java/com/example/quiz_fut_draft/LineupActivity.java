@@ -57,14 +57,14 @@ public class LineupActivity extends AppCompatActivity {
         ImageView gk = findViewById(R.id.gk);
         ImageView lb = findViewById(R.id.lb);
         ImageView rb = findViewById(R.id.rb);
-        ImageView cb = findViewById(R.id.cb);
-        ImageView lc = findViewById(R.id.lm);
+        ImageView lcb = findViewById(R.id.lcb);
+        ImageView rcb = findViewById(R.id.rcb);
         ImageView lcm = findViewById(R.id.lcm);
-        ImageView rc = findViewById(R.id.rm);
+        ImageView cam = findViewById(R.id.cam);
         ImageView rcm = findViewById(R.id.rcm);
-        ImageView LF = findViewById(R.id.ls);
-        ImageView CF = findViewById(R.id.cs);
-        ImageView RF = findViewById(R.id.rs);
+        ImageView LW = findViewById(R.id.lw);
+        ImageView ST = findViewById(R.id.st);
+        ImageView RW = findViewById(R.id.rw);
         TextView points = findViewById(R.id.points);
         TextView highest = findViewById(R.id.highest);
         TextView average = findViewById(R.id.average);
@@ -133,46 +133,46 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Grade", grade);
             startActivity(int1);
         });
-        cb.setOnClickListener(v-> {
+        lcb.setOnClickListener(v-> {
             Intent int1;
-            if(!Position.equals("CB")) {
+            if(!Position.equals("LCB")) {
                 int1 = new Intent(LineupActivity.this, StoreActivity.class);
             }
             else{
                 int1 = new Intent(LineupActivity.this, MyCardActivity.class);
             }
             int1.putExtra("ID", ID);
-            int1.putExtra("Card", "CB");
+            int1.putExtra("Card", "LCB");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
             int1.putExtra("Grade", grade);
             startActivity(int1);
         });
-        lc.setOnClickListener(v-> {
+        rcb.setOnClickListener(v-> {
             Intent int1;
-            if(!Position.equals("LC")) {
+            if(!Position.equals("RCB")) {
                 int1 = new Intent(LineupActivity.this, StoreActivity.class);
             }
             else{
                 int1 = new Intent(LineupActivity.this, MyCardActivity.class);
             }
             int1.putExtra("ID", ID);
-            int1.putExtra("Card", "LC");
+            int1.putExtra("Card", "RCB");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
             int1.putExtra("Grade", grade);
             startActivity(int1);
         });
-        rc.setOnClickListener(v-> {
+        cam.setOnClickListener(v-> {
             Intent int1;
-            if (!Position.equals("RC")) {
+            if (!Position.equals("CAM")) {
                 int1 = new Intent(LineupActivity.this, StoreActivity.class);
             }
             else{
                 int1 = new Intent(LineupActivity.this, MyCardActivity.class);
             }
             int1.putExtra("ID", ID);
-            int1.putExtra("Card", "RC");
+            int1.putExtra("Card", "CAM");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
             int1.putExtra("Grade", grade);
@@ -208,7 +208,7 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Grade", grade);
             startActivity(int1);
         });
-        LF.setOnClickListener(v-> {
+        LW.setOnClickListener(v-> {
             Intent int1;
             if(!Position.equals("LW")) {
                 int1 = new Intent(LineupActivity.this, StoreActivity.class);
@@ -223,7 +223,7 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Grade", grade);
             startActivity(int1);
         });
-        RF.setOnClickListener(v-> {
+        RW.setOnClickListener(v-> {
             Intent int1;
             if(!Position.equals("RW")) {
                 int1 = new Intent(LineupActivity.this, StoreActivity.class);
@@ -238,7 +238,7 @@ public class LineupActivity extends AppCompatActivity {
             int1.putExtra("Grade", grade);
             startActivity(int1);
         });
-        CF.setOnClickListener(v-> {
+        ST.setOnClickListener(v-> {
             Intent int1;
             if(!Position.equals("ST")) {
                 int1 = new Intent(LineupActivity.this, StoreActivity.class);
@@ -247,16 +247,14 @@ public class LineupActivity extends AppCompatActivity {
                 int1 = new Intent(LineupActivity.this, MyCardActivity.class);
             }
             int1.putExtra("ID", ID);
-            int1.putExtra("Card", "CF");
+            int1.putExtra("Card", "ST");
             int1.putExtra("Score", OVR);
             int1.putExtra("Name", Name);
             int1.putExtra("Grade", grade);
             startActivity(int1);
         });
 
-        FirebaseDatabase database2 = FirebaseDatabase.getInstance();
-        DatabaseReference ref1 = database2.getReference("/");
-        ref1.child("elmilad25/Store").addValueEventListener(new ValueEventListener() {
+        ref.child("elmilad25/Store").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<Card> teamCards = new ArrayList<>();
@@ -306,14 +304,14 @@ public class LineupActivity extends AppCompatActivity {
                 setCardImage("GK", gk, positions, teamCards);
                 setCardImage("LB", lb, positions, teamCards);
                 setCardImage("RB", rb, positions, teamCards);
-                setCardImage("CB", cb, positions, teamCards);
-                setCardImage("LC", lc, positions, teamCards);
+                setCardImage("LCB", lcb, positions, teamCards);
+                setCardImage("RCB", rcb, positions, teamCards);
                 setCardImage("LCM", lcm, positions, teamCards);
-                setCardImage("RC", rc, positions, teamCards);
+                setCardImage("CAM", cam, positions, teamCards);
                 setCardImage("RCM", rcm, positions, teamCards);
-                setCardImage("LW", LF, positions, teamCards);
-                setCardImage("ST", CF, positions, teamCards);
-                setCardImage("RW", RF, positions, teamCards);
+                setCardImage("LW", LW, positions, teamCards);
+                setCardImage("ST", ST, positions, teamCards);
+                setCardImage("RW", RW, positions, teamCards);
 
 
                 int highestScore = -1;

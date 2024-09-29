@@ -8,6 +8,7 @@ public class Card {
     private String owner;
     private String rating;
     private String position;
+    private boolean owned = false;
 
     public Card(int ID, int price, String name, String owner, String rating, String position) {
         this.ID = ID;
@@ -63,5 +64,9 @@ public class Card {
 
     public void setPosition(String position) {
         this.position = position;
+    }
+
+    public void own() {
+        owned = true;
     }
 }
