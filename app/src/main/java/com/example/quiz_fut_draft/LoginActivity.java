@@ -58,6 +58,10 @@ public class LoginActivity extends AppCompatActivity {
             String id = editTextId.getText().toString().trim();
             String password = editTextPassword.getText().toString().trim();
             String grade = editTextGrade.getText().toString().trim();
+            if (!grade.equals("1") && !grade.equals("2") && !grade.equals("3") && !grade.equals("4") && !grade.equals("5") && !grade.equals("6")) {
+                Toast.makeText(LoginActivity.this, "Please enter a valid grade", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (!id.isEmpty() && !password.isEmpty()) {
                 validateLogin(id, password,grade);
             } else {

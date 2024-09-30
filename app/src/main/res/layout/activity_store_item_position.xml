@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/position"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/_30sdp"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="@dimen/_15sdp"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="15dp"
+        android:textSize="23dp"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:textColor="@color/white"/>
+
+    <Button
+        android:id="@+id/purchase"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:paddingVertical="0dp"
+        android:paddingHorizontal="15dp"
+        android:textAllCaps="false"
+        android:background="@drawable/button_background"
+        android:text="Purchase"
+        android:textSize="15dp"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"/>
+</LinearLayout>

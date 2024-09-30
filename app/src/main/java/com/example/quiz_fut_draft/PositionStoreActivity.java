@@ -23,7 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Mosab2aActivity extends AppCompatActivity {
+public class PositionStoreActivity extends AppCompatActivity {
     private String Name;
     private String ID;
 
@@ -31,52 +31,64 @@ public class Mosab2aActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_mosab2a);
+        setContentView(R.layout.activity_store);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Intent intent = getIntent();
-        ID = intent.getStringExtra("ID");
-        Name = intent.getStringExtra("Name");
-        String grade = intent.getStringExtra("Grade");
 
-        RecyclerView mosab2at_list = findViewById(R.id.mosab2at_list);
+        Intent intent1 = getIntent();
+        ID = intent1.getStringExtra("ID");
+        Name = intent1.getStringExtra("Name");
+        String grade = intent1.getStringExtra("Grade");
+        assert grade != null;
+        setupHeader(FirebaseDatabase.getInstance().getReference(Users_Path.getPath(grade)));
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference();
-        setupHeader(ref);
+
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
         int numberOfColumns = 2;
-        mosab2at_list.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
+
+        DatabaseReference ref = database.getReference();
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<Mosab2a> mosab2at = new ArrayList<>();
-                ArrayList<String> mosab2atIDs = new ArrayList<>();
-                assert grade != null;
-                DataSnapshot mosab2atData = snapshot.child(Mosab2a_Path.getPath(grade));
-                for (DataSnapshot mosab2a : mosab2atData.getChildren()) {
-                    Mosab2a m = new Mosab2a();
-                    mosab2atIDs.add(mosab2a.getKey());
-                    m.setId(mosab2a.getKey());
-                    m.setTitle(mosab2a.child("Title").getValue(String.class));
-                    m.setCoins(mosab2a.child("Points").getValue().toString());
-                    m.setLink(mosab2a.child("Link").getValue(String.class));
-                    mosab2at.add(m);
-                }
-                DataSnapshot userM = snapshot.child(Users_Path.getPath(grade)).child(ID).child("Mosab2at");
-                for (DataSnapshot mosab2a : userM.getChildren()) {
-                    if (mosab2atIDs.contains(mosab2a.getKey())) mosab2at.remove(mosab2atIDs.indexOf(mosab2a.getKey()));
+            public void onDataChange(@NonNull DataSnapshot data) {
+                DataSnapshot snapshot = data.child("elmilad25").child("CardPosition");
+                ArrayList<Position> positions = new ArrayList<>();
+                ArrayList<String> positionsIds = new ArrayList<>();
+                for (DataSnapshot p : snapshot.getChildren()) {
+                    String id = p.getKey();
+                    Position position = new Position();
+                    position.setId(id);
+                    position.setPosition(p.child("Position").getValue().toString());
+                    position.setPrice(Integer.parseInt(p.child("Price").getValue().toString()));
+                    positions.add(position);
+                    positionsIds.add(id);
                 }
 
-                Mosab2atAdapter adapter = new Mosab2atAdapter(Mosab2aActivity.this, mosab2at);
-                mosab2at_list.setAdapter(adapter);
+                DataSnapshot ownedPositions = data.child(
+                        Users_Path.getPath(grade)).child(ID).child("Owned Positions");
+                for (DataSnapshot position : ownedPositions.getChildren()) {
+                    if (Boolean.parseBoolean(position.child("Owned").getValue().toString())) {
+                        String positionId = position.getKey();
+                        if (positionsIds.contains(positionId)) {
+                            positions.get(positionsIds.indexOf(positionId)).setOwned(true);
+                        }
+                    }
+                }
+
+               PositionStoreAdapter adapter = new PositionStoreAdapter(
+                       PositionStoreActivity.this, positions, database, ID, grade);
+               recyclerView.setAdapter(adapter);
+
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(Mosab2aActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onCancelled(DatabaseError error) {
+                Toast.makeText(PositionStoreActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

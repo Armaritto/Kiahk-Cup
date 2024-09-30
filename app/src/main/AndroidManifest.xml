@@ -15,6 +15,12 @@
         android:theme="@style/Theme.QuizFUTDraft"
         tools:targetApi="31">
         <activity
+            android:name=".RatingStoreActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PositionStoreActivity"
+            android:exported="false" />
+        <activity
             android:name=".FormActivity"
             android:exported="false" />
         <activity

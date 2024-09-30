@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/other_background"
+    tools:context=".RatingStoreActivity">
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"/>
+
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_centerInParent="true">
+
+            <TextView
+                android:id="@+id/new_rating"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:fontFamily="@font/segoebold"
+                android:textSize="@dimen/_50sdp"/>
+
+
+            <TextView
+                android:id="@+id/price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:fontFamily="@font/segoebold"
+                android:textSize="@dimen/_20sdp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_70sdp">
+
+                <LinearLayout
+                    android:id="@+id/minus"
+                    android:layout_width="@dimen/_35sdp"
+                    android:layout_height="@dimen/_35sdp"
+                    android:background="@drawable/circle"
+                    android:gravity="center"
+                    android:layout_alignParentStart="true">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/hyphen"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/plus"
+                    android:layout_width="@dimen/_35sdp"
+                    android:layout_height="@dimen/_35sdp"
+                    android:background="@drawable/circle"
+                    android:gravity="center"
+                    android:layout_alignParentEnd="true"
+                    android:padding="@dimen/_9sdp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/plus"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/purchase"
+                android:layout_width="@dimen/_160sdp"
+                android:layout_height="wrap_content"
+                android:text="Purchase"
+                android:textAllCaps="false"
+                android:background="@drawable/button_background4"
+                android:fontFamily="@font/segoebold"
+                android:textStyle="bold"
+                android:textSize="@dimen/_17sdp"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:padding="@dimen/_7sdp"/>
+        </LinearLayout>
+
+
+
+</RelativeLayout>

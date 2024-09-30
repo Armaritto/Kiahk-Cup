@@ -33,6 +33,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
@@ -76,7 +77,13 @@ public class LineupActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.child(Users_Path.getPath(grade)).child(ID).exists()) {
-                    Position = snapshot.child(Users_Path.getPath(grade)).child(ID).child("Card").child("Position").getValue().toString();
+                    if(snapshot.child(Users_Path.getPath(grade)).child(ID).child("Card").hasChild("Position"))
+                        Position = snapshot.child(Users_Path.getPath(grade)).child(ID).child("Card").child("Position").getValue().toString();
+                    else{
+                        DatabaseReference userRef = ref.child(Users_Path.getPath(grade)).child(ID);
+                        userRef.child("Owned Positions").child("position1").child("Owned").setValue(true);
+                        userRef.child("Card").child("Position").setValue("GK");
+                    }
                     OVR = snapshot.child(Users_Path.getPath(grade)).child(ID).child("Points").getValue().toString();
                 }
                 points.setText(OVR);
@@ -270,16 +277,22 @@ public class LineupActivity extends AppCompatActivity {
                         lineup.add(new Card(Integer.parseInt(card.getValue().toString()), 0, "", "", card.getKey()));
                     }
                 }
-                for(Card card : lineup) {
-                    card.setRating(snapshot.child("elmilad25").child("Store").child("Card "+card.getID()).child("Rating").getValue().toString());
-                    card.setPosition(snapshot.child("elmilad25").child("Store").child("Card "+card.getID()).child("Position").getValue().toString());
-                    card.setPrice(Integer.parseInt(snapshot.child("elmilad25").child("Store").child("Card "+card.getID()).child("Price").getValue().toString()));
-                    card.setImage(snapshot.child("elmilad25").child("Store").child("Card "+card.getID()).child("Image").getValue().toString());
+                Iterator<Card> iterator = lineup.iterator();
+                while (iterator.hasNext()) {
+                    Card card = iterator.next();
+                    card.setRating(snapshot.child("elmilad25").child("Store").child("Card " + card.getID()).child("Rating").getValue().toString());
+                    card.setPosition(snapshot.child("elmilad25").child("Store").child("Card " + card.getID()).child("Position").getValue().toString());
+                    if (Objects.equals(card.getPosition(), Position)) {
+                        iterator.remove();
+                        continue;
+                    }
+                    card.setPrice(Integer.parseInt(snapshot.child("elmilad25").child("Store").child("Card " + card.getID()).child("Price").getValue().toString()));
+                    card.setImage(snapshot.child("elmilad25").child("Store").child("Card " + card.getID()).child("Image").getValue().toString());
                     positions.add(card.getPosition());
-                    totalPoints += Integer.parseInt(card.getRating())/11;
+                    totalPoints += Integer.parseInt(card.getRating()) / 11;
                 }
 
-                totalPoints += snapshot.child(Users_Path.getPath(grade)).child(ID).child("Card").child("Rating").getValue(Integer.class)/11;
+                    totalPoints += snapshot.child(Users_Path.getPath(grade)).child(ID).child("Card").child("Rating").getValue(Integer.class)/11;
                 teamsScores.put(ID, totalPoints);
 
                 OVR = Integer.toString(totalPoints);

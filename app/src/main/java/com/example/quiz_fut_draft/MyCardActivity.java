@@ -2,7 +2,6 @@ package com.example.quiz_fut_draft;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -93,9 +92,16 @@ public class MyCardActivity extends AppCompatActivity {
                 if (snapshot.hasChild("Name")) {
                     name.setText(snapshot.child("Name").getValue().toString());
                 }
+
                 if (snapshot.child("Card").hasChild("Position")) {
                     position.setText(snapshot.child("Card").child("Position").getValue().toString());
                 }
+                else {
+                    DatabaseReference userRef = ref.child(Users_Path.getPath(grade)).child(ID);
+                    userRef.child("Owned Positions").child("position1").child("Owned").setValue(true);
+                    userRef.child("Card").child("Position").setValue("GK");
+                }
+
                 if (snapshot.child("Card").hasChild("Rating")) {
                     card_rating.setText(snapshot.child("Card").child("Rating").getValue().toString());
                 }
@@ -115,6 +121,21 @@ public class MyCardActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        positionBtn.setOnClickListener(v-> {
+            Intent intent = new Intent(MyCardActivity.this, PositionStoreActivity.class);
+            intent.putExtra("ID",ID);
+            intent.putExtra("Name",Name);
+            intent.putExtra("Grade",grade);
+            startActivity(intent);
+        });
+
+        ratingBtn.setOnClickListener(v-> {
+            Intent intent = new Intent(MyCardActivity.this, RatingStoreActivity.class);
+            intent.putExtra("ID",ID);
+            intent.putExtra("Name",Name);
+            intent.putExtra("Grade",grade);
+            startActivity(intent);
+        });
     }
 
     private void setupHeader(DatabaseReference ref) {

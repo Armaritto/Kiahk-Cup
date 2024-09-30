@@ -28,7 +28,6 @@
         android:textSize="@dimen/_30sdp"
         android:fontFamily="@font/segoebold"
         android:textStyle="bold"
-        android:text="Patrick Remon"
         android:layout_centerInParent="true"
         android:paddingTop="@dimen/_220sdp"/>
 
@@ -40,8 +39,7 @@
         android:fontFamily="@font/segoebold"
         android:textStyle="bold"
         android:layout_marginLeft="@dimen/_58sdp"
-        android:layout_marginTop="@dimen/_107sdp"
-        android:text="ST"/>
+        android:layout_marginTop="@dimen/_107sdp" />
 
     <TextView
         android:id="@+id/card_rating"
@@ -50,7 +48,6 @@
         android:textSize="@dimen/_37sdp"
         android:fontFamily="@font/segoebold"
         android:textStyle="bold"
-        android:text="99"
         android:layout_marginLeft="@dimen/_50sdp"
         android:layout_marginTop="@dimen/_62sdp"/>
 
