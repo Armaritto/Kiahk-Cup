@@ -85,8 +85,8 @@ public class StoreActivity extends AppCompatActivity {
                         owner = snapshot.child(objectName).child("Owner").getValue().toString();
                     if (owner.equals(team) && !ownedPositions.contains(position)) ownedPositions.add(position);
                     String rating = snapshot.child(objectName).child("Rating").getValue().toString();
-                    Card card = new Card((i+1), Integer.parseInt(price), image, owner, rating, position);
-                    if (owner.equals("")) cards.add(card);
+                    Card card = new Card((i+1), Integer.parseInt(price), image, rating, position);
+                    cards.add(card);
                 }
 
                 ArrayList<Card> finalList = new ArrayList<>();

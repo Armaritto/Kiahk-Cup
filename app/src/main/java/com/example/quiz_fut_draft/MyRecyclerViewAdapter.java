@@ -121,7 +121,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         userRef.child("Coins").setValue(points);
         cardRef.setValue(true);
 
-        userRef.child("Lineup").child(card.getPosition()).setValue("Card "+card.getID());
+        userRef.child("Lineup").child(card.getPosition()).setValue(card.getID());
 
         ((Activity) context).finish();
 

@@ -5,16 +5,14 @@ public class Card {
     private int ID;
     private int price;
     private String image;
-    private String owner;
     private String rating;
     private String position;
     private boolean owned = false;
 
-    public Card(int ID, int price, String name, String owner, String rating, String position) {
+    public Card(int ID, int price, String name, String rating, String position) {
         this.ID = ID;
         this.price = price;
         this.image = name;
-        this.owner = owner;
         this.rating = rating;
         this.position = position;
     }
@@ -40,14 +38,6 @@ public class Card {
 
     public void setImage(String image) {
         this.image = image;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
     }
 
     public String getRating() {

@@ -254,7 +254,7 @@ public class LineupActivity extends AppCompatActivity {
             startActivity(int1);
         });
 
-        ref.child("elmilad25/Store").addValueEventListener(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<Card> teamCards = new ArrayList<>();
@@ -263,55 +263,39 @@ public class LineupActivity extends AppCompatActivity {
 
                 HashMap<String,Integer> teamsScores = new HashMap<>();
 
-                for (int i = 0; i < 66; i++) { //---------------------------------------> if changed then will change this
-                    String objectName = "Card " + (i + 1);
-                    if (!snapshot.child(objectName).exists())
-                        continue;
-                    String price = snapshot.child(objectName).child("Price").getValue().toString();
-                    String position = snapshot.child(objectName).child("Position").getValue().toString();
-                    String image = snapshot.child(objectName).child("Image").getValue().toString();
-                    String rating = snapshot.child(objectName).child("Rating").getValue().toString();
-                    String owner = "";
-                    if (snapshot.child(objectName).hasChild("Owner"))
-                        owner = snapshot.child(objectName).child("Owner").getValue().toString();
-                    Card card = new Card((i+1), Integer.parseInt(price), image, owner, rating, position);
-                    if (owner.equals(ID)) {
-                        teamCards.add(card);
-                        positions.add(position);
-                        totalPoints += Integer.parseInt(card.getRating());
-                        if (!teamsScores.containsKey(owner)) {
-                            teamsScores.put(owner, 0);
-                        }
-                    }
-                    for (Map.Entry<String, Integer> entry : teamsScores.entrySet()) {
-                        String key = entry.getKey();
-                        Integer value = entry.getValue();
-                        if(key.equals(owner)) {
-                            value += Integer.parseInt(card.getRating());
-                            teamsScores.put(key, value);
-                        }
+                ArrayList<Card> lineup = new ArrayList<>(11);
+                if (snapshot.child(Users_Path.getPath(grade)).child(ID).child("Lineup").hasChildren()) {
+                    for (DataSnapshot card : snapshot.child(Users_Path.getPath(grade)).child(ID).child("Lineup").getChildren()) {
+
+                        lineup.add(new Card(Integer.parseInt(card.getValue().toString()), 0, "", "", card.getKey()));
                     }
                 }
-                for (Map.Entry<String, Integer> entry : teamsScores.entrySet()) {
-                    String key = entry.getKey();
-                    Integer value = entry.getValue();
-                    teamsScores.put(key, value/11);
+                for(Card card : lineup) {
+                    card.setRating(snapshot.child("elmilad25").child("Store").child("Card "+card.getID()).child("Rating").getValue().toString());
+                    card.setPosition(snapshot.child("elmilad25").child("Store").child("Card "+card.getID()).child("Position").getValue().toString());
+                    card.setPrice(Integer.parseInt(snapshot.child("elmilad25").child("Store").child("Card "+card.getID()).child("Price").getValue().toString()));
+                    card.setImage(snapshot.child("elmilad25").child("Store").child("Card "+card.getID()).child("Image").getValue().toString());
+                    positions.add(card.getPosition());
+                    totalPoints += Integer.parseInt(card.getRating())/11;
                 }
-                totalPoints /=11;
+
+                totalPoints += snapshot.child(Users_Path.getPath(grade)).child(ID).child("Card").child("Rating").getValue(Integer.class)/11;
+                teamsScores.put(ID, totalPoints);
+
                 OVR = Integer.toString(totalPoints);
                 points.setText(String.valueOf(totalPoints));
 
-                setCardImage("GK", gk, positions, teamCards);
-                setCardImage("LB", lb, positions, teamCards);
-                setCardImage("RB", rb, positions, teamCards);
-                setCardImage("LCB", lcb, positions, teamCards);
-                setCardImage("RCB", rcb, positions, teamCards);
-                setCardImage("LCM", lcm, positions, teamCards);
-                setCardImage("CAM", cam, positions, teamCards);
-                setCardImage("RCM", rcm, positions, teamCards);
-                setCardImage("LW", LW, positions, teamCards);
-                setCardImage("ST", ST, positions, teamCards);
-                setCardImage("RW", RW, positions, teamCards);
+                setCardImage("GK", gk, positions, lineup);
+                setCardImage("LB", lb, positions, lineup);
+                setCardImage("RB", rb, positions, lineup);
+                setCardImage("LCB", lcb, positions, lineup);
+                setCardImage("RCB", rcb, positions, lineup);
+                setCardImage("LCM", lcm, positions, lineup);
+                setCardImage("CAM", cam, positions, lineup);
+                setCardImage("RCM", rcm, positions, lineup);
+                setCardImage("LW", LW, positions, lineup);
+                setCardImage("ST", ST, positions, lineup);
+                setCardImage("RW", RW, positions, lineup);
 
 
                 int highestScore = -1;
@@ -355,7 +339,6 @@ public class LineupActivity extends AppCompatActivity {
         }
         else if (Objects.equals(Position, p)) {
 
-//            View v = getLayoutInflater().inflate(R.layout.activity_card_all_in_one, null);
             RelativeLayout v = findViewById(R.id.main);
             ImageView icon = findViewById(R.id.card_icon);
             ImageView img = findViewById(R.id.img);
