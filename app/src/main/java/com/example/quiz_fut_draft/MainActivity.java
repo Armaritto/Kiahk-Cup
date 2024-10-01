@@ -38,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
         ID = intent1.getStringExtra("ID");
         Name = intent1.getStringExtra("Name");
         grade = intent1.getStringExtra("Grade");
-        setupHeader(FirebaseDatabase.getInstance().getReference(Users_Path.getPath(grade)));
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        setupHeader(database.getReference(Users_Path.getPath(grade)));
         Button[] buttons = new Button[4];
         buttons[0] = findViewById(R.id.mosab2a);
         buttons[1] = findViewById(R.id.lineup);
@@ -52,6 +53,25 @@ public class MainActivity extends AppCompatActivity {
                 showCustomDialog();
             });
         }
+
+        database.getReference("elmilad25/Leaderboard").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild("J"+grade) &&
+                        Boolean.parseBoolean(snapshot.child("J"+grade).getValue().toString())) {
+                    buttons[3].setVisibility(View.VISIBLE);
+                } else {
+                    buttons[3].setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+
         buttons[0].setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, Mosab2aActivity.class);
             intent.putExtra("ID",ID);

@@ -43,7 +43,8 @@
             android:id="@+id/leaderboard"
             style="@style/main_button"
             android:text="Leaderboard"
-            android:background="@drawable/t4"/>
+            android:background="@drawable/t4"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/admin"

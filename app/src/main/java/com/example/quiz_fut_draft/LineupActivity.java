@@ -3,14 +3,9 @@ package com.example.quiz_fut_draft;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -20,7 +15,6 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,62 +25,138 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
+import java.util.Collections;
 
 public class LineupActivity extends AppCompatActivity {
-    private String Name;
+    private String userName;
     private String ID;
-    private String Position;
-    private String OVR; //Points in database
+    private String userPos;
+    private String userRating = "0"; //Points in database
     private String grade;
+    private ImageView[] lineupCards;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_lineup);
+
         Intent intent1 = getIntent();
         ID = intent1.getStringExtra("ID");
-        Name = intent1.getStringExtra("Name");
+        userName = intent1.getStringExtra("Name");
         grade = intent1.getStringExtra("Grade");
-        OVR = "0";
 
-        ImageView gk = findViewById(R.id.gk);
-        ImageView lb = findViewById(R.id.lb);
-        ImageView rb = findViewById(R.id.rb);
-        ImageView lcb = findViewById(R.id.lcb);
-        ImageView rcb = findViewById(R.id.rcb);
-        ImageView lcm = findViewById(R.id.lcm);
-        ImageView cam = findViewById(R.id.cam);
-        ImageView rcm = findViewById(R.id.rcm);
-        ImageView LW = findViewById(R.id.lw);
-        ImageView ST = findViewById(R.id.st);
-        ImageView RW = findViewById(R.id.rw);
+        // All cards IDs
+        int[] lineupViewIds = {
+                R.id.ST,
+                R.id.LW,
+                R.id.RW,
+                R.id.CAM,
+                R.id.LCM,
+                R.id.RCM,
+                R.id.LB,
+                R.id.LCB,
+                R.id.RCB,
+                R.id.RB,
+                R.id.GK
+        };
+
+        lineupCards = new ImageView[lineupViewIds.length];
+
         TextView points = findViewById(R.id.points);
         TextView highest = findViewById(R.id.highest);
         TextView average = findViewById(R.id.average);
 
+        for (int i=0;i<lineupViewIds.length;i++) {
+            int id = lineupViewIds[i];
+            lineupCards[i] = findViewById(id);
+            String cardPos = getResources().getResourceEntryName(id);
+            lineupCards[i].setOnClickListener(v-> {
+                String usedPosition = userPos;
+                if (usedPosition.equals("CB")) usedPosition = "LCB";
+                if (usedPosition.equals("CM")) usedPosition = "LCM";
+                Intent int1;
+                if (!usedPosition.equals(cardPos))
+                    int1 = new Intent(LineupActivity.this, StoreActivity.class);
+                else
+                    int1 = new Intent(LineupActivity.this, MyCardActivity.class);
+                int1.putExtra("ID", ID);
+                int1.putExtra("Card", cardPos);
+                int1.putExtra("Name", userName);
+                int1.putExtra("Grade", grade);
+                startActivity(int1);
+            });
+        }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("/");
+        DatabaseReference ref = database.getReference();
+        DatabaseReference userRef = ref.child(Users_Path.getPath(grade)).child(ID);
+
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child(Users_Path.getPath(grade)).child(ID).exists()) {
-                    if(snapshot.child(Users_Path.getPath(grade)).child(ID).child("Card").hasChild("Position"))
-                        Position = snapshot.child(Users_Path.getPath(grade)).child(ID).child("Card").child("Position").getValue().toString();
-                    else{
-                        DatabaseReference userRef = ref.child(Users_Path.getPath(grade)).child(ID);
-                        userRef.child("Owned Positions").child("position1").child("Owned").setValue(true);
-                        userRef.child("Card").child("Position").setValue("GK");
-                    }
-                    OVR = snapshot.child(Users_Path.getPath(grade)).child(ID).child("Points").getValue().toString();
+
+                DataSnapshot userData = snapshot.child(Users_Path.getPath(grade)).child(ID);
+                DataSnapshot storeData = snapshot.child("elmilad25").child("Store");
+
+                // check user position || make it default (GK)
+                if (userData.child("Card").hasChild("Position"))
+                    userPos = userData.child("Card").child("Position").getValue().toString();
+                else {
+                    userRef.child("Owned Positions").child("position1").child("Owned").setValue(true);
+                    userRef.child("Card").child("Position").setValue("GK");
                 }
-                points.setText(OVR);
+
+                resetImages();
+
+                // read lineup
+                double totalRating = 0;
+                for (ImageView cardImage : lineupCards) {
+                    String cardPos = getResources().getResourceEntryName(cardImage.getId());
+                    String usedPosition = userPos;
+                    if (usedPosition.equals("CB")) usedPosition = "LCB";
+                    if (usedPosition.equals("CM")) usedPosition = "LCM";
+                    if (cardPos.equals(usedPosition)) {
+                        setUserCardImage(cardImage, userData, snapshot);
+                        totalRating += (double) userData.child("Card").child("Rating").getValue(Integer.class)/11;
+                    } else if (userData.child("Lineup").hasChild(cardPos)) {
+                        String cardID = userData.child("Lineup").child(cardPos).getValue().toString();
+                        Card c = new Card();
+                        c.setID(cardID);
+                        DataSnapshot cardData = storeData.child(cardID);
+                        c.setRating(cardData.child("Rating").getValue().toString());
+                        c.setPosition(cardData.child("Position").getValue().toString());
+                        c.setPrice(Integer.parseInt(cardData.child("Price").getValue().toString()));
+                        c.setImageLink(cardData.child("Image").getValue().toString());
+                        Picasso.get().load(c.getImageLink()).into(cardImage);
+                        totalRating += (double) Integer.parseInt(c.getRating()) / 11;
+                    }
+
+                }
+
+                // set Rating value & store it into database
+                int userRatingInt = (int) Math.round(totalRating);
+                userRating = String.valueOf(userRatingInt);
+                points.setText(String.valueOf(userRatingInt));
+                userRef.child("Points").setValue(userRating);
+
+                // assign average & highest
+                ArrayList<Integer> allUsersRatings = new ArrayList<>();
+                int sum = 0;
+                int numOfUsers = 0;
+                for (DataSnapshot aUserData : snapshot.child(Users_Path.getPath(grade)).getChildren()) {
+                    numOfUsers++;
+                    if (aUserData.hasChild("Points")) {
+                        int aUserPoints = Integer.parseInt(aUserData.child("Points").getValue().toString());
+                        allUsersRatings.add(aUserPoints);
+                        sum+=aUserPoints;
+                    }
+                }
+
+                highest.setText(String.valueOf(Collections.max(allUsersRatings)));
+                double avg = (double) sum /numOfUsers;
+                average.setText(String.valueOf((int) Math.round(avg)));
+
             }
 
             @Override
@@ -95,336 +165,73 @@ public class LineupActivity extends AppCompatActivity {
             }
         });
 
-        gk.setOnClickListener(v-> {
-            Intent int1;
-            if(!Position.equals("GK")) {
-                int1 = new Intent(LineupActivity.this, StoreActivity.class);
-            }
-            else{
-                int1 = new Intent(LineupActivity.this, MyCardActivity.class);
-            }
-            int1.putExtra("ID", ID);
-            int1.putExtra("Card", "GK");
-            int1.putExtra("Score", OVR);
-            int1.putExtra("Name", Name);
-            int1.putExtra("Grade", grade);
-            startActivity(int1);
-        });
-        lb.setOnClickListener(v-> {
-            Intent int1;
-            if(!Position.equals("LB")) {
-                int1 = new Intent(LineupActivity.this, StoreActivity.class);
-            }
-            else{
-                int1 = new Intent(LineupActivity.this, MyCardActivity.class);
-            }
-            int1.putExtra("ID", ID);
-            int1.putExtra("Card", "LB");
-            int1.putExtra("Score", OVR);
-            int1.putExtra("Name", Name);
-            int1.putExtra("Grade", grade);
-            startActivity(int1);
-        });
-        rb.setOnClickListener(v-> {
-            Intent int1;
-            if(!Position.equals("RB")) {
-                int1 = new Intent(LineupActivity.this, StoreActivity.class);
-            }
-            else{
-                int1 = new Intent(LineupActivity.this, MyCardActivity.class);
-            }
-            int1.putExtra("ID", ID);
-            int1.putExtra("Card", "RB");
-            int1.putExtra("Score", OVR);
-            int1.putExtra("Name", Name);
-            int1.putExtra("Grade", grade);
-            startActivity(int1);
-        });
-        lcb.setOnClickListener(v-> {
-            Intent int1;
-            if(!Position.equals("LCB")) {
-                int1 = new Intent(LineupActivity.this, StoreActivity.class);
-            }
-            else{
-                int1 = new Intent(LineupActivity.this, MyCardActivity.class);
-            }
-            int1.putExtra("ID", ID);
-            int1.putExtra("Card", "LCB");
-            int1.putExtra("Score", OVR);
-            int1.putExtra("Name", Name);
-            int1.putExtra("Grade", grade);
-            startActivity(int1);
-        });
-        rcb.setOnClickListener(v-> {
-            Intent int1;
-            if(!Position.equals("RCB")) {
-                int1 = new Intent(LineupActivity.this, StoreActivity.class);
-            }
-            else{
-                int1 = new Intent(LineupActivity.this, MyCardActivity.class);
-            }
-            int1.putExtra("ID", ID);
-            int1.putExtra("Card", "RCB");
-            int1.putExtra("Score", OVR);
-            int1.putExtra("Name", Name);
-            int1.putExtra("Grade", grade);
-            startActivity(int1);
-        });
-        cam.setOnClickListener(v-> {
-            Intent int1;
-            if (!Position.equals("CAM")) {
-                int1 = new Intent(LineupActivity.this, StoreActivity.class);
-            }
-            else{
-                int1 = new Intent(LineupActivity.this, MyCardActivity.class);
-            }
-            int1.putExtra("ID", ID);
-            int1.putExtra("Card", "CAM");
-            int1.putExtra("Score", OVR);
-            int1.putExtra("Name", Name);
-            int1.putExtra("Grade", grade);
-            startActivity(int1);
-        });
-        lcm.setOnClickListener(v-> {
-            Intent int1;
-            if(!Position.equals("LCM")) {
-                int1 = new Intent(LineupActivity.this, StoreActivity.class);
-            }
-            else{
-                int1 = new Intent(LineupActivity.this, MyCardActivity.class);
-            }
-            int1.putExtra("ID", ID);
-            int1.putExtra("Card", "LCM");
-            int1.putExtra("Score", OVR);
-            int1.putExtra("Name", Name);
-            int1.putExtra("Grade", grade);
-            startActivity(int1);
-        });
-        rcm.setOnClickListener(v-> {
-            Intent int1;
-            if(!Position.equals("RCM")) {
-                int1 = new Intent(LineupActivity.this, StoreActivity.class);
-            }
-            else{
-                int1 = new Intent(LineupActivity.this, MyCardActivity.class);
-            }
-            int1.putExtra("ID", ID);
-            int1.putExtra("Card", "RCM");
-            int1.putExtra("Score", OVR);
-            int1.putExtra("Name", Name);
-            int1.putExtra("Grade", grade);
-            startActivity(int1);
-        });
-        LW.setOnClickListener(v-> {
-            Intent int1;
-            if(!Position.equals("LW")) {
-                int1 = new Intent(LineupActivity.this, StoreActivity.class);
-            }
-            else{
-                int1 = new Intent(LineupActivity.this, MyCardActivity.class);
-            }
-            int1.putExtra("ID", ID);
-            int1.putExtra("Card", "LW");
-            int1.putExtra("Score", OVR);
-            int1.putExtra("Name", Name);
-            int1.putExtra("Grade", grade);
-            startActivity(int1);
-        });
-        RW.setOnClickListener(v-> {
-            Intent int1;
-            if(!Position.equals("RW")) {
-                int1 = new Intent(LineupActivity.this, StoreActivity.class);
-            }
-            else{
-                int1 = new Intent(LineupActivity.this, MyCardActivity.class);
-            }
-            int1.putExtra("ID", ID);
-            int1.putExtra("Card", "RW");
-            int1.putExtra("Score", OVR);
-            int1.putExtra("Name", Name);
-            int1.putExtra("Grade", grade);
-            startActivity(int1);
-        });
-        ST.setOnClickListener(v-> {
-            Intent int1;
-            if(!Position.equals("ST")) {
-                int1 = new Intent(LineupActivity.this, StoreActivity.class);
-            }
-            else{
-                int1 = new Intent(LineupActivity.this, MyCardActivity.class);
-            }
-            int1.putExtra("ID", ID);
-            int1.putExtra("Card", "ST");
-            int1.putExtra("Score", OVR);
-            int1.putExtra("Name", Name);
-            int1.putExtra("Grade", grade);
-            startActivity(int1);
-        });
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<Card> teamCards = new ArrayList<>();
-                ArrayList<String> positions = new ArrayList<>();
-                int totalPoints = 0;
-
-                HashMap<String,Integer> teamsScores = new HashMap<>();
-
-                ArrayList<Card> lineup = new ArrayList<>(11);
-                if (snapshot.child(Users_Path.getPath(grade)).child(ID).child("Lineup").hasChildren()) {
-                    for (DataSnapshot card : snapshot.child(Users_Path.getPath(grade)).child(ID).child("Lineup").getChildren()) {
-
-                        lineup.add(new Card(Integer.parseInt(card.getValue().toString()), 0, "", "", card.getKey()));
-                    }
-                }
-                Iterator<Card> iterator = lineup.iterator();
-                while (iterator.hasNext()) {
-                    Card card = iterator.next();
-                    card.setRating(snapshot.child("elmilad25").child("Store").child("Card " + card.getID()).child("Rating").getValue().toString());
-                    card.setPosition(snapshot.child("elmilad25").child("Store").child("Card " + card.getID()).child("Position").getValue().toString());
-                    if (Objects.equals(card.getPosition(), Position)) {
-                        iterator.remove();
-                        continue;
-                    }
-                    card.setPrice(Integer.parseInt(snapshot.child("elmilad25").child("Store").child("Card " + card.getID()).child("Price").getValue().toString()));
-                    card.setImage(snapshot.child("elmilad25").child("Store").child("Card " + card.getID()).child("Image").getValue().toString());
-                    positions.add(card.getPosition());
-                    totalPoints += Integer.parseInt(card.getRating()) / 11;
-                }
-
-                    totalPoints += snapshot.child(Users_Path.getPath(grade)).child(ID).child("Card").child("Rating").getValue(Integer.class)/11;
-                teamsScores.put(ID, totalPoints);
-
-                OVR = Integer.toString(totalPoints);
-                points.setText(String.valueOf(totalPoints));
-
-                setCardImage("GK", gk, positions, lineup);
-                setCardImage("LB", lb, positions, lineup);
-                setCardImage("RB", rb, positions, lineup);
-                setCardImage("LCB", lcb, positions, lineup);
-                setCardImage("RCB", rcb, positions, lineup);
-                setCardImage("LCM", lcm, positions, lineup);
-                setCardImage("CAM", cam, positions, lineup);
-                setCardImage("RCM", rcm, positions, lineup);
-                setCardImage("LW", LW, positions, lineup);
-                setCardImage("ST", ST, positions, lineup);
-                setCardImage("RW", RW, positions, lineup);
-
-
-                int highestScore = -1;
-                for (Map.Entry<String, Integer> entry : teamsScores.entrySet()) {
-                    Integer value = entry.getValue();
-                    highestScore = Math.max(highestScore, value);
-                }
-//                if(highestScore == -1)    ----------------------------------------> uncomment when finish debugging
-//                    highestScore = 0;
-                highest.setText(String.valueOf(highestScore));
-
-                int averageScore = 0;
-                int sum = 0;
-                for (Map.Entry<String, Integer> entry : teamsScores.entrySet()) {
-                    Integer value = entry.getValue();
-                    sum += value;
-                }
-                if(!teamsScores.isEmpty())
-                    averageScore = sum / teamsScores.size();
-                average.setText(String.valueOf(averageScore));
-                updateOVR();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
     }
 
-    int imagesToLoad = 2;
+    private void setUserCardImage(ImageView imageView, DataSnapshot userData, DataSnapshot allData) {
+        RelativeLayout v = findViewById(R.id.main);
+        ImageView icon = findViewById(R.id.card_icon);
+        ImageView img = findViewById(R.id.img);
+        TextView name = findViewById(R.id.name);
+        TextView rating = findViewById(R.id.card_rating);
+        TextView position = findViewById(R.id.position);
 
-    private void setCardImage(String p, ImageView imageView,
-                              ArrayList<String> pos, ArrayList<Card> cards) {
-        if (pos.contains(p)) {
-            Card card = cards.get(pos.indexOf(p));
-            Drawable drawable = getResources().getDrawable(getResources()
-                    .getIdentifier(card.getImage(), "drawable", getPackageName()));
-            imageView.setImageDrawable(drawable);
+        imagesToLoad = 2;
+
+        if (userData.child("Owned Card Icons").hasChild("Selected")) {
+            String selected = userData.child("Owned Card Icons").child("Selected").getValue().toString();
+
+            DataSnapshot cardRef = allData.child("elmilad25").child("CardIcon").child(selected);
+
+            if (cardRef.hasChild("Link")) {
+                String cardIconLink = cardRef.child("Link").getValue().toString();
+                Picasso.get().load(cardIconLink).into(icon, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        imagesToLoad--;
+                        TextColor.setColor(icon, name, position, rating);
+                        checkIfAllImagesLoaded(v, imageView);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        imagesToLoad--;
+                        checkIfAllImagesLoaded(v, imageView);
+                    }
+                });
+            }
+
+        } else {
+            icon.setImageDrawable(getResources().getDrawable(R.drawable.empty));
+            imagesToLoad--;
+            checkIfAllImagesLoaded(v, imageView);
         }
-        else if (Objects.equals(Position, p)) {
-
-            RelativeLayout v = findViewById(R.id.main);
-            ImageView icon = findViewById(R.id.card_icon);
-            ImageView img = findViewById(R.id.img);
-            TextView name = findViewById(R.id.name);
-            TextView rating = findViewById(R.id.card_rating);
-            TextView position = findViewById(R.id.position);
-
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference ref = database.getReference(Users_Path.getPath(grade)).child(ID);
-            ref.addValueEventListener(new ValueEventListener() {
+        if (userData.hasChild("Pic")) {
+            String imgLink = userData.child("Pic").getValue().toString();
+            Picasso.get().load(imgLink).into(img, new Callback() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                    imagesToLoad = 2;
-
-                    if (snapshot.child("Card").hasChild("CardIcon")) {
-                        String cardIconLink = snapshot.child("Card").child("CardIcon").getValue().toString();
-                        Picasso.get().load(cardIconLink).into(icon, new Callback() {
-                            @Override
-                            public void onSuccess() {
-                                imagesToLoad--;
-                                TextColor.setColor(icon, name, position, rating);
-                                checkIfAllImagesLoaded(v, imageView);
-                            }
-
-                            @Override
-                            public void onError(Exception e) {
-                                imagesToLoad--;
-                                checkIfAllImagesLoaded(v, imageView);
-                            }
-                        });
-                    } else {
-                        imagesToLoad--;
-                        checkIfAllImagesLoaded(v, imageView);
-                    }
-                    if (snapshot.hasChild("Pic")) {
-                        String imgLink = snapshot.child("Pic").getValue().toString();
-                        Picasso.get().load(imgLink).into(img, new Callback() {
-                            @Override
-                            public void onSuccess() {
-                                imagesToLoad--;
-                                checkIfAllImagesLoaded(v, imageView);
-                            }
-
-                            @Override
-                            public void onError(Exception e) {
-                                imagesToLoad--;
-                                checkIfAllImagesLoaded(v, imageView);
-                            }
-                        });
-                    } else {
-                        imagesToLoad--;
-                        checkIfAllImagesLoaded(v, imageView);
-                    }
-                    if (snapshot.hasChild("Name")) {
-                        name.setText(snapshot.child("Name").getValue().toString());
-                    }
-                    if (snapshot.child("Card").hasChild("Position")) {
-                        position.setText(snapshot.child("Card").child("Position").getValue().toString());
-                    }
-                    if (snapshot.child("Card").hasChild("Rating")) {
-                        rating.setText(snapshot.child("Card").child("Rating").getValue().toString());
-                    }
+                public void onSuccess() {
+                    imagesToLoad--;
+                    checkIfAllImagesLoaded(v, imageView);
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError error) {}
+                public void onError(Exception e) {
+                    imagesToLoad--;
+                    checkIfAllImagesLoaded(v, imageView);
+                }
             });
-
-
-
+        } else {
+            imagesToLoad--;
+            checkIfAllImagesLoaded(v, imageView);
+        }
+        name.setText(userName);
+        position.setText(userPos);
+        if (userData.child("Card").hasChild("Rating")) {
+            rating.setText(userData.child("Card").child("Rating").getValue().toString());
         }
     }
+
+    private int imagesToLoad = 2;
 
     private void checkIfAllImagesLoaded(View v, ImageView imageView) {
         if (imagesToLoad==0) {
@@ -441,22 +248,19 @@ public class LineupActivity extends AppCompatActivity {
                 int totalHeight = v.getMeasuredHeight();
                 int totalWidth  = v.getMeasuredWidth();
 
-                Log.d("D", "Height: " + totalHeight);
-                Log.d("D", "Width: " + totalWidth);
                 Bitmap bitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(bitmap);
                 v.draw(canvas);
                 imageView.setImageBitmap(bitmap);
                 imageView.setScaleX(1.05F);
-
-//                imageView.setScaleY(1.05F);
-            }, 1000);
+            }, 100);
         }
     }
 
-    private void updateOVR() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("/");
-        ref.child(Users_Path.getPath(grade)).child(ID).child("Points").setValue(OVR);
+    private void resetImages() {
+        for (ImageView img : lineupCards) {
+            img.setImageDrawable(getResources().getDrawable(R.drawable.empty));
+        }
     }
+
 }

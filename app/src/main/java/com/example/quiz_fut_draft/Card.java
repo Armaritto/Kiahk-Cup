@@ -2,26 +2,28 @@ package com.example.quiz_fut_draft;
 
 public class Card {
 
-    private int ID;
+    private String ID;
     private int price;
-    private String image;
+    private String imageLink;
     private String rating;
     private String position;
-    private boolean owned = false;
+    private boolean owned;
 
-    public Card(int ID, int price, String name, String rating, String position) {
+    public Card(String ID, int price, String imageLink, String rating, String position) {
         this.ID = ID;
         this.price = price;
-        this.image = name;
+        this.imageLink = imageLink;
         this.rating = rating;
         this.position = position;
     }
 
-    public int getID() {
+    public Card() {}
+
+    public String getID() {
         return ID;
     }
 
-    public void setID(int ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
     public int getPrice() {
@@ -32,12 +34,12 @@ public class Card {
         this.price = price;
     }
 
-    public String getImage() {
-        return image;
+    public String getImageLink() {
+        return imageLink;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
     }
 
     public String getRating() {
@@ -56,7 +58,11 @@ public class Card {
         this.position = position;
     }
 
-    public void own() {
-        owned = true;
+    public boolean isOwned() {
+        return owned;
+    }
+
+    public void setOwned(boolean owned) {
+        this.owned = owned;
     }
 }

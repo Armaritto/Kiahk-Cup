@@ -8,7 +8,6 @@
         android:id="@+id/card_icon"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_455sdp"
-        android:src="@drawable/icon12"
         android:scaleType="fitCenter"/>
 
     <ImageView

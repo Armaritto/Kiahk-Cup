@@ -26,6 +26,7 @@ import java.util.Objects;
 public class Mosab2aActivity extends AppCompatActivity {
     private String Name;
     private String ID;
+    private String grade;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,7 @@ public class Mosab2aActivity extends AppCompatActivity {
         Intent intent = getIntent();
         ID = intent.getStringExtra("ID");
         Name = intent.getStringExtra("Name");
-        String grade = intent.getStringExtra("Grade");
+        grade = intent.getStringExtra("Grade");
 
         RecyclerView mosab2at_list = findViewById(R.id.mosab2at_list);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -88,6 +89,7 @@ public class Mosab2aActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 name.setText(Name);
+                snapshot = snapshot.child(Users_Path.getPath(grade));
                 stars.setText(Objects.requireNonNull(snapshot.child(ID).child("Stars").getValue()).toString());
                 coins.setText(Objects.requireNonNull(snapshot.child(ID).child("Coins").getValue()).toString());
             }

@@ -82,6 +82,8 @@ public class MyCardActivity extends AppCompatActivity {
                         });
                     }
 
+                } else {
+                    cardIcon.setImageDrawable(getResources().getDrawable(R.drawable.empty));
                 }
 
                 DataSnapshot snapshot = data.child(Users_Path.getPath(grade)).child(ID);
