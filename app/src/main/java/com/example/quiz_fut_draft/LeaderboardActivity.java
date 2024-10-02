@@ -67,6 +67,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                DataSnapshot userData = snapshot.child(Users_Path.getPath(grade));
                 HashMap<String,Integer> allUsersRatings = new HashMap<>();
                 for (DataSnapshot aUserData : snapshot.child(Users_Path.getPath(grade)).getChildren()) {
                     if (aUserData.hasChild("Points")) {
@@ -86,7 +87,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                 | 4. User4: 70 OVR           view lineup  |
                 -------------------------------------------
                  */
-                LeaderboardAdapter adapter = new LeaderboardAdapter(LeaderboardActivity.this, lineups, database, ID, grade, "Admin");
+                LeaderboardAdapter adapter = new LeaderboardAdapter(LeaderboardActivity.this, lineups, database, ID, grade, "Admin", userData, snapshot);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -106,10 +107,10 @@ public class LeaderboardActivity extends AppCompatActivity {
                 lineup.setOVR(entry.getValue().toString());
 
 
-                ImageView imageView = new ImageView(this);
-                DataSnapshot userData = snapshot.child(Users_Path.getPath(grade)).child(ID);
-                setUserCardImage(imageView, userData, snapshot);
-                lineup.setImage(imageView);
+//                ImageView imageView = new ImageView();
+//                DataSnapshot userData = snapshot.child(Users_Path.getPath(grade)).child(ID);
+//                setUserCardImage(imageView, userData, snapshot);
+//                lineup.setImage(imageView);
 
                 lineups.add(lineup);
             }

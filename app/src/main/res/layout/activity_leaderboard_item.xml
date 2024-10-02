@@ -18,13 +18,19 @@
         android:layout_alignParentStart="true"
         android:textColor="@color/white"/>
 
-    <ImageView
-        android:id="@+id/img"
-        android:layout_width="100dp"
-        android:layout_height="133dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/empty"
+    <include layout="@layout/activity_card_all_in_one"
+        android:id="@+id/card_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/rank"/>
+
+<!--     <ImageView -->
+<!--         android:id="@+id/img" -->
+<!--         android:layout_width="100dp" -->
+<!--         android:layout_height="133dp" -->
+<!--         android:scaleType="centerCrop" -->
+<!--         android:src="@drawable/empty" -->
+<!--         android:layout_toRightOf="@+id/rank"/> -->
 
     <TextView
         android:id="@+id/ovr"
