@@ -118,7 +118,7 @@ public class LineupActivity extends AppCompatActivity {
                     if (usedPosition.equals("CM")) usedPosition = "LCM";
                     if (cardPos.equals(usedPosition)) {
                         setUserCardImage(cardImage, userData, snapshot);
-                        totalRating += (double) userData.child("Card").child("Rating").getValue(Integer.class)/11;
+                        totalRating += (double) Integer.parseInt(userData.child("Card").child("Rating").getValue().toString())/11;
                     } else if (userData.child("Lineup").hasChild(cardPos)) {
                         String cardID = userData.child("Lineup").child(cardPos).getValue().toString();
                         Card c = new Card();

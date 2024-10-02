@@ -148,6 +148,9 @@ public class MainActivity extends AppCompatActivity {
             // Handle the input
             if (input.equals("admin")) {
                 Intent intent = new Intent(MainActivity.this, AdminActivity.class);
+                intent.putExtra("ID",ID);
+                intent.putExtra("Name",Name);
+                intent.putExtra("Grade",grade);
                 startActivity(intent);
             }
             // Dismiss the dialog
