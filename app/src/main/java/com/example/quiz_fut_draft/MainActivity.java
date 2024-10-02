@@ -3,7 +3,6 @@ package com.example.quiz_fut_draft;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -11,12 +10,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,25 +47,27 @@ public class MainActivity extends AppCompatActivity {
             admin.setOnClickListener(v-> {
                 showCustomDialog();
             });
+            buttons[3].setVisibility(View.VISIBLE);
         }
-
-        database.getReference("elmilad25/Leaderboard").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.hasChild("J"+grade) &&
-                        Boolean.parseBoolean(snapshot.child("J"+grade).getValue().toString())) {
-                    buttons[3].setVisibility(View.VISIBLE);
-                } else {
-                    buttons[3].setVisibility(View.GONE);
+        else { // View Leaderboard for admin all the time
+            database.getReference("elmilad25/Leaderboard").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.hasChild("J" + grade) &&
+                            Boolean.parseBoolean(snapshot.child("J" + grade).getValue().toString())) {
+                        buttons[3].setVisibility(View.VISIBLE);
+                    } else {
+                        buttons[3].setVisibility(View.GONE);
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            });
+        }
 
         buttons[0].setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, Mosab2aActivity.class);

@@ -15,6 +15,16 @@
         android:theme="@style/Theme.QuizFUTDraft"
         tools:targetApi="31">
         <activity
+            android:name=".ViewOthersLineupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".IconsLeaderboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LeaderboardActivity"
+            android:exported="false"
+            android:label="@string/title_activity_leaderboard" />
+        <activity
             android:name=".RatingStoreActivity"
             android:exported="false" />
         <activity
@@ -34,9 +44,6 @@
             android:exported="false" />
         <activity
             android:name=".AdminActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LeaderboardActivity"
             android:exported="false" />
         <activity
             android:name=".MyCardActivity"

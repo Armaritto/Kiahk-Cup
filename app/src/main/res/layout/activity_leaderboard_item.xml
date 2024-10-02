@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/rank"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="23dp"
+        android:layout_marginRight="@dimen/_5sdp"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
+        android:textColor="@color/white"/>
+
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="100dp"
+        android:layout_height="133dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/empty"
+        android:layout_toRightOf="@+id/rank"/>
+
+    <TextView
+        android:id="@+id/ovr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="23dp"
+        android:text="OVR : 99"
+        android:layout_centerInParent="true"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:textColor="@color/white"/>
+
+    <Button
+        android:id="@+id/viewLineup"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:paddingVertical="0dp"
+        android:paddingHorizontal="15dp"
+        android:textAllCaps="false"
+        android:background="@drawable/button_background"
+        android:text="View Lineup"
+        android:textSize="17dp"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true" />
+</RelativeLayout>
