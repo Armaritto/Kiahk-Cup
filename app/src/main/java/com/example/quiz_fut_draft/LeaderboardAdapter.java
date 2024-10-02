@@ -2,6 +2,8 @@ package com.example.quiz_fut_draft;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.ViewGroupUtils;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +38,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     private final String Name;
     private final DataSnapshot userData;
     private final DataSnapshot snapshot;
+    private final int[] imagesToLoad;
 
     // data is passed into the constructor
     LeaderboardAdapter(Context context, ArrayList<Lineup> lineups,
@@ -48,6 +52,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         this.Name = Name;
         this.userData = userData;
         this.snapshot = snapshot;
+        this.imagesToLoad = new int[lineups.size()];
     }
 
     // inflates the cell layout from xml when needed
@@ -65,7 +70,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         holder.ovr.setText(lineups.get(i).getOVR());
 
 //         holder.img.setImageDrawable(lineups.get(i).getImage().getDrawable());
-        setUserCardImage(holder.cardImage, userData.child(lineups.get(i).getID()), snapshot);
+        setUserCardImage(holder.cardView, holder.cardImage, userData.child(lineups.get(i).getID()), snapshot, i, holder.row);
         holder.button.setOnClickListener(v-> {
             Intent intent;
             if(Objects.equals(lineups.get(i).getID(), ID))
@@ -88,16 +93,20 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     // stores and recycles views as they are scrolled off screen
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView rank;
-        RelativeLayout cardImage;
+        RelativeLayout cardView;
+        ImageView cardImage;
         TextView ovr;
         Button button;
+        RelativeLayout row;
 
         ViewHolder(View itemView) {
             super(itemView);
+            cardView = itemView.findViewById(R.id.card_view);
             cardImage = itemView.findViewById(R.id.card_image);
             ovr = itemView.findViewById(R.id.ovr);
             button = itemView.findViewById(R.id.viewLineup);
             rank = itemView.findViewById(R.id.rank);
+            row = itemView.findViewById(R.id.row);
         }
 
         @Override
@@ -111,15 +120,14 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         return lineups.get(id);
     }
 
-    private void setUserCardImage(RelativeLayout parent, DataSnapshot userData, DataSnapshot allData) {
-            RelativeLayout v = parent.findViewById(R.id.main);
+    private void setUserCardImage(RelativeLayout parent, ImageView cardImage, DataSnapshot userData, DataSnapshot allData, int i, RelativeLayout row) {
             ImageView icon = parent.findViewById(R.id.card_icon);
             ImageView img = parent.findViewById(R.id.img);
             TextView name = parent.findViewById(R.id.name);
             TextView rating = parent.findViewById(R.id.card_rating);
             TextView position = parent.findViewById(R.id.position);
 
-            imagesToLoad = 2;
+            imagesToLoad[i] = 2;
 
             if (userData.child("Owned Card Icons").hasChild("Selected")) {
                 String selected = userData.child("Owned Card Icons").child("Selected").getValue().toString();
@@ -131,42 +139,42 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
                     Picasso.get().load(cardIconLink).into(icon, new com.squareup.picasso.Callback() {
                         @Override
                         public void onSuccess() {
-                            imagesToLoad--;
+                            imagesToLoad[i]--;
                             TextColor.setColor(icon, name, position, rating);
-                            checkIfAllImagesLoaded(v, parent);
+                            checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
                         }
 
                         @Override
                         public void onError(Exception e) {
-                            imagesToLoad--;
-                            checkIfAllImagesLoaded(v, parent);
+                            imagesToLoad[i]--;
+                            checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
                         }
                     });
                 }
 
             } else {
                 icon.setImageDrawable(context.getResources().getDrawable(R.drawable.empty));
-                imagesToLoad--;
-//                 checkIfAllImagesLoaded(v, imageView);
+                imagesToLoad[i]--;
+                 checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
             }
             if (userData.hasChild("Pic")) {
                 String imgLink = userData.child("Pic").getValue().toString();
                 Picasso.get().load(imgLink).into(img, new Callback() {
                     @Override
                     public void onSuccess() {
-                        imagesToLoad--;
-                        checkIfAllImagesLoaded(v, parent);
+                        imagesToLoad[i]--;
+                        checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        imagesToLoad--;
-                        checkIfAllImagesLoaded(v, parent);
+                        imagesToLoad[i]--;
+                        checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
                     }
                 });
             } else {
-                imagesToLoad--;
-                checkIfAllImagesLoaded(v, parent);
+                imagesToLoad[i]--;
+                checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
             }
             name.setText(userData.child("Name").getValue().toString());
             position.setText(userData.child("Card").child("Position").getValue().toString());
@@ -176,41 +184,62 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
             }
         }
 
-        private int imagesToLoad = 2;
-
-        private void checkIfAllImagesLoaded(View v, RelativeLayout layout) {
+        private void checkIfAllImagesLoaded(RelativeLayout parent, ImageView cardImage, int imagesToLoad, RelativeLayout row) {
             if (imagesToLoad==0) {
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
 
-                    ScaleAnimation scaleAnimation = new ScaleAnimation(
-                            1f, 0.5f, // Start and end scale for X
-                            1f, 0.5f, // Start and end scale for Y
-                            Animation.RELATIVE_TO_SELF, 0.5f, // Pivot X
-                            Animation.RELATIVE_TO_SELF, 0.5f  // Pivot Y
-                    );
-                    scaleAnimation.setDuration(2); // Duration of animation
-                    scaleAnimation.setFillAfter(true); // Keep the scale after animation
-                    layout.startAnimation(scaleAnimation);
+//                    ScaleAnimation scaleAnimation = new ScaleAnimation(
+//                            1f, 0.5f, // Start and end scale for X
+//                            1f, 0.5f, // Start and end scale for Y
+//                            Animation.RELATIVE_TO_SELF, 0.5f, // Pivot X
+//                            Animation.RELATIVE_TO_SELF, 0.5f  // Pivot Y
+//                    );
+//                    scaleAnimation.setDuration(2); // Duration of animation
+//                    scaleAnimation.setFillAfter(true); // Keep the scale after animation
+//                    layout.startAnimation(scaleAnimation);
 
-//                     RelativeLayout layout = v.findViewById(R.id.main);
-//
-//                     layout.measure(View.MeasureSpec.makeMeasureSpec(
-//                                     layout.getWidth(), View.MeasureSpec.EXACTLY),
-//                             View.MeasureSpec.makeMeasureSpec(
-//                                     layout.getHeight(), View.MeasureSpec.EXACTLY));
-//
-//                     layout.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
-//
-//                     int totalHeight = v.getMeasuredHeight();
-//                     int totalWidth  = v.getMeasuredWidth();
-//
-//                     Bitmap bitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888);
-//                     Canvas canvas = new Canvas(bitmap);
-//                     v.draw(canvas);
-//                     imageView.setImageBitmap(bitmap);
-//                     imageView.setScaleX(1.05F);
+//                     RelativeLayout layout = parent.findViewById(R.id.main);
+
+                     parent.measure(View.MeasureSpec.makeMeasureSpec(
+                                     parent.getWidth(), View.MeasureSpec.EXACTLY),
+                             View.MeasureSpec.makeMeasureSpec(
+                                     parent.getHeight(), View.MeasureSpec.EXACTLY));
+
+                     parent.setVisibility(View.GONE);
+                     parent.layout(0, 0, parent.getMeasuredWidth(), parent.getMeasuredHeight());
+
+                     int totalHeight = parent.getMeasuredHeight();
+                     int totalWidth  = parent.getMeasuredWidth();
+
+                     Bitmap bitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888);
+                     Canvas canvas = new Canvas(bitmap);
+                    parent.draw(canvas);
+                    cardImage.setImageBitmap(bitmap);
+                    row.setVisibility(View.VISIBLE);
                 }, 100);
             }
         }
+
+    public static ViewGroup getParent(View view) {
+        return (ViewGroup)view.getParent();
+    }
+
+    public static void removeView(View view) {
+        ViewGroup parent = getParent(view);
+        if(parent != null) {
+            parent.removeView(view);
+        }
+    }
+
+    public static void replaceView(View currentView, View newView) {
+        ViewGroup parent = getParent(currentView);
+        if(parent == null) {
+            return;
+        }
+        final int index = parent.indexOfChild(currentView);
+        removeView(currentView);
+        removeView(newView);
+        parent.addView(newView, index);
+    }
 
 }
