@@ -12,22 +12,20 @@
     tools:context=".LoginActivity">
 
     <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="@dimen/_23sdp"
-            android:fontFamily="@font/segoebold"
-            android:text="Login"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:paddingBottom="@dimen/_30sdp"
-            android:layout_centerInParent="true"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="@dimen/_27sdp"
+        android:fontFamily="@font/segoebold"
+        android:text="Login"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_marginBottom="@dimen/_30sdp"/>
 
     <EditText
         android:id="@+id/editTextId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:layout_marginHorizontal="@dimen/_50sdp"
         android:background="@drawable/button_background3"
         android:fontFamily="@font/segoebold"
@@ -37,25 +35,7 @@
         android:padding="@dimen/_7sdp"
         android:textColor="@color/black"
         android:textColorHint="@color/gray_hint"
-        android:textSize="@dimen/_18sdp"
-        android:layout_marginBottom="@dimen/_15sdp"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/editTextGrade"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginHorizontal="@dimen/_50sdp"
-        android:background="@drawable/button_background3"
-        android:fontFamily="@font/segoebold"
-        android:gravity="center"
-        android:hint="Grade"
-        android:inputType="text"
-        android:padding="@dimen/_7sdp"
-        android:textColor="@color/black"
-        android:textColorHint="@color/gray_hint"
-        android:textSize="@dimen/_18sdp"
+        android:textSize="@dimen/_16sdp"
         android:layout_marginBottom="@dimen/_15sdp"
         android:textStyle="bold" />
 
@@ -63,7 +43,6 @@
         android:id="@+id/editTextPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:layout_marginHorizontal="@dimen/_50sdp"
         android:background="@drawable/button_background3"
         android:fontFamily="@font/segoebold"
@@ -73,7 +52,8 @@
         android:padding="@dimen/_7sdp"
         android:textColor="@color/black"
         android:textColorHint="@color/gray_hint"
-        android:textSize="@dimen/_18sdp"
+        android:textSize="@dimen/_16sdp"
+        android:layout_marginBottom="@dimen/_15sdp"
         android:textStyle="bold" />
 
     <Button
@@ -81,14 +61,11 @@
         android:layout_width="@dimen/_170sdp"
         android:layout_height="wrap_content"
         android:text="Login"
-        android:layout_below="@+id/password"
-        android:layout_centerHorizontal="true"
         android:textAllCaps="false"
         android:background="@drawable/button_background4"
         android:fontFamily="@font/segoebold"
         android:textStyle="bold"
-        android:textSize="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_15sdp"
+        android:textSize="@dimen/_16sdp"
         android:padding="@dimen/_7sdp"/>
 
 </LinearLayout>

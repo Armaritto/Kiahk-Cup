@@ -15,26 +15,19 @@
         android:theme="@style/Theme.QuizFUTDraft"
         tools:targetApi="31">
         <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
             android:name=".ViewOthersLineupActivity"
             android:exported="false" />
         <activity
-            android:name=".IconsLeaderboardActivity"
-            android:exported="false" />
-        <activity
             android:name=".LeaderboardActivity"
-            android:exported="false"
-            android:label="@string/title_activity_leaderboard" />
+            android:exported="false" />
         <activity
             android:name=".RatingStoreActivity"
             android:exported="false" />
         <activity
             android:name=".PositionStoreActivity"
-            android:exported="false" />
-        <activity
-            android:name=".FormActivity"
-            android:exported="false" />
-        <activity
-            android:name=".helperCard"
             android:exported="false" />
         <activity
             android:name=".CardStoreActivity"
@@ -58,7 +51,7 @@
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".GradeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

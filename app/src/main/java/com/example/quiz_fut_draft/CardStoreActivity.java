@@ -39,11 +39,11 @@ public class CardStoreActivity extends AppCompatActivity {
         Intent intent1 = getIntent();
         ID = intent1.getStringExtra("ID");
         Name = intent1.getStringExtra("Name");
-        String grade = intent1.getStringExtra("Grade");
-        assert grade != null;
-        setupHeader(FirebaseDatabase.getInstance().getReference(Users_Path.getPath(grade)));
+        String dbURL = intent1.getStringExtra("Database");
+        String storageURL = intent1.getStringExtra("Storage");
+        setupHeader(FirebaseDatabase.getInstance(dbURL).getReference("/elmilad25/Users"));
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         int numberOfColumns = 2;
@@ -68,7 +68,7 @@ public class CardStoreActivity extends AppCompatActivity {
                 }
 
                 DataSnapshot ownedIconsData = data.child(
-                        Users_Path.getPath(grade)).child(ID).child("Owned Card Icons");
+                        "/elmilad25/Users").child(ID).child("Owned Card Icons");
                 for (DataSnapshot icon : ownedIconsData.getChildren()) {
                     if (!icon.getKey().equals("Selected")) {
                         if (Boolean.parseBoolean(icon.child("Owned").getValue().toString())) {
@@ -81,7 +81,7 @@ public class CardStoreActivity extends AppCompatActivity {
                 }
 
                 CardStoreAdapter adapter = new CardStoreAdapter(
-                        CardStoreActivity.this, cards, database, ID, grade);
+                        CardStoreActivity.this, cards, database, ID);
                 recyclerView.setAdapter(adapter);
 
             }

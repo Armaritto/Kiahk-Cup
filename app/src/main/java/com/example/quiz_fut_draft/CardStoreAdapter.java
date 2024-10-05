@@ -29,17 +29,15 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
     private final Context context;
     private final FirebaseDatabase database;
     private final String ID;
-    private final String grade;
 
     // data is passed into the constructor
     CardStoreAdapter(Context context, ArrayList<CardIcon> cards,
-                     FirebaseDatabase database, String ID, String grade) {
+                     FirebaseDatabase database, String ID) {
         this.mInflater = LayoutInflater.from(context);
         this.cards = cards;
         this.context = context;
         this.database = database;
         this.ID = ID;
-        this.grade = grade;
     }
 
     // inflates the cell layout from xml when needed
@@ -60,7 +58,8 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
         });
         if (cards.get(position).isOwned()) {
             holder.button.setText("Select");
-        }
+        } else
+            holder.button.setText("Purchase");
     }
 
     // total number of cells
@@ -94,7 +93,7 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
 
     public void purchaseObject(CardIcon card) {
 
-        DatabaseReference ref = database.getReference(Users_Path.getPath(grade)).child(ID);
+        DatabaseReference ref = database.getReference("/elmilad25/Users").child(ID);
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

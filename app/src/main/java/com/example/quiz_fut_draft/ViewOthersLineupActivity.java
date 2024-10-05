@@ -35,7 +35,8 @@ public class ViewOthersLineupActivity extends AppCompatActivity {
     private String ID;
     private String userPos;
     private String userRating = "0"; //Points in database
-    private String grade;
+    private String dbURL;
+    private String storageURL;
     private ImageView[] lineupCards;
 
     @Override
@@ -51,7 +52,8 @@ public class ViewOthersLineupActivity extends AppCompatActivity {
         Intent intent1 = getIntent();
         ID = intent1.getStringExtra("ID");
         userName = intent1.getStringExtra("Name");
-        grade = intent1.getStringExtra("Grade");
+        dbURL = intent1.getStringExtra("Database");
+        storageURL = intent1.getStringExtra("Storage");
 
         // All cards IDs
         int[] lineupViewIds = {
@@ -79,15 +81,15 @@ public class ViewOthersLineupActivity extends AppCompatActivity {
             lineupCards[i] = findViewById(id);
         }
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
         DatabaseReference ref = database.getReference();
-        DatabaseReference userRef = ref.child(Users_Path.getPath(grade)).child(ID);
+        DatabaseReference userRef = ref.child("/elmilad25/Users").child(ID);
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                DataSnapshot userData = snapshot.child(Users_Path.getPath(grade)).child(ID);
+                DataSnapshot userData = snapshot.child("/elmilad25/Users").child(ID);
                 DataSnapshot storeData = snapshot.child("elmilad25").child("Store");
 
                 // check user position || make it default (GK)
@@ -97,6 +99,9 @@ public class ViewOthersLineupActivity extends AppCompatActivity {
                     userRef.child("Owned Positions").child("position1").child("Owned").setValue(true);
                     userRef.child("Card").child("Position").setValue("GK");
                 }
+
+                if (!userData.child("Card").hasChild("Rating"))
+                    userRef.child("Card").child("Position").setValue(50);
 
                 resetImages();
 
@@ -109,17 +114,18 @@ public class ViewOthersLineupActivity extends AppCompatActivity {
                     if (usedPosition.equals("CM")) usedPosition = "LCM";
                     if (cardPos.equals(usedPosition)) {
                         setUserCardImage(cardImage, userData, snapshot);
-                        totalRating += (double) userData.child("Card").child("Rating").getValue(Integer.class)/11;
+                        totalRating += (double) Integer.parseInt(
+                                userData.child("Card").child("Rating").getValue().toString())/11;
                     } else if (userData.child("Lineup").hasChild(cardPos)) {
                         String cardID = userData.child("Lineup").child(cardPos).getValue().toString();
-                        Card c = new Card();
+                        Card c = new Card(storageURL);
                         c.setID(cardID);
                         DataSnapshot cardData = storeData.child(cardID);
                         c.setRating(cardData.child("Rating").getValue().toString());
                         c.setPosition(cardData.child("Position").getValue().toString());
                         c.setPrice(Integer.parseInt(cardData.child("Price").getValue().toString()));
-                        c.setImageLink(cardData.child("Image").getValue().toString());
-                        Picasso.get().load(c.getImageLink()).into(cardImage);
+                        c.setImageName(cardData.child("Image").getValue().toString());
+                        Picasso.get().load(c.getImageName()).into(cardImage);
                         totalRating += (double) Integer.parseInt(c.getRating()) / 11;
                     }
 
@@ -135,7 +141,7 @@ public class ViewOthersLineupActivity extends AppCompatActivity {
                 ArrayList<Integer> allUsersRatings = new ArrayList<>();
                 int sum = 0;
                 int numOfUsers = 0;
-                for (DataSnapshot aUserData : snapshot.child(Users_Path.getPath(grade)).getChildren()) {
+                for (DataSnapshot aUserData : snapshot.child("/elmilad25/Users").getChildren()) {
                     numOfUsers++;
                     if (aUserData.hasChild("Points")) {
                         int aUserPoints = Integer.parseInt(aUserData.child("Points").getValue().toString());

@@ -24,7 +24,8 @@ public class RatingStoreActivity extends AppCompatActivity {
     private int rating;
     private int oldRating;
     private String ID;
-    private String grade;
+    private String dbURL;
+    private String storageURL;
     private int total = 0;
 
     @Override
@@ -46,22 +47,23 @@ public class RatingStoreActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         ID = intent.getStringExtra("ID");
-        grade = intent.getStringExtra("Grade");
+        dbURL = intent.getStringExtra("Database");
+        storageURL = intent.getStringExtra("Storage");
         new_rating.setText(String.valueOf(rating));
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
         DatabaseReference ref = database.getReference();
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot data) {
 
-                DataSnapshot userData = data.child(Users_Path.getPath(grade)).child(ID);
+                DataSnapshot userData = data.child("/elmilad25/Users").child(ID);
                 rating = Integer.parseInt(userData.child("Card").child("Rating").getValue().toString());
                 new_rating.setText(String.valueOf(rating));
                 oldRating = rating;
                 int units;
-                if (data.hasChild(Rating_Path.getPath(grade))) {
-                    DataSnapshot snapshot = data.child(Rating_Path.getPath(grade));
+                if (data.hasChild("/elmilad25/RatingPrice")) {
+                    DataSnapshot snapshot = data.child("/elmilad25/RatingPrice");
                     units = Integer.parseInt(snapshot.getValue().toString());
                 }
                 else
@@ -82,7 +84,7 @@ public class RatingStoreActivity extends AppCompatActivity {
                     price.setText(String.valueOf(total));
                 });
                 purchase.setOnClickListener(v -> {
-                    DatabaseReference userRef = database.getReference(Users_Path.getPath(grade)).child(ID);
+                    DatabaseReference userRef = database.getReference("/elmilad25/Users").child(ID);
                     int stars = Integer.parseInt(userData.child("Stars").getValue().toString());
                     if (stars>=total) {
                         stars-=total;

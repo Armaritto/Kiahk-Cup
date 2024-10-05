@@ -27,19 +27,17 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     private int points;
     private final FirebaseDatabase database;
     private final String ID;
-    private final String grade;
     private final String cardPosition;
 
     // data is passed into the constructor
     StoreAdapter(Context context, ArrayList<Card> cards, int points, FirebaseDatabase database,
-                 String ID, String grade, String cardPosition) {
+                 String ID, String cardPosition) {
         this.mInflater = LayoutInflater.from(context);
         this.cards = cards;
         this.context = context;
         this.points = points;
         this.database = database;
         this.ID = ID;
-        this.grade = grade;
         this.cardPosition = cardPosition;
     }
 
@@ -94,7 +92,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
 
     public void purchaseObject(Card card) {
 
-        DatabaseReference userRef = database.getReference(Users_Path.getPath(grade)).child(ID);
+        DatabaseReference userRef = database.getReference("/elmilad25/Users").child(ID);
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
 
         if (card.isOwned()) {

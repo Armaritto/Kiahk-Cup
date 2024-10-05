@@ -24,7 +24,8 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
     private String Name;
     private String ID;
-    private String grade;
+    private String dbURL;
+    private String storageURL;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,9 +33,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent1 = getIntent();
         ID = intent1.getStringExtra("ID");
         Name = intent1.getStringExtra("Name");
-        grade = intent1.getStringExtra("Grade");
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        setupHeader(database.getReference(Users_Path.getPath(grade)));
+        dbURL = intent1.getStringExtra("Database");
+        storageURL = intent1.getStringExtra("Storage");
+        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
+        setupHeader(database.getReference("/elmilad25/Users"));
         Button[] buttons = new Button[4];
         buttons[0] = findViewById(R.id.mosab2a);
         buttons[1] = findViewById(R.id.lineup);
@@ -44,17 +46,15 @@ public class MainActivity extends AppCompatActivity {
         Button logout = findViewById(R.id.logout);
         if(Objects.equals(ID, "9999")){
             admin.setVisibility(View.VISIBLE);
-            admin.setOnClickListener(v-> {
-                showCustomDialog();
-            });
+            admin.setOnClickListener(v-> showCustomDialog());
             buttons[3].setVisibility(View.VISIBLE);
         }
         else { // View Leaderboard for admin all the time
-            database.getReference("elmilad25/Leaderboard").addValueEventListener(new ValueEventListener() {
+            database.getReference("elmilad25").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.hasChild("J" + grade) &&
-                            Boolean.parseBoolean(snapshot.child("J" + grade).getValue().toString())) {
+                    if (snapshot.hasChild("Leaderboard") &&
+                            Boolean.parseBoolean(snapshot.child("Leaderboard").getValue().toString())) {
                         buttons[3].setVisibility(View.VISIBLE);
                     } else {
                         buttons[3].setVisibility(View.GONE);
@@ -73,32 +73,36 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, Mosab2aActivity.class);
             intent.putExtra("ID",ID);
             intent.putExtra("Name",Name);
-            intent.putExtra("Grade",grade);
+            intent.putExtra("Database", dbURL);
+            intent.putExtra("Storage", storageURL);
             startActivity(intent);
         });
         buttons[1].setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, LineupActivity.class);
             intent.putExtra("ID",ID);
             intent.putExtra("Name",Name);
-            intent.putExtra("Grade",grade);
+            intent.putExtra("Database", dbURL);
+            intent.putExtra("Storage", storageURL);
             startActivity(intent);
         });
         buttons[2].setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, MyCardActivity.class);
             intent.putExtra("ID",ID);
             intent.putExtra("Name",Name);
-            intent.putExtra("Grade",grade);
+            intent.putExtra("Database", dbURL);
+            intent.putExtra("Storage", storageURL);
             startActivity(intent);
         });
         buttons[3].setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, LeaderboardActivity.class);
             intent.putExtra("ID",ID);
             intent.putExtra("Name",Name);
-            intent.putExtra("Grade",grade);
+            intent.putExtra("Database", dbURL);
+            intent.putExtra("Storage", storageURL);
             startActivity(intent);
         });
         logout.setOnClickListener(v-> {
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            Intent intent = new Intent(MainActivity.this, GradeActivity.class);
             SharedPreferences.Editor editor = getSharedPreferences("Login", MODE_PRIVATE).edit();
             editor.clear();
             editor.apply();
@@ -115,8 +119,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 name.setText(Name);
-                stars.setText(Objects.requireNonNull(snapshot.child(ID).child("Stars").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(ID).child("Coins").getValue()).toString());
+                if (!snapshot.child(ID).hasChild("Stars")) {
+                    ref.child(ID).child("Stars").setValue(0);
+                    stars.setText("0");
+                } else
+                    stars.setText(Objects.requireNonNull(snapshot.child(ID).child("Stars").getValue()).toString());
+                if (!snapshot.child(ID).hasChild("Coins")) {
+                    ref.child(ID).child("Coins").setValue(0);
+                    coins.setText("0");
+                } else
+                    coins.setText(Objects.requireNonNull(snapshot.child(ID).child("Coins").getValue()).toString());
             }
 
             @Override
@@ -150,7 +162,8 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, AdminActivity.class);
                 intent.putExtra("ID",ID);
                 intent.putExtra("Name",Name);
-                intent.putExtra("Grade",grade);
+                intent.putExtra("Database", dbURL);
+                intent.putExtra("Storage", storageURL);
                 startActivity(intent);
             }
             // Dismiss the dialog

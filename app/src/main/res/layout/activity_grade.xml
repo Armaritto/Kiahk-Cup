@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:paddingBottom="@dimen/_20sdp"
+    android:orientation="vertical"
+    android:background="@drawable/other_background"
+    tools:context=".GradeActivity">
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="@dimen/_27sdp"
+            android:fontFamily="@font/segoebold"
+            android:text="STG-FUT-Draft"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_marginBottom="@dimen/_30sdp"
+            android:layout_centerInParent="true"/>
+    
+    <RadioGroup
+        android:id="@+id/grade_selection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        
+        <RadioButton
+            android:layout_width="@dimen/_200sdp"
+            android:layout_height="wrap_content"
+            android:text="Junior 1"
+            android:background="@drawable/button_background3"
+            android:fontFamily="@font/segoebold"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray_hint"
+            android:textSize="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:textStyle="bold"
+            android:padding="@dimen/_8sdp"/>
+
+        <RadioButton
+            android:layout_width="@dimen/_200sdp"
+            android:layout_height="wrap_content"
+            android:text="Junior 2"
+            android:background="@drawable/button_background3"
+            android:fontFamily="@font/segoebold"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray_hint"
+            android:textSize="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:textStyle="bold"
+            android:padding="@dimen/_8sdp"/>
+
+        <RadioButton
+            android:layout_width="@dimen/_200sdp"
+            android:layout_height="wrap_content"
+            android:text="Junior 3"
+            android:background="@drawable/button_background3"
+            android:fontFamily="@font/segoebold"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray_hint"
+            android:textSize="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:textStyle="bold"
+            android:padding="@dimen/_8sdp"/>
+
+        <RadioButton
+            android:layout_width="@dimen/_200sdp"
+            android:layout_height="wrap_content"
+            android:text="Junior 4"
+            android:background="@drawable/button_background3"
+            android:fontFamily="@font/segoebold"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray_hint"
+            android:textSize="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:textStyle="bold"
+            android:padding="@dimen/_8sdp"/>
+
+        <RadioButton
+            android:layout_width="@dimen/_200sdp"
+            android:layout_height="wrap_content"
+            android:text="Junior 5"
+            android:background="@drawable/button_background3"
+            android:fontFamily="@font/segoebold"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray_hint"
+            android:textSize="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:textStyle="bold"
+            android:padding="@dimen/_8sdp"/>
+
+        <RadioButton
+            android:layout_width="@dimen/_200sdp"
+            android:layout_height="wrap_content"
+            android:text="Junior 6"
+            android:background="@drawable/button_background3"
+            android:fontFamily="@font/segoebold"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray_hint"
+            android:textSize="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:textStyle="bold"
+            android:padding="@dimen/_8sdp"/>
+        
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/cont"
+        android:layout_width="@dimen/_170sdp"
+        android:layout_height="wrap_content"
+        android:text="Continue"
+        android:textAllCaps="false"
+        android:background="@drawable/button_background4"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:textSize="@dimen/_16sdp"
+        android:padding="@dimen/_7sdp"/>
+
+</LinearLayout>

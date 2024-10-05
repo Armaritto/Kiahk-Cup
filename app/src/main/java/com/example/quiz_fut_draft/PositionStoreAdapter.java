@@ -29,17 +29,15 @@ public class PositionStoreAdapter extends RecyclerView.Adapter<PositionStoreAdap
     private final Context context;
     private final FirebaseDatabase database;
     private final String ID;
-    private final String grade;
 
     // data is passed into the constructor
     PositionStoreAdapter(Context context, ArrayList<Position> positions,
-                     FirebaseDatabase database, String ID, String grade) {
+                     FirebaseDatabase database, String ID) {
         this.mInflater = LayoutInflater.from(context);
         this.positions = positions;
         this.context = context;
         this.database = database;
         this.ID = ID;
-        this.grade = grade;
     }
 
     // inflates the cell layout from xml when needed
@@ -94,7 +92,7 @@ public class PositionStoreAdapter extends RecyclerView.Adapter<PositionStoreAdap
 
     public void purchaseObject(Position position) {
 
-        DatabaseReference ref = database.getReference(Users_Path.getPath(grade)).child(ID);
+        DatabaseReference ref = database.getReference("/elmilad25/Users").child(ID);
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

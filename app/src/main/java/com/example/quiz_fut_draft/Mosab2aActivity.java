@@ -26,7 +26,8 @@ import java.util.Objects;
 public class Mosab2aActivity extends AppCompatActivity {
     private String Name;
     private String ID;
-    private String grade;
+    private String dbURL;
+    private String storageURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +42,11 @@ public class Mosab2aActivity extends AppCompatActivity {
         Intent intent = getIntent();
         ID = intent.getStringExtra("ID");
         Name = intent.getStringExtra("Name");
-        grade = intent.getStringExtra("Grade");
+        dbURL = intent.getStringExtra("Database");
+        storageURL = intent.getStringExtra("Storage");
 
         RecyclerView mosab2at_list = findViewById(R.id.mosab2at_list);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
         DatabaseReference ref = database.getReference();
         setupHeader(ref);
         int numberOfColumns = 2;
@@ -55,8 +57,7 @@ public class Mosab2aActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<Mosab2a> mosab2at = new ArrayList<>();
                 ArrayList<String> mosab2atIDs = new ArrayList<>();
-                assert grade != null;
-                DataSnapshot mosab2atData = snapshot.child(Mosab2a_Path.getPath(grade));
+                DataSnapshot mosab2atData = snapshot.child("/elmilad25/Mosab2at");
                 for (DataSnapshot mosab2a : mosab2atData.getChildren()) {
                     Mosab2a m = new Mosab2a();
                     mosab2atIDs.add(mosab2a.getKey());
@@ -66,7 +67,7 @@ public class Mosab2aActivity extends AppCompatActivity {
                     m.setLink(mosab2a.child("Link").getValue(String.class));
                     mosab2at.add(m);
                 }
-                DataSnapshot userM = snapshot.child(Users_Path.getPath(grade)).child(ID).child("Mosab2at");
+                DataSnapshot userM = snapshot.child("/elmilad25/Users").child(ID).child("Mosab2at");
                 for (DataSnapshot mosab2a : userM.getChildren()) {
                     if (mosab2atIDs.contains(mosab2a.getKey())) mosab2at.remove(mosab2atIDs.indexOf(mosab2a.getKey()));
                 }
@@ -89,7 +90,7 @@ public class Mosab2aActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 name.setText(Name);
-                snapshot = snapshot.child(Users_Path.getPath(grade));
+                snapshot = snapshot.child("/elmilad25/Users");
                 stars.setText(Objects.requireNonNull(snapshot.child(ID).child("Stars").getValue()).toString());
                 coins.setText(Objects.requireNonNull(snapshot.child(ID).child("Coins").getValue()).toString());
             }

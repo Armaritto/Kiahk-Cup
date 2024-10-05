@@ -34,8 +34,8 @@ import java.util.ArrayList;
 public class AdminActivity extends AppCompatActivity {
 
     private ListAdapter listAdapter;
-    private String grade;
     private DatabaseReference ref;
+    private String dbURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,16 +54,16 @@ public class AdminActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String ID = intent.getStringExtra("ID");
         String name = intent.getStringExtra("Name");
-        grade = intent.getStringExtra("Grade");
+        dbURL = intent.getStringExtra("Database");
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
         ref = database.getReference();
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                DataSnapshot userData = snapshot.child(Users_Path.getPath(grade));
+                DataSnapshot userData = snapshot.child("/elmilad25/Users");
                 ArrayList<User> users = new ArrayList<>();
 
                 for (DataSnapshot user : userData.getChildren()) {
@@ -199,7 +199,7 @@ public class AdminActivity extends AppCompatActivity {
 
         ArrayList<Option> optionsList = new ArrayList<>();
 
-        DataSnapshot optionsData = snapshot.child("elmilad25").child("Admin").child("J"+grade);
+        DataSnapshot optionsData = snapshot.child("elmilad25").child("Admin");
         for (DataSnapshot optionData : optionsData.getChildren()) {
             Option o = new Option();
             o.setOptionName(optionData.getKey());
@@ -249,9 +249,9 @@ public class AdminActivity extends AppCompatActivity {
             option.setText(options.get(position).getOptionName()+" ("+options.get(position).getStars()+")");
             option.setOnClickListener(v1-> {
                 int stars = Integer.parseInt(
-                        snapshot.child(Users_Path.getPath(grade)).child(ID).child("Stars").getValue().toString());
+                        snapshot.child("/elmilad25/Users").child(ID).child("Stars").getValue().toString());
                 stars+=options.get(position).getStars();
-                ref.child(Users_Path.getPath(grade)).child(ID).child("Stars").setValue(stars);
+                ref.child("/elmilad25/Users").child(ID).child("Stars").setValue(stars);
                 Toast.makeText(AdminActivity.this, options.get(position).getStars()+" stars added",
                         Toast.LENGTH_SHORT).show();
                 alertDialog.dismiss();

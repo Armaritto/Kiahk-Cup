@@ -1,5 +1,6 @@
 package com.example.quiz_fut_draft;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -38,13 +39,17 @@ public class MyCardActivity extends AppCompatActivity {
             return insets;
         });
 
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         Intent intent1 = getIntent();
         ID = intent1.getStringExtra("ID");
         Name = intent1.getStringExtra("Name");
-        String grade = intent1.getStringExtra("Grade");
-
-        assert grade != null;
-        setupHeader(FirebaseDatabase.getInstance().getReference(Users_Path.getPath(grade)));
+        String dbURL = intent1.getStringExtra("Database");
+        String storageURL = intent1.getStringExtra("Storage");
+        setupHeader(FirebaseDatabase.getInstance(dbURL).getReference("/elmilad25/Users"));
 
         Button positionBtn = findViewById(R.id.position_btn);
         Button cardBtn = findViewById(R.id.card_btn);
@@ -56,14 +61,14 @@ public class MyCardActivity extends AppCompatActivity {
         TextView position = findViewById(R.id.position);
         TextView card_rating = findViewById(R.id.card_rating);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
         DatabaseReference ref = database.getReference();
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot data) {
-                if (data.child(Users_Path.getPath(grade)).child(ID)
+                if (data.child("/elmilad25/Users").child(ID)
                         .child("Owned Card Icons").hasChild("Selected")) {
-                    String selected = data.child(Users_Path.getPath(grade)).child(ID).child("Owned Card Icons").child("Selected").getValue().toString();
+                    String selected = data.child("/elmilad25/Users").child(ID).child("Owned Card Icons").child("Selected").getValue().toString();
 
                     DataSnapshot cardRef = data.child("elmilad25").child("CardIcon").child(selected);
 
@@ -86,7 +91,8 @@ public class MyCardActivity extends AppCompatActivity {
                     cardIcon.setImageDrawable(getResources().getDrawable(R.drawable.empty));
                 }
 
-                DataSnapshot snapshot = data.child(Users_Path.getPath(grade)).child(ID);
+                DataSnapshot snapshot = data.child("/elmilad25/Users").child(ID);
+                DatabaseReference userRef = ref.child("/elmilad25/Users").child(ID);
                 if (snapshot.hasChild("Pic")) {
                     String imgLink = snapshot.child("Pic").getValue().toString();
                     Picasso.get().load(imgLink).into(img);
@@ -99,14 +105,15 @@ public class MyCardActivity extends AppCompatActivity {
                     position.setText(snapshot.child("Card").child("Position").getValue().toString());
                 }
                 else {
-                    DatabaseReference userRef = ref.child(Users_Path.getPath(grade)).child(ID);
                     userRef.child("Owned Positions").child("position1").child("Owned").setValue(true);
                     userRef.child("Card").child("Position").setValue("GK");
                 }
 
-                if (snapshot.child("Card").hasChild("Rating")) {
+                if (snapshot.child("Card").hasChild("Rating"))
                     card_rating.setText(snapshot.child("Card").child("Rating").getValue().toString());
-                }
+                else
+                    userRef.child("Card").child("Rating").setValue(50);
+                progressDialog.dismiss();
             }
 
             @Override
@@ -119,7 +126,8 @@ public class MyCardActivity extends AppCompatActivity {
             Intent intent = new Intent(MyCardActivity.this, CardStoreActivity.class);
             intent.putExtra("ID",ID);
             intent.putExtra("Name",Name);
-            intent.putExtra("Grade",grade);
+            intent.putExtra("Database", dbURL);
+            intent.putExtra("Storage", storageURL);
             startActivity(intent);
         });
 
@@ -127,7 +135,8 @@ public class MyCardActivity extends AppCompatActivity {
             Intent intent = new Intent(MyCardActivity.this, PositionStoreActivity.class);
             intent.putExtra("ID",ID);
             intent.putExtra("Name",Name);
-            intent.putExtra("Grade",grade);
+            intent.putExtra("Database", dbURL);
+            intent.putExtra("Storage", storageURL);
             startActivity(intent);
         });
 
@@ -135,7 +144,8 @@ public class MyCardActivity extends AppCompatActivity {
             Intent intent = new Intent(MyCardActivity.this, RatingStoreActivity.class);
             intent.putExtra("ID",ID);
             intent.putExtra("Name",Name);
-            intent.putExtra("Grade",grade);
+            intent.putExtra("Database", dbURL);
+            intent.putExtra("Storage", storageURL);
             startActivity(intent);
         });
     }

@@ -41,11 +41,11 @@ public class PositionStoreActivity extends AppCompatActivity {
         Intent intent1 = getIntent();
         ID = intent1.getStringExtra("ID");
         Name = intent1.getStringExtra("Name");
-        String grade = intent1.getStringExtra("Grade");
-        assert grade != null;
-        setupHeader(FirebaseDatabase.getInstance().getReference(Users_Path.getPath(grade)));
+        String dbURL = intent1.getStringExtra("Database");
+        String storageURL = intent1.getStringExtra("Storage");
+        setupHeader(FirebaseDatabase.getInstance(dbURL).getReference("/elmilad25/Users"));
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         int numberOfColumns = 2;
@@ -70,7 +70,7 @@ public class PositionStoreActivity extends AppCompatActivity {
                 }
 
                 DataSnapshot ownedPositions = data.child(
-                        Users_Path.getPath(grade)).child(ID).child("Owned Positions");
+                        "/elmilad25/Users").child(ID).child("Owned Positions");
                 for (DataSnapshot position : ownedPositions.getChildren()) {
                     if (Boolean.parseBoolean(position.child("Owned").getValue().toString())) {
                         String positionId = position.getKey();
@@ -81,7 +81,7 @@ public class PositionStoreActivity extends AppCompatActivity {
                 }
 
                PositionStoreAdapter adapter = new PositionStoreAdapter(
-                       PositionStoreActivity.this, positions, database, ID, grade);
+                       PositionStoreActivity.this, positions, database, ID);
                recyclerView.setAdapter(adapter);
 
             }

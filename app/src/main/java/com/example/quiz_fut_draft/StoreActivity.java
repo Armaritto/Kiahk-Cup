@@ -29,7 +29,8 @@ public class StoreActivity extends AppCompatActivity {
     private StoreAdapter adapter;
     private String selectedPosition;
     private String cardPosition;
-    private String grade;
+    private String dbURL;
+    private String storageURL;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +43,8 @@ public class StoreActivity extends AppCompatActivity {
         Intent intent1 = getIntent();
         ID = intent1.getStringExtra("ID");
         name = intent1.getStringExtra("Name");
-        grade = intent1.getStringExtra("Grade");
+        dbURL = intent1.getStringExtra("Database");
+        storageURL = intent1.getStringExtra("Storage");
         selectedPosition = getIntent().getStringExtra("Card");
         cardPosition = selectedPosition;
 
@@ -56,29 +58,29 @@ public class StoreActivity extends AppCompatActivity {
         int numberOfColumns = 2;
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
         DatabaseReference ref = database.getReference();
 
-        setupHeader(database.getReference(Users_Path.getPath(grade)));
+        setupHeader(database.getReference("/elmilad25/Users"));
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 DataSnapshot storeData = snapshot.child("elmilad25").child("Store");
-                DataSnapshot ownedData = snapshot.child(Users_Path.getPath(grade)).child(ID).child("Owned Cards");
-                DataSnapshot lineupData = snapshot.child(Users_Path.getPath(grade)).child(ID).child("Lineup");
+                DataSnapshot ownedData = snapshot.child("/elmilad25/Users").child(ID).child("Owned Cards");
+                DataSnapshot lineupData = snapshot.child("/elmilad25/Users").child(ID).child("Lineup");
 
                 ArrayList<Card> cards = new ArrayList<>();
                 for (DataSnapshot cardData : storeData.getChildren()) {
                     String cardID = cardData.getKey();
                     String position = cardData.child("Position").getValue().toString();
                     if (!position.equals(selectedPosition)) continue;
-                    Card card = new Card();
+                    Card card = new Card(storageURL);
                     card.setID(cardID);
                     card.setPrice(Integer.parseInt(cardData.child("Price").getValue().toString()));
                     card.setPosition(position);
-                    card.setImageLink(cardData.child("Image").getValue().toString());
+                    card.setImageName(cardData.child("Image").getValue().toString());
                     card.setRating(cardData.child("Rating").getValue().toString());
                     if (ownedData.hasChild(cardID) &&
                             Boolean.parseBoolean(ownedData.child(cardID).getValue().toString()))
@@ -92,7 +94,7 @@ public class StoreActivity extends AppCompatActivity {
 
                     if (!flag) cards.add(card);
                 }
-                adapter = new StoreAdapter(StoreActivity.this, cards, coins, database, ID, grade, cardPosition);
+                adapter = new StoreAdapter(StoreActivity.this, cards, coins, database, ID, cardPosition);
                 recyclerView.setAdapter(adapter);
             }
 

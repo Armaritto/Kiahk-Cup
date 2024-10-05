@@ -24,9 +24,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextId;
     private EditText editTextPassword;
-    private EditText editTextGrade;
-    private Button buttonLogin;
     private SharedPreferences sharedPreferences;
+    private String dbURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,39 +39,37 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         sharedPreferences = getSharedPreferences("Login", MODE_PRIVATE);
-        if (sharedPreferences.contains("ID") && sharedPreferences.contains("Password")) {
+        dbURL = getIntent().getStringExtra("Database");
+        if (sharedPreferences.contains("ID") && sharedPreferences.contains("Password") && sharedPreferences.contains("Name")
+                && sharedPreferences.contains("Database") && sharedPreferences.contains("Storage")) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra("ID", sharedPreferences.getString("ID", ""));
-            intent.putExtra("Grade", sharedPreferences.getString("Grade", ""));
             intent.putExtra("Name", sharedPreferences.getString("Name", ""));
+            intent.putExtra("Database", sharedPreferences.getString("Database", ""));
+            intent.putExtra("Storage", sharedPreferences.getString("Storage", ""));
             startActivity(intent);
             finish();
         }
 
         editTextId = findViewById(R.id.editTextId);
         editTextPassword = findViewById(R.id.editTextPassword);
-        editTextGrade = findViewById(R.id.editTextGrade);
-        buttonLogin = findViewById(R.id.buttonLogin);
+        Button buttonLogin = findViewById(R.id.buttonLogin);
 
         buttonLogin.setOnClickListener(v -> {
-            String id = editTextId.getText().toString().trim();
-            String password = editTextPassword.getText().toString().trim();
-            String grade = editTextGrade.getText().toString().trim();
-            if (!grade.equals("1") && !grade.equals("2") && !grade.equals("3") && !grade.equals("4") && !grade.equals("5") && !grade.equals("6")) {
-                Toast.makeText(LoginActivity.this, "Please enter a valid grade", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            String id = editTextId.getText().toString();
+            String password = editTextPassword.getText().toString();
             if (!id.isEmpty() && !password.isEmpty()) {
-                validateLogin(id, password,grade);
+                validateLogin(id, password);
             } else {
-                Toast.makeText(LoginActivity.this, "Please enter ID, Grade, and Password", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Please enter both ID and Password", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
-    private void validateLogin(String id, String password,String grade) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference(Users_Path.getPath(grade)).child(id);
+    private void validateLogin(String id, String password) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
+        DatabaseReference ref = database.getReference("/elmilad25/Users").child(id);
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -80,16 +77,17 @@ public class LoginActivity extends AppCompatActivity {
                 if (dataSnapshot.exists()) {
                     String storedPassword = dataSnapshot.child("Password").getValue(String.class);
                     if (storedPassword != null && storedPassword.equals(password)) {
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.putExtra("ID", id);
-                        intent.putExtra("Name", dataSnapshot.child("Name").getValue(String.class));
-                        intent.putExtra("Grade", grade);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("ID", id);
                         editor.putString("Password", password);
-                        editor.putString("Grade", grade);
                         editor.putString("Name", dataSnapshot.child("Name").getValue(String.class));
                         editor.apply();
+
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("ID", id);
+                        intent.putExtra("Name", dataSnapshot.child("Name").getValue(String.class));
+                        intent.putExtra("Database", sharedPreferences.getString("Database", ""));
+                        intent.putExtra("Storage", sharedPreferences.getString("Storage", ""));
 
                         startActivity(intent);
                         finish();
@@ -107,4 +105,5 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
 }

@@ -36,9 +36,10 @@ import java.util.Map;
 import java.util.Objects;
 
 public class LeaderboardActivity extends AppCompatActivity {
-    String ID;
-    String Name;
-    static String grade;
+    private String ID;
+    private String name;
+    private String dbURL;
+    private String storageURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,14 +52,15 @@ public class LeaderboardActivity extends AppCompatActivity {
         });
 
         Intent intent = getIntent();
-        grade = intent.getStringExtra("Grade");
+        dbURL = intent.getStringExtra("Database");
+        storageURL = intent.getStringExtra("Storage");
         ID = intent.getStringExtra("ID");
-        Name = intent.getStringExtra("Name");
+        name = intent.getStringExtra("Name");
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
         DatabaseReference ref = database.getReference();
 
-        setupHeader(ref.child(Users_Path.getPath(grade)));
+        setupHeader(ref.child("/elmilad25/Users"));
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view_lineups);
         int numberOfColumns = 1;
@@ -67,9 +69,10 @@ public class LeaderboardActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                DataSnapshot userData = snapshot.child(Users_Path.getPath(grade));
+                DataSnapshot userData = snapshot.child("/elmilad25/Users");
                 HashMap<String,Integer> allUsersRatings = new HashMap<>();
-                for (DataSnapshot aUserData : snapshot.child(Users_Path.getPath(grade)).getChildren()) {
+                for (DataSnapshot aUserData : snapshot.child("/elmilad25/Users").getChildren()) {
+                    if (aUserData.getKey().equals("9999")) continue;
                     if (aUserData.hasChild("Points")) {
                         int aUserPoints = Integer.parseInt(aUserData.child("Points").getValue().toString());
                         allUsersRatings.put(aUserData.getKey(),aUserPoints);
@@ -87,7 +90,8 @@ public class LeaderboardActivity extends AppCompatActivity {
                 | 4. User4: 70 OVR           view lineup  |
                 -------------------------------------------
                  */
-                LeaderboardAdapter adapter = new LeaderboardAdapter(LeaderboardActivity.this, lineups, database, ID, grade, "Admin", userData, snapshot);
+                LeaderboardAdapter adapter = new LeaderboardAdapter(LeaderboardActivity.this, lineups,
+                        ID, name, dbURL, storageURL, userData, snapshot);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -105,13 +109,6 @@ public class LeaderboardActivity extends AppCompatActivity {
                 Lineup lineup = new Lineup();
                 lineup.setID(entry.getKey());
                 lineup.setOVR(entry.getValue().toString());
-
-
-//                ImageView imageView = new ImageView();
-//                DataSnapshot userData = snapshot.child(Users_Path.getPath(grade)).child(ID);
-//                setUserCardImage(imageView, userData, snapshot);
-//                lineup.setImage(imageView);
-
                 lineups.add(lineup);
             }
         }
@@ -122,7 +119,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         RelativeLayout v = findViewById(R.id.main);
         ImageView icon = findViewById(R.id.card_icon);
         ImageView img = findViewById(R.id.img);
-        TextView name = findViewById(R.id.name);
+        TextView nameView = findViewById(R.id.name);
         TextView rating = findViewById(R.id.card_rating);
         TextView position = findViewById(R.id.position);
 
@@ -139,7 +136,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess() {
                         imagesToLoad--;
-                        TextColor.setColor(icon, name, position, rating);
+                        TextColor.setColor(icon, nameView, position, rating);
                         checkIfAllImagesLoaded(v, imageView);
                     }
 
@@ -175,7 +172,7 @@ public class LeaderboardActivity extends AppCompatActivity {
             imagesToLoad--;
             checkIfAllImagesLoaded(v, imageView);
         }
-        name.setText(Name);
+        nameView.setText(name);
 //        position.setText(userPos);
         if (userData.child("Card").hasChild("Rating")) {
             rating.setText(userData.child("Card").child("Rating").getValue().toString());

@@ -32,23 +32,23 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     private final ArrayList<Lineup> lineups;
     private final LayoutInflater mInflater;
     private final Context context;
-    private final FirebaseDatabase database;
     private final String ID;
-    private final String grade;
     private final String Name;
+    private final String dbURL;
+    private final String storageURL;
     private final DataSnapshot userData;
     private final DataSnapshot snapshot;
     private final int[] imagesToLoad;
 
     // data is passed into the constructor
-    LeaderboardAdapter(Context context, ArrayList<Lineup> lineups,
-                       FirebaseDatabase database, String ID, String grade, String Name, DataSnapshot userData, DataSnapshot snapshot) {
+    LeaderboardAdapter(Context context, ArrayList<Lineup> lineups, String ID, String Name, String dbURL,
+                       String storageURL, DataSnapshot userData, DataSnapshot snapshot) {
         this.mInflater = LayoutInflater.from(context);
         this.lineups = lineups;
         this.context = context;
-        this.database = database;
+        this.dbURL = dbURL;
+        this.storageURL = storageURL;
         this.ID = ID;
-        this.grade = grade;
         this.Name = Name;
         this.userData = userData;
         this.snapshot = snapshot;
@@ -78,7 +78,8 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
             else
                 intent = new Intent(context, ViewOthersLineupActivity.class);
             intent.putExtra("ID", lineups.get(i).getID());
-            intent.putExtra("Grade", grade);
+            intent.putExtra("Database", dbURL);
+            intent.putExtra("Storage", storageURL);
             intent.putExtra("Name", Name);
             context.startActivity(intent);
         });

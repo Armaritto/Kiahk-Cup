@@ -4,20 +4,24 @@ public class Card {
 
     private String ID;
     private int price;
-    private String imageLink;
+    private String imageName;
     private String rating;
     private String position;
     private boolean owned;
+    private String storageURL;
 
-    public Card(String ID, int price, String imageLink, String rating, String position) {
+    public Card(String ID, int price, String imageName, String rating, String position, String storageURL) {
         this.ID = ID;
         this.price = price;
-        this.imageLink = imageLink;
+        this.imageName = imageName;
         this.rating = rating;
         this.position = position;
+        this.storageURL = storageURL;
     }
 
-    public Card() {}
+    public Card(String storageURL) {
+        this.storageURL = storageURL;
+    }
 
     public String getID() {
         return ID;
@@ -34,12 +38,12 @@ public class Card {
         this.price = price;
     }
 
-    public String getImageLink() {
-        return imageLink;
+    public String getImageName() {
+        return imageName;
     }
 
-    public void setImageLink(String imageLink) {
-        this.imageLink = imageLink;
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 
     public String getRating() {
@@ -64,5 +68,9 @@ public class Card {
 
     public void setOwned(boolean owned) {
         this.owned = owned;
+    }
+
+    public String getImageLink() {
+        return storageURL + imageName + "?alt=media";
     }
 }
