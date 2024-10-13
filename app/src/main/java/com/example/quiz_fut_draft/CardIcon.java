@@ -3,9 +3,10 @@ package com.example.quiz_fut_draft;
 public class CardIcon {
 
     private String card;
-    private String link;
+    private String imageLink;
     private double price;
     private boolean owned;
+    private String imagePath;
 
     public CardIcon() {
     }
@@ -18,12 +19,12 @@ public class CardIcon {
         this.card = card;
     }
 
-    public String getLink() {
-        return link;
+    public String getImageLink() {
+        return imageLink;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
     }
 
     public double getPrice() {
@@ -40,5 +41,13 @@ public class CardIcon {
 
     public void setOwned(boolean owned) {
         this.owned = owned;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

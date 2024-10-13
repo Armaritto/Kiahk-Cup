@@ -22,7 +22,7 @@ public class GradeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+//        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_grade);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -58,11 +58,11 @@ public class GradeActivity extends AppCompatActivity {
 //                    break;
                 case "Junior 6":
                     setupDatabase("https://j6-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://j6-fut-draft.appspot.com");
+                            "gs://j6-fut-draft.appspot.com/");
                     break;
                 default:
                     setupDatabase("https://quiz-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://quiz-fut-draft.appspot.com");
+                            "gs://quiz-fut-draft.appspot.com/");
                     break;
             }
         });

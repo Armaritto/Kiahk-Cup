@@ -23,16 +23,51 @@
         android:textStyle="bold"
         android:textColor="@color/white"/>
 
-    <Button
-        android:id="@+id/purchase"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="35dp"
-        android:paddingVertical="0dp"
-        android:paddingHorizontal="15dp"
-        android:textAllCaps="false"
-        android:background="@drawable/button_background"
-        android:text="Purchase"
-        android:textSize="15dp"
-        android:fontFamily="@font/segoebold"
-        android:textStyle="bold"/>
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:paddingVertical="0dp"
+            android:paddingHorizontal="15dp"
+            android:textAllCaps="false"
+            android:background="@drawable/button_background"
+            android:text="Purchase"
+            android:textSize="15dp"
+            android:fontFamily="@font/segoebold"
+            android:textStyle="bold"/>
+
+        <Button
+            android:id="@+id/purchase"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:paddingVertical="0dp"
+            android:paddingHorizontal="15dp"
+            android:textAllCaps="false"
+            android:background="@color/transparent"
+            android:text="Sell"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:textColor="@color/red"
+            android:textSize="15dp"
+            android:fontFamily="@font/segoebold"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+<!--    <Button-->
+<!--        android:id="@+id/purchase"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="35dp"-->
+<!--        android:paddingVertical="0dp"-->
+<!--        android:paddingHorizontal="15dp"-->
+<!--        android:textAllCaps="false"-->
+<!--        android:background="@drawable/button_background"-->
+<!--        android:text="Purchase"-->
+<!--        android:textSize="15dp"-->
+<!--        android:fontFamily="@font/segoebold"-->
+<!--        android:textStyle="bold"/>-->
 </LinearLayout>

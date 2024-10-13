@@ -52,7 +52,7 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.price.setText(cards.get(position).getPrice()+"$");
-        Picasso.get().load(cards.get(position).getLink()).into(holder.img);
+        Picasso.get().load(cards.get(position).getImageLink()).into(holder.img);
         holder.button.setOnClickListener(v-> {
             purchaseObject(getItem(position));
         });

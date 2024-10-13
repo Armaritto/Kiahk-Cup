@@ -22,32 +22,28 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
-    private String Name;
-    private String ID;
-    private String dbURL;
-    private String storageURL;
+
+    private String[] data;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intent1 = getIntent();
-        ID = intent1.getStringExtra("ID");
-        Name = intent1.getStringExtra("Name");
-        dbURL = intent1.getStringExtra("Database");
-        storageURL = intent1.getStringExtra("Storage");
-        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
+
+        data = getIntent().getStringArrayExtra("Data");
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         setupHeader(database.getReference("/elmilad25/Users"));
-        Button[] buttons = new Button[4];
-        buttons[0] = findViewById(R.id.mosab2a);
-        buttons[1] = findViewById(R.id.lineup);
-        buttons[2] = findViewById(R.id.myCard);
-        buttons[3] = findViewById(R.id.leaderboard);
+        Button mosab2a = findViewById(R.id.mosab2a);
+        Button lineup = findViewById(R.id.lineup);
+        Button myCard = findViewById(R.id.myCard);
+        Button leaderboard = findViewById(R.id.leaderboard);
         Button admin = findViewById(R.id.admin);
         Button logout = findViewById(R.id.logout);
-        if(Objects.equals(ID, "9999")){
+        if(Objects.equals(data[0], "Admin")){
             admin.setVisibility(View.VISIBLE);
             admin.setOnClickListener(v-> showCustomDialog());
-            buttons[3].setVisibility(View.VISIBLE);
+            leaderboard.setVisibility(View.VISIBLE);
         }
         else { // View Leaderboard for admin all the time
             database.getReference("elmilad25").addValueEventListener(new ValueEventListener() {
@@ -55,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.hasChild("Leaderboard") &&
                             Boolean.parseBoolean(snapshot.child("Leaderboard").getValue().toString())) {
-                        buttons[3].setVisibility(View.VISIBLE);
+                        leaderboard.setVisibility(View.VISIBLE);
                     } else {
-                        buttons[3].setVisibility(View.GONE);
+                        leaderboard.setVisibility(View.GONE);
                     }
                 }
 
@@ -69,36 +65,24 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        buttons[0].setOnClickListener(v-> {
+        mosab2a.setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, Mosab2aActivity.class);
-            intent.putExtra("ID",ID);
-            intent.putExtra("Name",Name);
-            intent.putExtra("Database", dbURL);
-            intent.putExtra("Storage", storageURL);
+            intent.putExtra("Data", data);
             startActivity(intent);
         });
-        buttons[1].setOnClickListener(v-> {
+        lineup.setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, LineupActivity.class);
-            intent.putExtra("ID",ID);
-            intent.putExtra("Name",Name);
-            intent.putExtra("Database", dbURL);
-            intent.putExtra("Storage", storageURL);
+            intent.putExtra("Data", data);
             startActivity(intent);
         });
-        buttons[2].setOnClickListener(v-> {
+        myCard.setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, MyCardActivity.class);
-            intent.putExtra("ID",ID);
-            intent.putExtra("Name",Name);
-            intent.putExtra("Database", dbURL);
-            intent.putExtra("Storage", storageURL);
+            intent.putExtra("Data", data);
             startActivity(intent);
         });
-        buttons[3].setOnClickListener(v-> {
+        leaderboard.setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, LeaderboardActivity.class);
-            intent.putExtra("ID",ID);
-            intent.putExtra("Name",Name);
-            intent.putExtra("Database", dbURL);
-            intent.putExtra("Storage", storageURL);
+            intent.putExtra("Data", data);
             startActivity(intent);
         });
         logout.setOnClickListener(v-> {
@@ -118,17 +102,17 @@ public class MainActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(Name);
-                if (!snapshot.child(ID).hasChild("Stars")) {
-                    ref.child(ID).child("Stars").setValue(0);
+                name.setText(data[0]);
+                if (!snapshot.child(data[0]).hasChild("Stars")) {
+                    ref.child(data[0]).child("Stars").setValue(0);
                     stars.setText("0");
                 } else
-                    stars.setText(Objects.requireNonNull(snapshot.child(ID).child("Stars").getValue()).toString());
-                if (!snapshot.child(ID).hasChild("Coins")) {
-                    ref.child(ID).child("Coins").setValue(0);
+                    stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
+                if (!snapshot.child(data[0]).hasChild("Coins")) {
+                    ref.child(data[0]).child("Coins").setValue(0);
                     coins.setText("0");
                 } else
-                    coins.setText(Objects.requireNonNull(snapshot.child(ID).child("Coins").getValue()).toString());
+                    coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
             }
 
             @Override
@@ -159,11 +143,8 @@ public class MainActivity extends AppCompatActivity {
             String input = dialogInput.getText().toString();
             // Handle the input
             if (input.equals("admin")) {
-                Intent intent = new Intent(MainActivity.this, AdminActivity.class);
-                intent.putExtra("ID",ID);
-                intent.putExtra("Name",Name);
-                intent.putExtra("Database", dbURL);
-                intent.putExtra("Storage", storageURL);
+                Intent intent = new Intent(MainActivity.this, UsersList.class);
+                intent.putExtra("Data", data);
                 startActivity(intent);
             }
             // Dismiss the dialog

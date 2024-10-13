@@ -24,6 +24,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -31,29 +33,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class ViewOthersLineupActivity extends AppCompatActivity {
-    private String userName;
-    private String ID;
+
+    private String[] data;
     private String userPos;
     private String userRating = "0"; //Points in database
-    private String dbURL;
-    private String storageURL;
     private ImageView[] lineupCards;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+//        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_lineup);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
                     Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
                     v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
                     return insets;
         });
-        Intent intent1 = getIntent();
-        ID = intent1.getStringExtra("ID");
-        userName = intent1.getStringExtra("Name");
-        dbURL = intent1.getStringExtra("Database");
-        storageURL = intent1.getStringExtra("Storage");
+        data = getIntent().getStringArrayExtra("Data");
 
         // All cards IDs
         int[] lineupViewIds = {
@@ -81,15 +77,16 @@ public class ViewOthersLineupActivity extends AppCompatActivity {
             lineupCards[i] = findViewById(id);
         }
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
+        FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
+        FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
         DatabaseReference ref = database.getReference();
-        DatabaseReference userRef = ref.child("/elmilad25/Users").child(ID);
+        DatabaseReference userRef = ref.child("/elmilad25/Users").child(data[0]);
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                DataSnapshot userData = snapshot.child("/elmilad25/Users").child(ID);
+                DataSnapshot userData = snapshot.child("/elmilad25/Users").child(data[0]);
                 DataSnapshot storeData = snapshot.child("elmilad25").child("Store");
 
                 // check user position || make it default (GK)
@@ -114,18 +111,26 @@ public class ViewOthersLineupActivity extends AppCompatActivity {
                     if (usedPosition.equals("CM")) usedPosition = "LCM";
                     if (cardPos.equals(usedPosition)) {
                         setUserCardImage(cardImage, userData, snapshot);
-                        totalRating += (double) Integer.parseInt(
-                                userData.child("Card").child("Rating").getValue().toString())/11;
+                        if (userData.child("Card").hasChild("Rating"))
+                            totalRating += (double) Integer.parseInt(userData.child("Card").child("Rating").getValue().toString())/11;
+                        else
+                            totalRating+=50;
                     } else if (userData.child("Lineup").hasChild(cardPos)) {
                         String cardID = userData.child("Lineup").child(cardPos).getValue().toString();
-                        Card c = new Card(storageURL);
+                        Card c = new Card();
                         c.setID(cardID);
                         DataSnapshot cardData = storeData.child(cardID);
                         c.setRating(cardData.child("Rating").getValue().toString());
                         c.setPosition(cardData.child("Position").getValue().toString());
                         c.setPrice(Integer.parseInt(cardData.child("Price").getValue().toString()));
-                        c.setImageName(cardData.child("Image").getValue().toString());
-                        Picasso.get().load(c.getImageName()).into(cardImage);
+                        String imagePath = cardData.child("Image").getValue().toString();
+                        StorageReference storageRef = storage.getReference().child(imagePath);
+                        storageRef.getDownloadUrl()
+                                .addOnSuccessListener(uri -> {
+                                    String downloadUrl = uri.toString();
+                                    Picasso.get().load(downloadUrl).into(cardImage);
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(ViewOthersLineupActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show());
                         totalRating += (double) Integer.parseInt(c.getRating()) / 11;
                     }
 
@@ -202,8 +207,8 @@ public class ViewOthersLineupActivity extends AppCompatActivity {
             imagesToLoad--;
             checkIfAllImagesLoaded(v, imageView);
         }
-        if (userData.hasChild("Pic")) {
-            String imgLink = userData.child("Pic").getValue().toString();
+        if (userData.hasChild("ImageLink")) {
+            String imgLink = userData.child("ImageLink").getValue().toString();
             Picasso.get().load(imgLink).into(img, new Callback() {
                 @Override
                 public void onSuccess() {
@@ -221,7 +226,7 @@ public class ViewOthersLineupActivity extends AppCompatActivity {
             imagesToLoad--;
             checkIfAllImagesLoaded(v, imageView);
         }
-        name.setText(userName);
+        name.setText(data[0]);
         position.setText(userPos);
         if (userData.child("Card").hasChild("Rating")) {
             rating.setText(userData.child("Card").child("Rating").getValue().toString());

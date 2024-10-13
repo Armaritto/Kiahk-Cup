@@ -32,25 +32,19 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     private final ArrayList<Lineup> lineups;
     private final LayoutInflater mInflater;
     private final Context context;
-    private final String ID;
-    private final String Name;
-    private final String dbURL;
-    private final String storageURL;
+    private final String[] data;
     private final DataSnapshot userData;
     private final DataSnapshot snapshot;
     private final int[] imagesToLoad;
 
     // data is passed into the constructor
-    LeaderboardAdapter(Context context, ArrayList<Lineup> lineups, String ID, String Name, String dbURL,
-                       String storageURL, DataSnapshot userData, DataSnapshot snapshot) {
+    LeaderboardAdapter(Context context, ArrayList<Lineup> lineups, String[] data,
+                       DataSnapshot userData, DataSnapshot snapshot) {
         this.mInflater = LayoutInflater.from(context);
         this.lineups = lineups;
         this.context = context;
-        this.dbURL = dbURL;
-        this.storageURL = storageURL;
-        this.ID = ID;
-        this.Name = Name;
         this.userData = userData;
+        this.data = data;
         this.snapshot = snapshot;
         this.imagesToLoad = new int[lineups.size()];
     }
@@ -73,14 +67,12 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         setUserCardImage(holder.cardView, holder.cardImage, userData.child(lineups.get(i).getID()), snapshot, i, holder.row);
         holder.button.setOnClickListener(v-> {
             Intent intent;
-            if(Objects.equals(lineups.get(i).getID(), ID))
+            if(Objects.equals(lineups.get(i).getID(), data[0]))
                 intent = new Intent(context, LineupActivity.class);
             else
                 intent = new Intent(context, ViewOthersLineupActivity.class);
-            intent.putExtra("ID", lineups.get(i).getID());
-            intent.putExtra("Database", dbURL);
-            intent.putExtra("Storage", storageURL);
-            intent.putExtra("Name", Name);
+            data[0] = lineups.get(i).getID();
+            intent.putExtra("Data", data);
             context.startActivity(intent);
         });
     }
@@ -158,8 +150,8 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
                 imagesToLoad[i]--;
                  checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
             }
-            if (userData.hasChild("Pic")) {
-                String imgLink = userData.child("Pic").getValue().toString();
+            if (userData.hasChild("ImageLink")) {
+                String imgLink = userData.child("ImageLink").getValue().toString();
                 Picasso.get().load(imgLink).into(img, new Callback() {
                     @Override
                     public void onSuccess() {
@@ -177,12 +169,12 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
                 imagesToLoad[i]--;
                 checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
             }
-            name.setText(userData.child("Name").getValue().toString());
-            position.setText(userData.child("Card").child("Position").getValue().toString());
+            name.setText(userData.getKey());
+            if (userData.child("Card").hasChild("Position"))
+                position.setText(userData.child("Card").child("Position").getValue().toString());
     //        position.setText(userPos);
-            if (userData.child("Card").hasChild("Rating")) {
+            if (userData.child("Card").hasChild("Rating"))
                 rating.setText(userData.child("Card").child("Rating").getValue().toString());
-            }
         }
 
         private void checkIfAllImagesLoaded(RelativeLayout parent, ImageView cardImage, int imagesToLoad, RelativeLayout row) {

@@ -36,10 +36,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class LeaderboardActivity extends AppCompatActivity {
-    private String ID;
-    private String name;
-    private String dbURL;
-    private String storageURL;
+
+    private String[] data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +49,9 @@ public class LeaderboardActivity extends AppCompatActivity {
             return insets;
         });
 
-        Intent intent = getIntent();
-        dbURL = intent.getStringExtra("Database");
-        storageURL = intent.getStringExtra("Storage");
-        ID = intent.getStringExtra("ID");
-        name = intent.getStringExtra("Name");
+        data = getIntent().getStringArrayExtra("Data");
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
+        FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         DatabaseReference ref = database.getReference();
 
         setupHeader(ref.child("/elmilad25/Users"));
@@ -72,7 +66,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                 DataSnapshot userData = snapshot.child("/elmilad25/Users");
                 HashMap<String,Integer> allUsersRatings = new HashMap<>();
                 for (DataSnapshot aUserData : snapshot.child("/elmilad25/Users").getChildren()) {
-                    if (aUserData.getKey().equals("9999")) continue;
+                    if (aUserData.getKey().equals("Admin")) continue;
                     if (aUserData.hasChild("Points")) {
                         int aUserPoints = Integer.parseInt(aUserData.child("Points").getValue().toString());
                         allUsersRatings.put(aUserData.getKey(),aUserPoints);
@@ -91,7 +85,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                 -------------------------------------------
                  */
                 LeaderboardAdapter adapter = new LeaderboardAdapter(LeaderboardActivity.this, lineups,
-                        ID, name, dbURL, storageURL, userData, snapshot);
+                        data, userData, snapshot);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -172,7 +166,7 @@ public class LeaderboardActivity extends AppCompatActivity {
             imagesToLoad--;
             checkIfAllImagesLoaded(v, imageView);
         }
-        nameView.setText(name);
+        nameView.setText(data[0]);
 //        position.setText(userPos);
         if (userData.child("Card").hasChild("Rating")) {
             rating.setText(userData.child("Card").child("Rating").getValue().toString());
@@ -212,8 +206,8 @@ public class LeaderboardActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                stars.setText(Objects.requireNonNull(snapshot.child(ID).child("Stars").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(ID).child("Coins").getValue()).toString());
+                stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
+                coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
             }
 
             @Override

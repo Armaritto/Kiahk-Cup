@@ -1,6 +1,5 @@
 package com.example.quiz_fut_draft;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -19,13 +18,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class CardStoreActivity extends AppCompatActivity {
-    private String Name;
-    private String ID;
+
+    private String[] data;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,14 +39,11 @@ public class CardStoreActivity extends AppCompatActivity {
             return insets;
         });
 
-        Intent intent1 = getIntent();
-        ID = intent1.getStringExtra("ID");
-        Name = intent1.getStringExtra("Name");
-        String dbURL = intent1.getStringExtra("Database");
-        String storageURL = intent1.getStringExtra("Storage");
-        setupHeader(FirebaseDatabase.getInstance(dbURL).getReference("/elmilad25/Users"));
+        data = getIntent().getStringArrayExtra("Data");
+        setupHeader(FirebaseDatabase.getInstance(data[1]).getReference("/elmilad25/Users"));
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
+        FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
+        FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         int numberOfColumns = 2;
@@ -53,22 +53,23 @@ public class CardStoreActivity extends AppCompatActivity {
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot data) {
-                DataSnapshot snapshot = data.child("elmilad25").child("CardIcon");
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DataSnapshot snapshot = dataSnapshot.child("elmilad25").child("CardIcon");
                 ArrayList<CardIcon> cards = new ArrayList<>();
                 ArrayList<String> cardsNames = new ArrayList<>();
                 for (DataSnapshot card : snapshot.getChildren()) {
                     String cardName = card.getKey();
                     CardIcon c = new CardIcon();
                     c.setCard(cardName);
-                    c.setLink(card.child("Link").getValue().toString());
+                    String imagePath = card.child("Image").getValue().toString();
+                    c.setImagePath(imagePath);
                     c.setPrice(Double.parseDouble(card.child("Price").getValue().toString()));
                     cards.add(c);
                     cardsNames.add(c.getCard());
                 }
 
-                DataSnapshot ownedIconsData = data.child(
-                        "/elmilad25/Users").child(ID).child("Owned Card Icons");
+                DataSnapshot ownedIconsData = dataSnapshot.child(
+                        "/elmilad25/Users").child(data[0]).child("Owned Card Icons");
                 for (DataSnapshot icon : ownedIconsData.getChildren()) {
                     if (!icon.getKey().equals("Selected")) {
                         if (Boolean.parseBoolean(icon.child("Owned").getValue().toString())) {
@@ -80,9 +81,22 @@ public class CardStoreActivity extends AppCompatActivity {
                     }
                 }
 
-                CardStoreAdapter adapter = new CardStoreAdapter(
-                        CardStoreActivity.this, cards, database, ID);
-                recyclerView.setAdapter(adapter);
+                for (int i=0;i<cards.size();i++) {
+                    CardIcon c = cards.get(i);
+                    StorageReference storageRef = storage.getReference().child(c.getImagePath());
+                    final int j = i;
+                    storageRef.getDownloadUrl()
+                            .addOnSuccessListener(uri -> {
+                                String downloadUrl = uri.toString();
+                                cards.get(j).setImageLink(downloadUrl);
+                                if (j==cards.size()-1) {
+                                    CardStoreAdapter adapter = new CardStoreAdapter(
+                                            CardStoreActivity.this, cards, database, data[0]);
+                                    recyclerView.setAdapter(adapter);
+                                }
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(CardStoreActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show());
+                }
 
             }
 
@@ -100,9 +114,9 @@ public class CardStoreActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(Name);
-                stars.setText(Objects.requireNonNull(snapshot.child(ID).child("Stars").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(ID).child("Coins").getValue()).toString());
+                name.setText(data[0]);
+                stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
+                coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
             }
 
             @Override

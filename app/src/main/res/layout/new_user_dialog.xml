@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/popup_background"
+    android:gravity="center"
+    android:paddingVertical="34dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add new Users"
+        android:textSize="35dp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/dialog_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Names"
+        android:layout_marginHorizontal="40dp"
+        android:background="@drawable/button_background3"
+        android:fontFamily="@font/segoebold"
+        android:gravity="center_vertical|left"
+        android:padding="15dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray_hint"
+        android:textSize="23dp"
+        android:textStyle="bold"
+        android:layout_marginTop="37dp"/>
+
+    <Button
+        android:id="@+id/dialog_button"
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:textAllCaps="false"
+        android:background="@drawable/button_background5"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:textSize="23dp"
+        android:textColor="@color/white"
+        android:layout_marginTop="25dp"
+        android:padding="10dp"/>
+
+</LinearLayout>

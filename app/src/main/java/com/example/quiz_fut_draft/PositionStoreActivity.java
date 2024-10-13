@@ -24,13 +24,13 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class PositionStoreActivity extends AppCompatActivity {
-    private String Name;
-    private String ID;
+
+    private String[] data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+//        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_store);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -38,14 +38,10 @@ public class PositionStoreActivity extends AppCompatActivity {
             return insets;
         });
 
-        Intent intent1 = getIntent();
-        ID = intent1.getStringExtra("ID");
-        Name = intent1.getStringExtra("Name");
-        String dbURL = intent1.getStringExtra("Database");
-        String storageURL = intent1.getStringExtra("Storage");
-        setupHeader(FirebaseDatabase.getInstance(dbURL).getReference("/elmilad25/Users"));
+        data = getIntent().getStringArrayExtra("Data");
+        setupHeader(FirebaseDatabase.getInstance(data[1]).getReference("/elmilad25/Users"));
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
+        FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         int numberOfColumns = 2;
@@ -55,8 +51,8 @@ public class PositionStoreActivity extends AppCompatActivity {
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot data) {
-                DataSnapshot snapshot = data.child("elmilad25").child("CardPosition");
+            public void onDataChange(@NonNull DataSnapshot dataS) {
+                DataSnapshot snapshot = dataS.child("elmilad25").child("CardPosition");
                 ArrayList<Position> positions = new ArrayList<>();
                 ArrayList<String> positionsIds = new ArrayList<>();
                 for (DataSnapshot p : snapshot.getChildren()) {
@@ -69,8 +65,8 @@ public class PositionStoreActivity extends AppCompatActivity {
                     positionsIds.add(id);
                 }
 
-                DataSnapshot ownedPositions = data.child(
-                        "/elmilad25/Users").child(ID).child("Owned Positions");
+                DataSnapshot ownedPositions = dataS.child(
+                        "/elmilad25/Users").child(data[0]).child("Owned Positions");
                 for (DataSnapshot position : ownedPositions.getChildren()) {
                     if (Boolean.parseBoolean(position.child("Owned").getValue().toString())) {
                         String positionId = position.getKey();
@@ -81,7 +77,7 @@ public class PositionStoreActivity extends AppCompatActivity {
                 }
 
                PositionStoreAdapter adapter = new PositionStoreAdapter(
-                       PositionStoreActivity.this, positions, database, ID);
+                       PositionStoreActivity.this, positions, database, data[0]);
                recyclerView.setAdapter(adapter);
 
             }
@@ -99,9 +95,9 @@ public class PositionStoreActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(Name);
-                stars.setText(Objects.requireNonNull(snapshot.child(ID).child("Stars").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(ID).child("Coins").getValue()).toString());
+                name.setText(data[0]);
+                stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
+                coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
             }
 
             @Override

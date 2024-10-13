@@ -1,9 +1,11 @@
 package com.example.quiz_fut_draft;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -30,18 +31,20 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Random;
 
-public class AdminActivity extends AppCompatActivity {
+public class UsersList extends AppCompatActivity {
 
     private ListAdapter listAdapter;
+    private String[] data;
     private DatabaseReference ref;
-    private String dbURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_admin);
+//        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_users_list);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -51,12 +54,12 @@ public class AdminActivity extends AppCompatActivity {
         EditText search = findViewById(R.id.search);
         ListView users_list = findViewById(R.id.users_list);
 
-        Intent intent = getIntent();
-        String ID = intent.getStringExtra("ID");
-        String name = intent.getStringExtra("Name");
-        dbURL = intent.getStringExtra("Database");
+        data = getIntent().getStringArrayExtra("Data");
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
+        LinearLayout add = findViewById(R.id.add);
+        add.setOnClickListener(v-> addUsersDialog());
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance(Objects.requireNonNull(data)[1]);
         ref = database.getReference();
 
         ref.addValueEventListener(new ValueEventListener() {
@@ -67,13 +70,17 @@ public class AdminActivity extends AppCompatActivity {
                 ArrayList<User> users = new ArrayList<>();
 
                 for (DataSnapshot user : userData.getChildren()) {
+                    if (user.getKey().equals("NextID")) continue;
                     User u = new User();
-                    u.setID(user.getKey());
-                    u.setName(user.child("Name").getValue().toString());
+                    u.setName(user.getKey());
+                    if (user.hasChild("Passcode"))
+                        u.setPasscode(Objects.requireNonNull(user.child("Passcode").getValue()).toString());
+                    if (user.hasChild("ImageLink"))
+                        u.setImageLink(Objects.requireNonNull(user.child("ImageLink").getValue()).toString());
                     users.add(u);
                 }
 
-                listAdapter = new AdminActivity.ListAdapter(users, snapshot);
+                listAdapter = new UsersList.ListAdapter(users);
                 users_list.setAdapter(listAdapter);
 
             }
@@ -105,12 +112,10 @@ public class AdminActivity extends AppCompatActivity {
 
         private ArrayList<User> originalUsers;
         private ArrayList<User> filteredUsers;
-        private DataSnapshot snapshot;
 
-        public ListAdapter(ArrayList<User> users, DataSnapshot snapshot) {
+        public ListAdapter(ArrayList<User> users) {
             this.originalUsers = users;
             this.filteredUsers = users;
-            this.snapshot = snapshot;
         }
 
         @Override
@@ -130,18 +135,23 @@ public class AdminActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            @SuppressLint({"InflateParams", "ViewHolder"})
             View v = getLayoutInflater().inflate(R.layout.users_listitem, null);
             Button name = v.findViewById(R.id.name);
             name.setText(filteredUsers.get(position).getName());
             name.setOnClickListener(v1-> {
-                showDialog(filteredUsers.get(position), snapshot);
+                Intent intent = new Intent(UsersList.this, UserEditor.class);
+                intent.putExtra("Data", data);
+                intent.putExtra("SelectedUser", filteredUsers.get(position).getName());
+                startActivity(intent);
+//                showDialog(filteredUsers.get(position), snapshot);
             });
             return v;
         }
 
         @Override
         public Filter getFilter() {
-            Filter filter = new Filter() {
+            return new Filter() {
 
                 @SuppressWarnings("unchecked")
                 @Override
@@ -166,8 +176,8 @@ public class AdminActivity extends AppCompatActivity {
                     } else {
                         constraint = constraint.toString().toLowerCase();
                         for (int i = 0; i < originalUsers.size(); i++) {
-                            String data = originalUsers.get(i).getName();
-                            if (data.toLowerCase().startsWith(constraint.toString())) {
+                            String data1 = originalUsers.get(i).getName();
+                            if (data1.toLowerCase().startsWith(constraint.toString())) {
                                 FilteredArrList.add(originalUsers.get(i));
                             }
                         }
@@ -177,88 +187,41 @@ public class AdminActivity extends AppCompatActivity {
                     return results;
                 }
             };
-            return filter;
         }
     }
 
     private android.app.AlertDialog alertDialog;
 
-    private void showDialog(User user, DataSnapshot snapshot) {
+    public void addUsersDialog() {
         // Inflate the custom layout
         LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.admin_dialog, null);
+        View dialogView = inflater.inflate(R.layout.new_user_dialog, null);
 
         // Create the AlertDialog
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
         builder.setView(dialogView);
 
         // Get the UI elements from the custom layout
-        TextView name = dialogView.findViewById(R.id.name);
-        name.setText(user.getName());
-        ListView options = dialogView.findViewById(R.id.options);
+        EditText dialogInput = dialogView.findViewById(R.id.dialog_input);
+        Button dialogButton = dialogView.findViewById(R.id.dialog_button);
 
-        ArrayList<Option> optionsList = new ArrayList<>();
-
-        DataSnapshot optionsData = snapshot.child("elmilad25").child("Admin");
-        for (DataSnapshot optionData : optionsData.getChildren()) {
-            Option o = new Option();
-            o.setOptionName(optionData.getKey());
-            o.setStars(Integer.parseInt(optionData.getValue().toString()));
-            optionsList.add(o);
-        }
-
-        options.setAdapter(new DialogAdapter(user.getID(), snapshot, optionsList));
+        // Set up the dialog button click listener
+        dialogButton.setOnClickListener(v -> {
+            String input = dialogInput.getText().toString();
+            String[] names = input.split("\n");
+            for (String n : names) {
+                Random random = new Random();
+                int passcode = random.nextInt(9999);
+                if (passcode<1000) passcode+=1000;
+                ref.child("elmilad25/Users").child(n).child("Passcode").setValue(passcode);
+            }
+            alertDialog.dismiss();
+        });
 
         // Show the dialog
         alertDialog = builder.create();
         alertDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         alertDialog.show();
     }
-
-    private class DialogAdapter extends BaseAdapter {
-
-        private String ID;
-        private DataSnapshot snapshot;
-        private ArrayList<Option> options;
-
-        public DialogAdapter(String ID, DataSnapshot snapshot, ArrayList<Option> options) {
-            this.ID = ID;
-            this.snapshot = snapshot;
-            this.options = options;
-        }
-
-        @Override
-        public int getCount() {
-            return options.size();
-        }
-
-        @Override
-        public Option getItem(int position) {
-            return options.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View v = getLayoutInflater().inflate(R.layout.admin_options_listitem, null);
-            Button option = v.findViewById(R.id.option);
-            option.setText(options.get(position).getOptionName()+" ("+options.get(position).getStars()+")");
-            option.setOnClickListener(v1-> {
-                int stars = Integer.parseInt(
-                        snapshot.child("/elmilad25/Users").child(ID).child("Stars").getValue().toString());
-                stars+=options.get(position).getStars();
-                ref.child("/elmilad25/Users").child(ID).child("Stars").setValue(stars);
-                Toast.makeText(AdminActivity.this, options.get(position).getStars()+" stars added",
-                        Toast.LENGTH_SHORT).show();
-                alertDialog.dismiss();
-            });
-            return v;
-        }
-    }
-
 
 }

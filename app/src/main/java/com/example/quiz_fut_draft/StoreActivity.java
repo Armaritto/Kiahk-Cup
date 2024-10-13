@@ -2,6 +2,7 @@ package com.example.quiz_fut_draft;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,19 +19,20 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class StoreActivity extends AppCompatActivity {
-    private String name;
-    private String ID;
+
+    private String[] data;
     private static int coins;
     private StoreAdapter adapter;
     private String selectedPosition;
     private String cardPosition;
-    private String dbURL;
-    private String storageURL;
+    private int imagesToLoad;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,11 +42,7 @@ public class StoreActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Intent intent1 = getIntent();
-        ID = intent1.getStringExtra("ID");
-        name = intent1.getStringExtra("Name");
-        dbURL = intent1.getStringExtra("Database");
-        storageURL = intent1.getStringExtra("Storage");
+        data = getIntent().getStringArrayExtra("Data");
         selectedPosition = getIntent().getStringExtra("Card");
         cardPosition = selectedPosition;
 
@@ -58,7 +56,8 @@ public class StoreActivity extends AppCompatActivity {
         int numberOfColumns = 2;
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
+        FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
+        FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
         DatabaseReference ref = database.getReference();
 
         setupHeader(database.getReference("/elmilad25/Users"));
@@ -68,19 +67,20 @@ public class StoreActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 DataSnapshot storeData = snapshot.child("elmilad25").child("Store");
-                DataSnapshot ownedData = snapshot.child("/elmilad25/Users").child(ID).child("Owned Cards");
-                DataSnapshot lineupData = snapshot.child("/elmilad25/Users").child(ID).child("Lineup");
+                DataSnapshot ownedData = snapshot.child("/elmilad25/Users").child(data[0]).child("Owned Cards");
+                DataSnapshot lineupData = snapshot.child("/elmilad25/Users").child(data[0]).child("Lineup");
 
                 ArrayList<Card> cards = new ArrayList<>();
                 for (DataSnapshot cardData : storeData.getChildren()) {
                     String cardID = cardData.getKey();
                     String position = cardData.child("Position").getValue().toString();
                     if (!position.equals(selectedPosition)) continue;
-                    Card card = new Card(storageURL);
+                    Card card = new Card();
                     card.setID(cardID);
                     card.setPrice(Integer.parseInt(cardData.child("Price").getValue().toString()));
                     card.setPosition(position);
-                    card.setImageName(cardData.child("Image").getValue().toString());
+                    String imagePath = cardData.child("Image").getValue().toString();
+                    card.setImagePath(imagePath);
                     card.setRating(cardData.child("Rating").getValue().toString());
                     if (ownedData.hasChild(cardID) &&
                             Boolean.parseBoolean(ownedData.child(cardID).getValue().toString()))
@@ -94,8 +94,28 @@ public class StoreActivity extends AppCompatActivity {
 
                     if (!flag) cards.add(card);
                 }
-                adapter = new StoreAdapter(StoreActivity.this, cards, coins, database, ID, cardPosition);
-                recyclerView.setAdapter(adapter);
+
+                imagesToLoad = cards.size();
+
+                for (int i=0;i<cards.size();i++) {
+                    Card c = cards.get(i);
+                    StorageReference storageRef = storage.getReference().child(c.getImagePath());
+                    final int j = i;
+                    storageRef.getDownloadUrl()
+                            .addOnSuccessListener(uri -> {
+                                String downloadUrl = uri.toString();
+                                cards.get(j).setImageLink(downloadUrl);
+                                imagesToLoad--;
+                                if (imagesToLoad==0) {
+                                    adapter = new StoreAdapter(
+                                            StoreActivity.this, cards, coins, database, data[0], cardPosition);
+                                    recyclerView.setAdapter(adapter);
+                                }
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(StoreActivity.this,
+                                    "Failed to get download URL", Toast.LENGTH_SHORT).show());
+                }
+
             }
 
             @Override
@@ -112,10 +132,10 @@ public class StoreActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(StoreActivity.this.name);
-                stars.setText(Objects.requireNonNull(snapshot.child(ID).child("Stars").getValue()).toString());
-                StoreActivity.coins = Integer.parseInt(Objects.requireNonNull(snapshot.child(ID).child("Coins").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(ID).child("Coins").getValue()).toString());
+                name.setText(data[0]);
+                stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
+                StoreActivity.coins = Integer.parseInt(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
+                coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
             }
 
             @Override

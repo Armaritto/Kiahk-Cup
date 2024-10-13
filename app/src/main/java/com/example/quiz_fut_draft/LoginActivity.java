@@ -7,7 +7,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -22,15 +21,13 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText editTextId;
-    private EditText editTextPassword;
     private SharedPreferences sharedPreferences;
     private String dbURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+//        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -40,26 +37,28 @@ public class LoginActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences("Login", MODE_PRIVATE);
         dbURL = getIntent().getStringExtra("Database");
-        if (sharedPreferences.contains("ID") && sharedPreferences.contains("Password") && sharedPreferences.contains("Name")
+        if (sharedPreferences.contains("Name")
                 && sharedPreferences.contains("Database") && sharedPreferences.contains("Storage")) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.putExtra("ID", sharedPreferences.getString("ID", ""));
-            intent.putExtra("Name", sharedPreferences.getString("Name", ""));
-            intent.putExtra("Database", sharedPreferences.getString("Database", ""));
-            intent.putExtra("Storage", sharedPreferences.getString("Storage", ""));
+            String[] data = {
+                    sharedPreferences.getString("Name", ""),
+                    sharedPreferences.getString("Database", ""),
+                    sharedPreferences.getString("Storage", "")
+            };
+            intent.putExtra("Data", data);
             startActivity(intent);
             finish();
         }
 
-        editTextId = findViewById(R.id.editTextId);
-        editTextPassword = findViewById(R.id.editTextPassword);
+        EditText name_edittext = findViewById(R.id.name_edittext);
+        EditText passcode_edittext = findViewById(R.id.passcode_edittext);
         Button buttonLogin = findViewById(R.id.buttonLogin);
 
         buttonLogin.setOnClickListener(v -> {
-            String id = editTextId.getText().toString();
-            String password = editTextPassword.getText().toString();
-            if (!id.isEmpty() && !password.isEmpty()) {
-                validateLogin(id, password);
+            String name = name_edittext.getText().toString();
+            String passcode = passcode_edittext.getText().toString();
+            if (!name.isEmpty() && !passcode.isEmpty()) {
+                validateLogin(name, passcode);
             } else {
                 Toast.makeText(LoginActivity.this, "Please enter both ID and Password", Toast.LENGTH_SHORT).show();
             }
@@ -67,35 +66,38 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void validateLogin(String id, String password) {
+    private void validateLogin(String name, String passcode) {
         FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
-        DatabaseReference ref = database.getReference("/elmilad25/Users").child(id);
+        DatabaseReference ref = database.getReference("/elmilad25/Users").child(name);
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    String storedPassword = dataSnapshot.child("Password").getValue(String.class);
-                    if (storedPassword != null && storedPassword.equals(password)) {
+                    if (!dataSnapshot.hasChild("Passcode")) {
+                        Toast.makeText(LoginActivity.this, "Authenication Failed", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    String storedPasscode = dataSnapshot.child("Passcode").getValue().toString();
+                    if (storedPasscode.equals(passcode)) {
                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("ID", id);
-                        editor.putString("Password", password);
-                        editor.putString("Name", dataSnapshot.child("Name").getValue(String.class));
+                        editor.putString("Name", name);
                         editor.apply();
 
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.putExtra("ID", id);
-                        intent.putExtra("Name", dataSnapshot.child("Name").getValue(String.class));
-                        intent.putExtra("Database", sharedPreferences.getString("Database", ""));
-                        intent.putExtra("Storage", sharedPreferences.getString("Storage", ""));
-
+                        String[] data = {
+                                name,
+                                sharedPreferences.getString("Database", ""),
+                                sharedPreferences.getString("Storage", "")
+                        };
+                        intent.putExtra("Data", data);
                         startActivity(intent);
                         finish();
                     } else {
-                        Toast.makeText(LoginActivity.this, "Incorrect Password", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Incorrect Passcode", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(LoginActivity.this, "ID not found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Name not found", Toast.LENGTH_SHORT).show();
                 }
             }
 

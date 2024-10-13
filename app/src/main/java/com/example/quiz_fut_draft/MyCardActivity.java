@@ -20,18 +20,20 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
 public class MyCardActivity extends AppCompatActivity {
-    private String Name;
-    private String ID;
+
+    private String[] data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+//        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_my_card);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -44,12 +46,8 @@ public class MyCardActivity extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        Intent intent1 = getIntent();
-        ID = intent1.getStringExtra("ID");
-        Name = intent1.getStringExtra("Name");
-        String dbURL = intent1.getStringExtra("Database");
-        String storageURL = intent1.getStringExtra("Storage");
-        setupHeader(FirebaseDatabase.getInstance(dbURL).getReference("/elmilad25/Users"));
+        data = getIntent().getStringArrayExtra("Data");
+        setupHeader(FirebaseDatabase.getInstance(data[1]).getReference("/elmilad25/Users"));
 
         Button positionBtn = findViewById(R.id.position_btn);
         Button cardBtn = findViewById(R.id.card_btn);
@@ -61,45 +59,50 @@ public class MyCardActivity extends AppCompatActivity {
         TextView position = findViewById(R.id.position);
         TextView card_rating = findViewById(R.id.card_rating);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
+        FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         DatabaseReference ref = database.getReference();
+        FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
         ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot data) {
-                if (data.child("/elmilad25/Users").child(ID)
+            public void onDataChange(@NonNull DataSnapshot dataS) {
+                if (dataS.child("/elmilad25/Users").child(data[0])
                         .child("Owned Card Icons").hasChild("Selected")) {
-                    String selected = data.child("/elmilad25/Users").child(ID).child("Owned Card Icons").child("Selected").getValue().toString();
+                    String selected = dataS.child("/elmilad25/Users").child(data[0]).child("Owned Card Icons").child("Selected").getValue().toString();
 
-                    DataSnapshot cardRef = data.child("elmilad25").child("CardIcon").child(selected);
+                    DataSnapshot cardRef = dataS.child("elmilad25").child("CardIcon").child(selected);
 
-                    if (cardRef.hasChild("Link")) {
-                        String cardIconLink = cardRef.child("Link").getValue().toString();
-                        Picasso.get().load(cardIconLink).into(cardIcon, new com.squareup.picasso.Callback() {
-                            @Override
-                            public void onSuccess() {
-                                TextColor.setColor(cardIcon, name, position, card_rating);
-                            }
+                    if (cardRef.hasChild("Image")) {
+                        String cardIconName = cardRef.child("Image").getValue().toString();
+                        StorageReference storageRef = storage.getReference().child(cardIconName);
+                        storageRef.getDownloadUrl()
+                                .addOnSuccessListener(uri -> {
+                                    String downloadUrl = uri.toString();
+                                    Picasso.get().load(downloadUrl).into(cardIcon, new com.squareup.picasso.Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            TextColor.setColor(cardIcon, name, position, card_rating);
+                                        }
 
-                            @Override
-                            public void onError(Exception e) {
-                                Log.e("Picasso", e.getMessage());
-                            }
-                        });
+                                        @Override
+                                        public void onError(Exception e) {
+                                            Toast.makeText(MyCardActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(MyCardActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show());
                     }
 
                 } else {
                     cardIcon.setImageDrawable(getResources().getDrawable(R.drawable.empty));
                 }
 
-                DataSnapshot snapshot = data.child("/elmilad25/Users").child(ID);
-                DatabaseReference userRef = ref.child("/elmilad25/Users").child(ID);
-                if (snapshot.hasChild("Pic")) {
-                    String imgLink = snapshot.child("Pic").getValue().toString();
+                DataSnapshot snapshot = dataS.child("/elmilad25/Users").child(data[0]);
+                DatabaseReference userRef = ref.child("/elmilad25/Users").child(data[0]);
+                if (snapshot.hasChild("ImageLink")) {
+                    String imgLink = snapshot.child("ImageLink").getValue().toString();
                     Picasso.get().load(imgLink).into(img);
                 }
-                if (snapshot.hasChild("Name")) {
-                    name.setText(snapshot.child("Name").getValue().toString());
-                }
+                name.setText(snapshot.getKey());
 
                 if (snapshot.child("Card").hasChild("Position")) {
                     position.setText(snapshot.child("Card").child("Position").getValue().toString());
@@ -124,28 +127,19 @@ public class MyCardActivity extends AppCompatActivity {
 
         cardBtn.setOnClickListener(v-> {
             Intent intent = new Intent(MyCardActivity.this, CardStoreActivity.class);
-            intent.putExtra("ID",ID);
-            intent.putExtra("Name",Name);
-            intent.putExtra("Database", dbURL);
-            intent.putExtra("Storage", storageURL);
+            intent.putExtra("Data",data);
             startActivity(intent);
         });
 
         positionBtn.setOnClickListener(v-> {
             Intent intent = new Intent(MyCardActivity.this, PositionStoreActivity.class);
-            intent.putExtra("ID",ID);
-            intent.putExtra("Name",Name);
-            intent.putExtra("Database", dbURL);
-            intent.putExtra("Storage", storageURL);
+            intent.putExtra("Data",data);
             startActivity(intent);
         });
 
         ratingBtn.setOnClickListener(v-> {
             Intent intent = new Intent(MyCardActivity.this, RatingStoreActivity.class);
-            intent.putExtra("ID",ID);
-            intent.putExtra("Name",Name);
-            intent.putExtra("Database", dbURL);
-            intent.putExtra("Storage", storageURL);
+            intent.putExtra("Data",data);
             startActivity(intent);
         });
     }
@@ -157,9 +151,9 @@ public class MyCardActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(Name);
-                stars.setText(Objects.requireNonNull(snapshot.child(ID).child("Stars").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(ID).child("Coins").getValue()).toString());
+                name.setText(data[0]);
+                stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
+                coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
             }
 
             @Override

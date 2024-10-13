@@ -7,4 +7,5 @@
   <color name="gray_hint">#707070</color> 
   <color name="semitransparent">#BFFFFFFF</color>
   <color name="transparent">#00000000</color>
+  <color name="red">#FF0000</color>
 </resources>

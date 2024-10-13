@@ -23,14 +23,14 @@
         android:layout_marginBottom="@dimen/_30sdp"/>
 
     <EditText
-        android:id="@+id/editTextId"
+        android:id="@+id/name_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_50sdp"
         android:background="@drawable/button_background3"
         android:fontFamily="@font/segoebold"
         android:gravity="center"
-        android:hint="ID"
+        android:hint="Name"
         android:inputType="text"
         android:padding="@dimen/_7sdp"
         android:textColor="@color/black"
@@ -40,15 +40,15 @@
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/editTextPassword"
+        android:id="@+id/passcode_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_50sdp"
         android:background="@drawable/button_background3"
         android:fontFamily="@font/segoebold"
         android:gravity="center"
-        android:hint="Password"
-        android:inputType="textPassword"
+        android:hint="Passcode"
+        android:inputType="numberPassword"
         android:padding="@dimen/_7sdp"
         android:textColor="@color/black"
         android:textColorHint="@color/gray_hint"

@@ -21,17 +21,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class RatingStoreActivity extends AppCompatActivity {
+
     private int rating;
     private int oldRating;
-    private String ID;
-    private String dbURL;
-    private String storageURL;
+    private String[] data;
     private int total = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+//        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_rating_store);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -45,25 +44,22 @@ public class RatingStoreActivity extends AppCompatActivity {
         TextView new_rating = findViewById(R.id.new_rating);
         TextView price = findViewById(R.id.price);
 
-        Intent intent = getIntent();
-        ID = intent.getStringExtra("ID");
-        dbURL = intent.getStringExtra("Database");
-        storageURL = intent.getStringExtra("Storage");
+        data = getIntent().getStringArrayExtra("Data");
         new_rating.setText(String.valueOf(rating));
-        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
+        FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         DatabaseReference ref = database.getReference();
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot data) {
+            public void onDataChange(@NonNull DataSnapshot dataS) {
 
-                DataSnapshot userData = data.child("/elmilad25/Users").child(ID);
+                DataSnapshot userData = dataS.child("/elmilad25/Users").child(data[0]);
                 rating = Integer.parseInt(userData.child("Card").child("Rating").getValue().toString());
                 new_rating.setText(String.valueOf(rating));
                 oldRating = rating;
                 int units;
-                if (data.hasChild("/elmilad25/RatingPrice")) {
-                    DataSnapshot snapshot = data.child("/elmilad25/RatingPrice");
+                if (dataS.hasChild("/elmilad25/RatingPrice")) {
+                    DataSnapshot snapshot = dataS.child("/elmilad25/RatingPrice");
                     units = Integer.parseInt(snapshot.getValue().toString());
                 }
                 else
@@ -84,7 +80,7 @@ public class RatingStoreActivity extends AppCompatActivity {
                     price.setText(String.valueOf(total));
                 });
                 purchase.setOnClickListener(v -> {
-                    DatabaseReference userRef = database.getReference("/elmilad25/Users").child(ID);
+                    DatabaseReference userRef = database.getReference("/elmilad25/Users").child(data[0]);
                     int stars = Integer.parseInt(userData.child("Stars").getValue().toString());
                     if (stars>=total) {
                         stars-=total;

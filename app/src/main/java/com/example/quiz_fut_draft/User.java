@@ -2,18 +2,19 @@ package com.example.quiz_fut_draft;
 
 public class User {
 
-    private String ID;
+    private String passcode;
     private String name;
+    private String imageLink;
 
     public User() {
     }
 
-    public String getID() {
-        return ID;
+    public String getPasscode() {
+        return passcode;
     }
 
-    public void setID(String ID) {
-        this.ID = ID;
+    public void setPasscode(String passcode) {
+        this.passcode = passcode;
     }
 
     public String getName() {
@@ -22,5 +23,13 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getImageLink() {
+        return imageLink;
+    }
+
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
     }
 }
