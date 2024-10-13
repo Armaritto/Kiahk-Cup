@@ -51,7 +51,7 @@ public class PositionStoreAdapter extends RecyclerView.Adapter<PositionStoreAdap
     // binds the data to the TextView in each cell
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int i) {
-        holder.price.setText(positions.get(i).getPrice()+"$");
+        holder.price.setText(positions.get(i).getPrice()+" ★");
         holder.position.setText(positions.get(i).getPosition());
         holder.button.setOnClickListener(v-> {
             purchaseObject(getItem(i));

@@ -8,7 +8,7 @@ android:layout_height="@dimen/_150sdp">
 <ImageView
     android:id="@+id/pic1"
     style="@style/pic_home_btn"
-    android:src="@drawable/lock"/>
+    android:src="@drawable/quiz"/>
 
 <TextView
     android:id="@+id/coins"

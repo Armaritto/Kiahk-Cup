@@ -30,6 +30,7 @@
         android:orientation="vertical">
 
         <Button
+            android:id="@+id/purchase"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:paddingVertical="0dp"
@@ -42,7 +43,7 @@
             android:textStyle="bold"/>
 
         <Button
-            android:id="@+id/purchase"
+            android:id="@+id/sell"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:paddingVertical="0dp"
@@ -53,6 +54,7 @@
             android:layout_marginTop="@dimen/_5sdp"
             android:textColor="@color/red"
             android:textSize="15dp"
+            android:visibility="invisible"
             android:fontFamily="@font/segoebold"
             android:textStyle="bold"/>
 

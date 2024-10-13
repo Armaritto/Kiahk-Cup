@@ -20,6 +20,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Objects;
+
 public class RatingStoreActivity extends AppCompatActivity {
 
     private int rating;
@@ -47,6 +49,7 @@ public class RatingStoreActivity extends AppCompatActivity {
         data = getIntent().getStringArrayExtra("Data");
         new_rating.setText(String.valueOf(rating));
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
+        setupHeader(database.getReference("/elmilad25/Users"));
         DatabaseReference ref = database.getReference();
 
         ref.addValueEventListener(new ValueEventListener() {
@@ -96,6 +99,33 @@ public class RatingStoreActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
+    private void setupHeader(DatabaseReference ref) {
+        TextView stars = findViewById(R.id.rating);
+        TextView coins = findViewById(R.id.coins);
+        TextView name = findViewById(R.id.nametextview);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                name.setText(data[0]);
+                if (!snapshot.child(data[0]).hasChild("Stars")) {
+                    ref.child(data[0]).child("Stars").setValue(0);
+                    stars.setText("0");
+                } else
+                    stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
+                if (!snapshot.child(data[0]).hasChild("Coins")) {
+                    ref.child(data[0]).child("Coins").setValue(0);
+                    coins.setText("0");
+                } else
+                    coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
         });
     }
 }

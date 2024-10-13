@@ -51,7 +51,7 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
     // binds the data to the TextView in each cell
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.price.setText(cards.get(position).getPrice()+"$");
+        holder.price.setText(cards.get(position).getPrice()+" ★");
         Picasso.get().load(cards.get(position).getImageLink()).into(holder.img);
         holder.button.setOnClickListener(v-> {
             purchaseObject(getItem(position));
