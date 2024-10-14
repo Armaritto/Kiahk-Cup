@@ -15,7 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class ImageProcessor {
-    private Context context;
+    private final Context context;
 
     public ImageProcessor(Context context) {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build();
@@ -55,10 +55,8 @@ public class ImageProcessor {
     public CompletableFuture<Uri> removeBackground(Uri uri) {
         return CompletableFuture.supplyAsync(() -> {
             Uri image = removeBackgroundSync(uri);
-            if (image == null) {
-                return uri;
-            }
-            return image;
+
+            return image == null ? uri : image;
         });
     }
 
@@ -74,8 +72,6 @@ public class ImageProcessor {
 
             String boundary = UUID.randomUUID().toString();
             connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-
-            // Open the output stream
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 
             writeImageToRequest(uri, wr, boundary);
@@ -96,7 +92,6 @@ public class ImageProcessor {
                 }
                 baos.flush();
 
-                // Save the image from response to a temporary file and get its Uri
                 byte[] imageBytes = baos.toByteArray();
 
                 inputStream.close();
