@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,6 +51,8 @@ public class UserEditor extends AppCompatActivity {
     private String userName;
     private DatabaseReference ref;
     private ImageView img;
+
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +76,7 @@ public class UserEditor extends AppCompatActivity {
         img = findViewById(R.id.img);
         ListView list = findViewById(R.id.list);
         LinearLayout add = findViewById(R.id.add);
+        progressBar = findViewById(R.id.progress_bar);
 
         data = getIntent().getStringArrayExtra("Data");
         userName = getIntent().getStringExtra("SelectedUser");
@@ -250,7 +261,6 @@ public class UserEditor extends AppCompatActivity {
     // Inside your Activity or Fragment
 
     private static final int PICK_IMAGE_REQUEST = 1;
-    private Uri imageUri;
 
     // Method to open the gallery
     private void openFileChooser() {
@@ -265,33 +275,46 @@ public class UserEditor extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null) {
-            imageUri = data.getData();
-            uploadImage();
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+            Uri imageUri = data.getData();
+            if (imageUri == null) return;
+
+            progressBar.setVisibility(View.VISIBLE);
+            ImageProcessor processor = new ImageProcessor(this);
+            imageUri = processor.compressImage(imageUri);
+            processor.removeBackground(imageUri).thenApply(
+                    image -> {
+                        runOnUiThread(() -> uploadImage(image));
+                        return null;
+                    }
+            );
         }
     }
 
-    private void uploadImage() {
-        if (imageUri != null) {
-            Toast.makeText(this, "Uploading Pic", Toast.LENGTH_SHORT).show();
-            // Create a reference to the Firebase Storage location
-            FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
-            StorageReference storageRef = storage.getReference();
-            StorageReference fileRef = storageRef.child("Users/").child(System.currentTimeMillis() + ".jpg");
-
-            // Upload file to Firebase Storage
-            fileRef.putFile(imageUri)
-                    .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl()
-                            .addOnSuccessListener(uri -> {
-                                // Get the download URL
-                                String downloadlink = uri.toString();
-                                ref.child("Users").child(userName).child("ImageLink").setValue(downloadlink);
-                                Picasso.get().load(downloadlink).into(img);
-                                // Use the download URL as needed
-                            }))
-                    .addOnFailureListener(e -> Toast.makeText(this, "Upload failed\n"+e.getMessage(), Toast.LENGTH_SHORT).show());
+    private void uploadImage(Uri imageUri) {
+        if (imageUri == null) {
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
+            return;
         }
+        Toast.makeText(this, "Uploading Pic", Toast.LENGTH_SHORT).show();
+        // Create a reference to the Firebase Storage location
+        FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
+        StorageReference storageRef = storage.getReference();
+        StorageReference fileRef = storageRef.child("Users/").child(System.currentTimeMillis() + ".png");
+
+        // Upload file to Firebase Storage
+        fileRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl()
+                        .addOnSuccessListener(uri -> {
+                            // Get the download URL
+                            String downloadlink = uri.toString();
+                            ref.child("Users").child(userName).child("ImageLink").setValue(downloadlink);
+                            Picasso.get().load(uri).into(img);
+                            // Use the download URL as needed
+                        }))
+                .addOnFailureListener(e -> Toast.makeText(this, "Upload failed\n"+e.getMessage(), Toast.LENGTH_SHORT).show())
+                .addOnCompleteListener(task -> progressBar.setVisibility(View.GONE));
     }
 
     private android.app.AlertDialog alertDialog;
