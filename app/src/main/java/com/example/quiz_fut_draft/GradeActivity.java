@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,6 +41,11 @@ public class GradeActivity extends AppCompatActivity {
 
         cont.setOnClickListener(v-> {
             RadioButton selected = findViewById(grade_selection.getCheckedRadioButtonId());
+            if (selected == null) {
+                Toast.makeText(this, "You must choose your grade", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             switch (selected.getText().toString()) {
 //                case "Junior 1":
 //                    setupDatabase(j1);
