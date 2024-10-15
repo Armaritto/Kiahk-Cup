@@ -28,8 +28,17 @@ public class ImageProcessor {
         try(InputStream inputStream = context.getContentResolver().openInputStream(uri)) {
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 
+            int size = 800;
+            int newWidth = (int) (bitmap.getWidth() * ((double) size / bitmap.getHeight()));
+            Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, size, true);
+            // Crop image with width > 800
+            if (newWidth > size) {
+                int x = (newWidth - size) / 2;
+                resizedBitmap = Bitmap.createBitmap(resizedBitmap, x, 0, size, size);
+            }
+
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream); // 80 is the quality percentage
+            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 85, byteArrayOutputStream);
 
             byte[] compressedImageBytes = byteArrayOutputStream.toByteArray();
 
@@ -50,6 +59,10 @@ public class ImageProcessor {
         } catch (Exception ignored) {}
 
         return imageUri;
+    }
+
+    public void deleteImage(Uri uri) {
+        context.getContentResolver().delete(uri, null, null);
     }
 
     public CompletableFuture<Uri> removeBackground(Uri uri) {
@@ -75,6 +88,7 @@ public class ImageProcessor {
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 
             writeImageToRequest(uri, wr, boundary);
+            deleteImage(uri);
 
             wr.writeBytes("--" + boundary + "--\r\n");
             wr.flush();

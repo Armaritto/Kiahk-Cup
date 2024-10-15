@@ -306,7 +306,11 @@ public class UserEditor extends AppCompatActivity {
                             // Use the download URL as needed
                         }))
                 .addOnFailureListener(e -> Toast.makeText(this, "Upload failed\n"+e.getMessage(), Toast.LENGTH_SHORT).show())
-                .addOnCompleteListener(task -> progressBar.setVisibility(View.GONE));
+                .addOnCompleteListener(task -> {
+                    progressBar.setVisibility(View.GONE);
+                    ImageProcessor processor = new ImageProcessor(this);
+                    processor.deleteImage(imageUri);
+                });
     }
 
     private android.app.AlertDialog alertDialog;
