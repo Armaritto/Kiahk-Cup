@@ -16,46 +16,46 @@
         android:theme="@style/Theme.QuizFUTDraft"
         tools:targetApi="31">
         <activity
-            android:name=".UserEditor"
+            android:name="com.stgsporting.quiz_fut.helpers.UserEditor"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name="com.stgsporting.quiz_fut.activities.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".ViewOthersLineupActivity"
+            android:name="com.stgsporting.quiz_fut.activities.ViewOthersLineupActivity"
             android:exported="false" />
         <activity
-            android:name=".LeaderboardActivity"
+            android:name="com.stgsporting.quiz_fut.activities.LeaderboardActivity"
             android:exported="false" />
         <activity
-            android:name=".RatingStoreActivity"
+            android:name="com.stgsporting.quiz_fut.activities.RatingStoreActivity"
             android:exported="false" />
         <activity
-            android:name=".PositionStoreActivity"
+            android:name="com.stgsporting.quiz_fut.activities.PositionStoreActivity"
             android:exported="false" />
         <activity
-            android:name=".CardStoreActivity"
+            android:name="com.stgsporting.quiz_fut.activities.CardStoreActivity"
             android:exported="false" />
         <activity
-            android:name=".StoreActivity"
+            android:name="com.stgsporting.quiz_fut.activities.StoreActivity"
             android:exported="false" />
         <activity
-            android:name=".UsersList"
+            android:name="com.stgsporting.quiz_fut.helpers.UsersList"
             android:exported="false" />
         <activity
-            android:name=".MyCardActivity"
+            android:name="com.stgsporting.quiz_fut.activities.MyCardActivity"
             android:exported="false" />
         <activity
-            android:name=".LineupActivity"
+            android:name="com.stgsporting.quiz_fut.activities.LineupActivity"
             android:exported="false" />
         <activity
-            android:name=".Mosab2aActivity"
+            android:name="com.stgsporting.quiz_fut.activities.Mosab2aActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.stgsporting.quiz_fut.activities.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".GradeActivity"
+            android:name="com.stgsporting.quiz_fut.activities.GradeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
