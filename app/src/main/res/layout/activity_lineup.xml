@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/lineup_background"
-    tools:context=".LineupActivity">
+    tools:context="com.stgsporting.quiz_fut.activities.LineupActivity">
 
     <include layout="@layout/activity_card_all_in_one"
         app:layout_constraintBottom_toBottomOf="parent"
