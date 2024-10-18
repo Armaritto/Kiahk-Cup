@@ -1,7 +1,5 @@
 package com.stgsporting.quiz_fut.activities;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,17 +16,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
+import com.google.firebase.storage.FirebaseStorage;
 import com.stgsporting.quiz_fut.adapters.LeaderboardAdapter;
 import com.stgsporting.quiz_fut.data.Lineup;
-import com.stgsporting.quiz_fut.data.TextColor;
-
-import android.os.Handler;
-import android.os.Looper;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +31,7 @@ import java.util.Objects;
 public class LeaderboardActivity extends AppCompatActivity {
 
     private String[] data;
+    private FirebaseStorage storage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +46,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         data = getIntent().getStringArrayExtra("Data");
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
+        storage = FirebaseStorage.getInstance(data[2]);
         DatabaseReference ref = database.getReference();
 
         setupHeader(ref.child("/elmilad25/Users"));
@@ -77,7 +69,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                 }
                 List<Map.Entry<String, Integer>> list = new ArrayList<>(allUsersRatings.entrySet());
                 list.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
-                ArrayList<Lineup> lineups = getLineups(list,snapshot);
+                ArrayList<Lineup> lineups = getLineups(list);
                 // Display the sorted Lineups in the Leaderboard UI
                 /*
                 -------------------------------------------
@@ -88,7 +80,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                 -------------------------------------------
                  */
                 LeaderboardAdapter adapter = new LeaderboardAdapter(LeaderboardActivity.this, lineups,
-                        data, userData, snapshot);
+                        data, userData, snapshot, storage);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -99,7 +91,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         });
     }
 
-    private @NonNull ArrayList<Lineup> getLineups(List<Map.Entry<String, Integer>> list, DataSnapshot snapshot) {
+    private @NonNull ArrayList<Lineup> getLineups(List<Map.Entry<String, Integer>> list) {
         ArrayList<Lineup> lineups = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : list) {
             if(entry.getValue() > 0){
@@ -112,96 +104,6 @@ public class LeaderboardActivity extends AppCompatActivity {
         return lineups;
     }
 
-    private void setUserCardImage(ImageView imageView, DataSnapshot userData, DataSnapshot allData) {
-        RelativeLayout v = findViewById(R.id.main);
-        ImageView icon = findViewById(R.id.card_icon);
-        ImageView img = findViewById(R.id.img);
-        TextView nameView = findViewById(R.id.name);
-        TextView rating = findViewById(R.id.card_rating);
-        TextView position = findViewById(R.id.position);
-
-        imagesToLoad = 2;
-
-        if (userData.child("Owned Card Icons").hasChild("Selected")) {
-            String selected = userData.child("Owned Card Icons").child("Selected").getValue().toString();
-
-            DataSnapshot cardRef = allData.child("elmilad25").child("CardIcon").child(selected);
-
-            if (cardRef.hasChild("Link")) {
-                String cardIconLink = cardRef.child("Link").getValue().toString();
-                Picasso.get().load(cardIconLink).into(icon, new com.squareup.picasso.Callback() {
-                    @Override
-                    public void onSuccess() {
-                        imagesToLoad--;
-                        TextColor.setColor(icon, nameView, position, rating);
-                        checkIfAllImagesLoaded(v, imageView);
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        imagesToLoad--;
-                        checkIfAllImagesLoaded(v, imageView);
-                    }
-                });
-            }
-
-        } else {
-            icon.setImageDrawable(getResources().getDrawable(R.drawable.empty));
-            imagesToLoad--;
-            checkIfAllImagesLoaded(v, imageView);
-        }
-        if (userData.hasChild("Pic")) {
-            String imgLink = userData.child("Pic").getValue().toString();
-            Picasso.get().load(imgLink).into(img, new Callback() {
-                @Override
-                public void onSuccess() {
-                    imagesToLoad--;
-                    checkIfAllImagesLoaded(v, imageView);
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    imagesToLoad--;
-                    checkIfAllImagesLoaded(v, imageView);
-                }
-            });
-        } else {
-            imagesToLoad--;
-            checkIfAllImagesLoaded(v, imageView);
-        }
-        nameView.setText(data[0]);
-//        position.setText(userPos);
-        if (userData.child("Card").hasChild("Rating")) {
-            rating.setText(userData.child("Card").child("Rating").getValue().toString());
-        }
-    }
-
-    private int imagesToLoad = 2;
-
-    private void checkIfAllImagesLoaded(View v, ImageView imageView) {
-        if (imagesToLoad==0) {
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                RelativeLayout layout = v.findViewById(R.id.main);
-
-                layout.measure(View.MeasureSpec.makeMeasureSpec(
-                                layout.getWidth(), View.MeasureSpec.EXACTLY),
-                        View.MeasureSpec.makeMeasureSpec(
-                                layout.getHeight(), View.MeasureSpec.EXACTLY));
-
-                layout.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
-
-                int totalHeight = v.getMeasuredHeight();
-                int totalWidth  = v.getMeasuredWidth();
-
-                Bitmap bitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(bitmap);
-                v.draw(canvas);
-                imageView.setImageBitmap(bitmap);
-                imageView.setScaleX(1.05F);
-            }, 100);
-        }
-    }
-
     private void setupHeader(DatabaseReference ref) {
         TextView stars = findViewById(R.id.rating);
         TextView coins = findViewById(R.id.coins);
@@ -211,6 +113,7 @@ public class LeaderboardActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
                 coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
+                name.setText(data[0]);
             }
 
             @Override

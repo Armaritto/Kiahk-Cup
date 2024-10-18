@@ -1,4 +1,4 @@
-package com.stgsporting.quiz_fut.helpers;
+package com.stgsporting.quiz_fut.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -34,12 +34,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.data.Option;
+import com.stgsporting.quiz_fut.helpers.ImageProcessor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public class UserEditor extends AppCompatActivity {
+public class UserEditorActivity extends AppCompatActivity {
 
     private String[] data;
     private String userName;
@@ -98,7 +99,7 @@ public class UserEditor extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(UserEditor.this, "Error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserEditorActivity.this, "Error", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
@@ -134,7 +135,7 @@ public class UserEditor extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(UserEditor.this, "Error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserEditorActivity.this, "Error", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
@@ -392,7 +393,7 @@ public class UserEditor extends AppCompatActivity {
                     ref.child("Users").child(userName).child("Attendance").child(formattedDate).setValue(text);
                 } else
                     ref.child("Users").child(userName).child("Attendance").child(String.valueOf(System.currentTimeMillis())).setValue(text);
-                Toast.makeText(UserEditor.this, options.get(position).getStars()+" stars added",
+                Toast.makeText(UserEditorActivity.this, options.get(position).getStars()+" stars added",
                         Toast.LENGTH_SHORT).show();
                 alertDialog.dismiss();
             });

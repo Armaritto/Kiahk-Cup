@@ -16,7 +16,7 @@
         android:theme="@style/Theme.QuizFUTDraft"
         tools:targetApi="31">
         <activity
-            android:name="com.stgsporting.quiz_fut.helpers.UserEditor"
+            android:name="com.stgsporting.quiz_fut.activities.UserEditorActivity"
             android:exported="false" />
         <activity
             android:name="com.stgsporting.quiz_fut.activities.LoginActivity"
@@ -40,7 +40,7 @@
             android:name="com.stgsporting.quiz_fut.activities.StoreActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.helpers.UsersList"
+            android:name="com.stgsporting.quiz_fut.activities.UsersListActivity"
             android:exported="false" />
         <activity
             android:name="com.stgsporting.quiz_fut.activities.MyCardActivity"

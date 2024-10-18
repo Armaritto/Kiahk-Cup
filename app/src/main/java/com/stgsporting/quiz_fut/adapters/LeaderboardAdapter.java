@@ -13,14 +13,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quiz_fut_draft.R;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.stgsporting.quiz_fut.activities.LeaderboardActivity;
 import com.stgsporting.quiz_fut.activities.LineupActivity;
 import com.stgsporting.quiz_fut.activities.ViewOthersLineupActivity;
 import com.stgsporting.quiz_fut.data.Lineup;
@@ -38,10 +42,11 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     private final DataSnapshot userData;
     private final DataSnapshot snapshot;
     private final int[] imagesToLoad;
+    private FirebaseStorage storage;
 
     // data is passed into the constructor
     public LeaderboardAdapter(Context context, ArrayList<Lineup> lineups, String[] data,
-                       DataSnapshot userData, DataSnapshot snapshot) {
+                       DataSnapshot userData, DataSnapshot snapshot, FirebaseStorage storage) {
         this.mInflater = LayoutInflater.from(context);
         this.lineups = lineups;
         this.context = context;
@@ -49,6 +54,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         this.data = data;
         this.snapshot = snapshot;
         this.imagesToLoad = new int[lineups.size()];
+        this.storage = storage;
     }
 
     // inflates the cell layout from xml when needed
@@ -66,7 +72,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         holder.ovr.setText(lineups.get(i).getOVR());
 
 //         holder.img.setImageDrawable(lineups.get(i).getImage().getDrawable());
-        setUserCardImage(holder.cardView, holder.cardImage, userData.child(lineups.get(i).getID()), snapshot, i, holder.row);
+        setUserCardImage(holder.cardView, holder.cardImage, userData.child(lineups.get(i).getID()), snapshot, i, holder.row, storage);
         holder.button.setOnClickListener(v-> {
             Intent intent;
             if(Objects.equals(lineups.get(i).getID(), data[0]))
@@ -115,7 +121,8 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         return lineups.get(id);
     }
 
-    private void setUserCardImage(RelativeLayout parent, ImageView cardImage, DataSnapshot userData, DataSnapshot allData, int i, RelativeLayout row) {
+    private void setUserCardImage(RelativeLayout parent, ImageView cardImage, DataSnapshot userData,
+                                  DataSnapshot allData, int i, RelativeLayout row, FirebaseStorage storage) {
             ImageView icon = parent.findViewById(R.id.card_icon);
             ImageView img = parent.findViewById(R.id.img);
             TextView name = parent.findViewById(R.id.name);
@@ -129,22 +136,30 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
                 DataSnapshot cardRef = allData.child("elmilad25").child("CardIcon").child(selected);
 
-                if (cardRef.hasChild("Link")) {
-                    String cardIconLink = cardRef.child("Link").getValue().toString();
-                    Picasso.get().load(cardIconLink).into(icon, new com.squareup.picasso.Callback() {
-                        @Override
-                        public void onSuccess() {
-                            imagesToLoad[i]--;
-                            TextColor.setColor(icon, name, position, rating);
-                            checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
-                        }
+                if (cardRef.hasChild("Image")) {
+                    String cardIconPath = cardRef.child("Image").getValue().toString();
 
-                        @Override
-                        public void onError(Exception e) {
-                            imagesToLoad[i]--;
-                            checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
-                        }
-                    });
+                    StorageReference storageRef = storage.getReference().child(cardIconPath);
+                    storageRef.getDownloadUrl()
+                            .addOnSuccessListener(uri -> {
+                                String downloadUrl = uri.toString();
+                                Picasso.get().load(downloadUrl).into(icon, new com.squareup.picasso.Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        imagesToLoad[i]--;
+                                        TextColor.setColor(icon, name, position, rating);
+                                        checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
+                                    }
+
+                                    @Override
+                                    public void onError(Exception e) {
+                                        imagesToLoad[i]--;
+                                        checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
+                                    }
+                                });
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(context,
+                                    "Failed to get download URL", Toast.LENGTH_SHORT).show());
                 }
 
             } else {
@@ -215,26 +230,26 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
             }
         }
 
-    public static ViewGroup getParent(View view) {
-        return (ViewGroup)view.getParent();
-    }
+//    public static ViewGroup getParent(View view) {
+//        return (ViewGroup)view.getParent();
+//    }
 
-    public static void removeView(View view) {
-        ViewGroup parent = getParent(view);
-        if(parent != null) {
-            parent.removeView(view);
-        }
-    }
-
-    public static void replaceView(View currentView, View newView) {
-        ViewGroup parent = getParent(currentView);
-        if(parent == null) {
-            return;
-        }
-        final int index = parent.indexOfChild(currentView);
-        removeView(currentView);
-        removeView(newView);
-        parent.addView(newView, index);
-    }
+//    public static void removeView(View view) {
+//        ViewGroup parent = getParent(view);
+//        if(parent != null) {
+//            parent.removeView(view);
+//        }
+//    }
+//
+//    public static void replaceView(View currentView, View newView) {
+//        ViewGroup parent = getParent(currentView);
+//        if(parent == null) {
+//            return;
+//        }
+//        final int index = parent.indexOfChild(currentView);
+//        removeView(currentView);
+//        removeView(newView);
+//        parent.addView(newView, index);
+//    }
 
 }

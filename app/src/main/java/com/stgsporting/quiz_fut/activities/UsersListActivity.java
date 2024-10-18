@@ -1,4 +1,4 @@
-package com.stgsporting.quiz_fut.helpers;
+package com.stgsporting.quiz_fut.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 
-public class UsersList extends AppCompatActivity {
+public class UsersListActivity extends AppCompatActivity {
 
     private ListAdapter listAdapter;
     private String[] data;
@@ -80,7 +80,7 @@ public class UsersList extends AppCompatActivity {
                     users.add(u);
                 }
 
-                listAdapter = new UsersList.ListAdapter(users);
+                listAdapter = new UsersListActivity.ListAdapter(users);
                 users_list.setAdapter(listAdapter);
 
             }
@@ -140,7 +140,7 @@ public class UsersList extends AppCompatActivity {
             Button name = v.findViewById(R.id.name);
             name.setText(filteredUsers.get(position).getName());
             name.setOnClickListener(v1-> {
-                Intent intent = new Intent(UsersList.this, UserEditor.class);
+                Intent intent = new Intent(UsersListActivity.this, UserEditorActivity.class);
                 intent.putExtra("Data", data);
                 intent.putExtra("SelectedUser", filteredUsers.get(position).getName());
                 startActivity(intent);

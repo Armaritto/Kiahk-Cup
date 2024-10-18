@@ -19,7 +19,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.stgsporting.quiz_fut.helpers.UsersList;
 
 import java.util.Objects;
 
@@ -145,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
             String input = dialogInput.getText().toString();
             // Handle the input
             if (input.equals("admin")) {
-                Intent intent = new Intent(MainActivity.this, UsersList.class);
+                Intent intent = new Intent(MainActivity.this, UsersListActivity.class);
                 intent.putExtra("Data", data);
                 startActivity(intent);
             }
