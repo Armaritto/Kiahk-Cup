@@ -8,13 +8,21 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.quiz_fut_draft.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
+
+import java.util.concurrent.CountDownLatch;
 
 
 public class GradeActivity extends AppCompatActivity {
@@ -35,9 +43,12 @@ public class GradeActivity extends AppCompatActivity {
         });
 
         sharedPreferences = getSharedPreferences("Login", MODE_PRIVATE);
-        if (sharedPreferences.contains("Database") && sharedPreferences.contains("Storage"))
-            moveToLogin(sharedPreferences.getString("Database", ""),
+        if (sharedPreferences.contains("Database") && sharedPreferences.contains("Storage")){
+            loadingDialog = new LoadingDialog(this);
+            checkMaintenance(sharedPreferences.getString("Database", ""),
                     sharedPreferences.getString("Storage", ""));
+        }
+
 
         RadioGroup grade_selection = findViewById(R.id.grade_selection);
         Button cont = findViewById(R.id.cont);
@@ -83,8 +94,33 @@ public class GradeActivity extends AppCompatActivity {
         editor.putString("Database", dbURL);
         editor.putString("Storage", storageURL);
         editor.apply();
-        loadingDialog.dismiss();
-        moveToLogin(dbURL, storageURL);
+        checkMaintenance(dbURL, storageURL);
+    }
+
+    private void checkMaintenance(String dbURL, String storageURL) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
+        DatabaseReference ref = database.getReference("/elmilad25");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(Boolean.TRUE.equals(snapshot.child("Maintenance").getValue(Boolean.class))){
+                    Intent intent = new Intent(GradeActivity.this, MaintenanceActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                else {
+                    loadingDialog.dismiss();
+                    moveToLogin(dbURL, storageURL);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                loadingDialog.dismiss();
+                moveToLogin(dbURL, storageURL);
+            }
+        });
+
     }
 
     private void moveToLogin(String dbURL, String storageURL) {

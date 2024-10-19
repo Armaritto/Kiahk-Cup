@@ -16,6 +16,9 @@
         android:theme="@style/Theme.QuizFUTDraft"
         tools:targetApi="31">
         <activity
+            android:name="com.stgsporting.quiz_fut.activities.MaintenanceActivity"
+            android:exported="false" />
+        <activity
             android:name="com.stgsporting.quiz_fut.activities.UserEditorActivity"
             android:exported="false" />
         <activity
