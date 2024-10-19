@@ -46,7 +46,6 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         this.ID = ID;
         this.cardPosition = cardPosition;
         this.loadingDialog = loadingDialog;
-        imgs = cards.size();
     }
 
     // inflates the cell layout from xml when needed
@@ -60,6 +59,8 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     // binds the data to the TextView in each cell
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        loadingDialog.show();
+        imgs++;
         holder.price.setText(cards.get(position).getPrice()+"$");
         Picasso.get().load(cards.get(position).getImageLink()).into(holder.img, new Callback() {
             @Override

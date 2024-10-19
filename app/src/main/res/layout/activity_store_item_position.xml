@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="@dimen/_12sdp">
 
     <TextView
         android:id="@+id/position"
@@ -21,8 +21,8 @@
         android:id="@+id/price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="15dp"
-        android:textSize="23dp"
+        android:paddingBottom="@dimen/_12sdp"
+        android:textSize="@dimen/_18sdp"
         android:fontFamily="@font/segoebold"
         android:textStyle="bold"
         android:textColor="@color/white"/>
@@ -30,13 +30,13 @@
     <Button
         android:id="@+id/purchase"
         android:layout_width="wrap_content"
-        android:layout_height="35dp"
+        android:layout_height="@dimen/_27sdp"
         android:paddingVertical="0dp"
-        android:paddingHorizontal="15dp"
+        android:paddingHorizontal="@dimen/_12sdp"
         android:textAllCaps="false"
         android:background="@drawable/button_background"
         android:text="Purchase"
-        android:textSize="15dp"
+        android:textSize="@dimen/_12sdp"
         android:fontFamily="@font/segoebold"
         android:textStyle="bold"/>
 </LinearLayout>

@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:paddingTop="40dp"
-    android:paddingBottom="40dp">
+    android:paddingVertical="@dimen/_31sdp">
 
 
 
@@ -17,19 +16,19 @@
         android:gravity="center_vertical|right">
 
         <RelativeLayout
-            android:layout_width="160dp"
+            android:layout_width="@dimen/_123sdp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:paddingHorizontal="7dp"
-            android:paddingVertical="4dp"
+            android:layout_marginHorizontal="@dimen/_15sdp"
+            android:paddingHorizontal="@dimen/_5sdp"
+            android:paddingVertical="@dimen/_3sdp"
             android:background="@drawable/stats_background">
 
 
 
             <ImageView
                 android:id="@+id/stars"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/_23sdp"
+                android:layout_height="@dimen/_23sdp"
                 android:src="@drawable/coin"
                 android:scaleType="centerInside"
                 android:layout_centerVertical="true"
@@ -40,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:textSize="23dp"
+                android:textSize="@dimen/_18sdp"
                 android:textColor="@color/white"
                 android:fontFamily="@font/segoebold"
                 android:textStyle="bold"
@@ -50,18 +49,18 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:layout_width="160dp"
+            android:layout_width="@dimen/_123sdp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:paddingHorizontal="7dp"
-            android:paddingVertical="4dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="@dimen/_15sdp"
+            android:paddingHorizontal="@dimen/_5sdp"
+            android:paddingVertical="@dimen/_3sdp"
+            android:layout_marginTop="@dimen/_8sdp"
             android:background="@drawable/stats_background">
 
             <ImageView
                 android:id="@+id/coin"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/_23sdp"
+                android:layout_height="@dimen/_23sdp"
                 android:src="@drawable/star"
                 android:scaleType="centerInside"
                 android:layout_centerVertical="true"
@@ -72,7 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:textSize="23dp"
+                android:textSize="@dimen/_18sdp"
                 android:textColor="@color/white"
                 android:fontFamily="@font/segoebold"
                 android:textStyle="bold"
@@ -88,14 +87,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:textSize="35dp"
+        android:textSize="@dimen/_27sdp"
         android:textColor="@color/white"
         android:fontFamily="@font/segoebold"
         android:textStyle="bold"
         android:gravity="left"
         android:layout_toLeftOf="@+id/scores_panel"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="@dimen/_15sdp"
         />
 
 

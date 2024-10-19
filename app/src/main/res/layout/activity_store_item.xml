@@ -4,12 +4,12 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="@dimen/_12sdp">
 
     <ImageView
         android:id="@+id/img"
-        android:layout_width="150dp"
-        android:layout_height="200dp"
+        android:layout_width="@dimen/_115sdp"
+        android:layout_height="@dimen/_154sdp"
         android:scaleType="centerCrop"
         android:src="@drawable/empty" />
 
@@ -17,8 +17,8 @@
         android:id="@+id/price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="15dp"
-        android:textSize="23dp"
+        android:paddingBottom="@dimen/_12sdp"
+        android:textSize="@dimen/_18sdp"
         android:fontFamily="@font/segoebold"
         android:textStyle="bold"
         android:textColor="@color/white"/>
@@ -32,44 +32,32 @@
         <Button
             android:id="@+id/purchase"
             android:layout_width="wrap_content"
-            android:layout_height="35dp"
+            android:layout_height="@dimen/_27sdp"
             android:paddingVertical="0dp"
-            android:paddingHorizontal="15dp"
+            android:paddingHorizontal="@dimen/_12sdp"
             android:textAllCaps="false"
             android:background="@drawable/button_background"
             android:text="Purchase"
-            android:textSize="15dp"
+            android:textSize="@dimen/_12sdp"
             android:fontFamily="@font/segoebold"
             android:textStyle="bold"/>
 
         <Button
             android:id="@+id/sell"
             android:layout_width="wrap_content"
-            android:layout_height="35dp"
+            android:layout_height="@dimen/_27sdp"
             android:paddingVertical="0dp"
-            android:paddingHorizontal="15dp"
+            android:paddingHorizontal="@dimen/_12sdp"
             android:textAllCaps="false"
             android:background="@color/transparent"
             android:text="Sell"
             android:layout_marginTop="@dimen/_5sdp"
             android:textColor="@color/red"
-            android:textSize="15dp"
+            android:textSize="@dimen/_12sdp"
             android:visibility="invisible"
             android:fontFamily="@font/segoebold"
             android:textStyle="bold"/>
 
     </LinearLayout>
 
-<!--    <Button-->
-<!--        android:id="@+id/purchase"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="35dp"-->
-<!--        android:paddingVertical="0dp"-->
-<!--        android:paddingHorizontal="15dp"-->
-<!--        android:textAllCaps="false"-->
-<!--        android:background="@drawable/button_background"-->
-<!--        android:text="Purchase"-->
-<!--        android:textSize="15dp"-->
-<!--        android:fontFamily="@font/segoebold"-->
-<!--        android:textStyle="bold"/>-->
 </LinearLayout>

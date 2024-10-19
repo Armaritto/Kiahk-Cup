@@ -21,10 +21,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:paddingHorizontal="5dp"
-        android:paddingVertical="5dp"
-        android:layout_marginTop="25dp"
-        android:layout_marginBottom="50dp"
+        android:paddingHorizontal="@dimen/_4sdp"
+        android:paddingVertical="@dimen/_4sdp"
+        android:layout_marginTop="@dimen/_19sdp"
+        android:layout_marginBottom="@dimen/_38sdp"
         android:layout_below="@+id/header"/>
 
 </RelativeLayout>

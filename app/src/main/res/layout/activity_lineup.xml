@@ -174,7 +174,7 @@
                 android:layout_width="@dimen/_78sdp"
                 android:layout_height="@dimen/_99sdp"
                 android:src="@drawable/empty"
-                android:layout_marginEnd="5dp"
+                android:layout_marginEnd="@dimen/_4sdp"
                 android:layout_marginTop="@dimen/_15sdp"/>
 
             <ImageView
@@ -182,7 +182,7 @@
                 android:layout_width="@dimen/_78sdp"
                 android:layout_height="@dimen/_99sdp"
                 android:src="@drawable/empty"
-                android:layout_marginEnd="5dp"
+                android:layout_marginEnd="@dimen/_4sdp"
                 android:layout_marginBottom="@dimen/_12sdp"/>
 
             <ImageView
@@ -206,7 +206,7 @@
                 android:layout_width="@dimen/_78sdp"
                 android:layout_height="@dimen/_99sdp"
                 android:src="@drawable/empty"
-                android:layout_marginStart="20dp"/>
+                android:layout_marginStart="@dimen/_15sdp"/>
 
             <ImageView
                 android:id="@+id/LCB"
@@ -225,7 +225,7 @@
                 android:layout_width="@dimen/_78sdp"
                 android:layout_height="@dimen/_99sdp"
                 android:src="@drawable/empty"
-                android:layout_marginEnd="20dp"/>
+                android:layout_marginEnd="@dimen/_15sdp"/>
 
         </LinearLayout>
 
