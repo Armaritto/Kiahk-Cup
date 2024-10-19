@@ -26,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private String dbURL;
     private LoadingDialog loadingDialog;
+    private boolean under_maintenance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,24 @@ public class LoginActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
+        DatabaseReference ref = database.getReference("/elmilad25");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                under_maintenance = Boolean.TRUE.equals(snapshot.child("Maintenance").getValue(Boolean.class));
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                under_maintenance = false;
+            }
+        });
+        if (under_maintenance){
+            Intent intent = new Intent(LoginActivity.this, MaintenanceActivity.class);
+            startActivity(intent);
+            finish();
+        }
         sharedPreferences = getSharedPreferences("Login", MODE_PRIVATE);
         dbURL = getIntent().getStringExtra("Database");
         if (sharedPreferences.contains("Name")
@@ -61,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
             String name = name_edittext.getText().toString();
             String passcode = passcode_edittext.getText().toString();
             if (!name.isEmpty() && !passcode.isEmpty()) {
-                validateLogin(name, passcode);
+                validateLogin(name, passcode,ref);
             } else {
                 Toast.makeText(LoginActivity.this, "Please enter both ID and Password", Toast.LENGTH_SHORT).show();
             }
@@ -69,10 +87,9 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void validateLogin(String name, String passcode) {
+    private void validateLogin(String name, String passcode, DatabaseReference ref) {
         loadingDialog = new LoadingDialog(this);
-        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
-        DatabaseReference ref = database.getReference("/elmilad25/Users").child(name);
+        ref = ref.child("Users").child(name);
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
