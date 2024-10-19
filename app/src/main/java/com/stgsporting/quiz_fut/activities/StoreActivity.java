@@ -22,6 +22,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.stgsporting.quiz_fut.data.Card;
 import com.stgsporting.quiz_fut.adapters.StoreAdapter;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -43,6 +44,9 @@ public class StoreActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        LoadingDialog loadingDialog = new LoadingDialog(this);
+
         data = getIntent().getStringArrayExtra("Data");
         selectedPosition = getIntent().getStringExtra("Card");
         cardPosition = selectedPosition;
@@ -109,12 +113,15 @@ public class StoreActivity extends AppCompatActivity {
                                 imagesToLoad--;
                                 if (imagesToLoad==0) {
                                     adapter = new StoreAdapter(
-                                            StoreActivity.this, cards, coins, database, data[0], cardPosition);
+                                            StoreActivity.this, cards, coins, database, data[0], cardPosition, loadingDialog);
                                     recyclerView.setAdapter(adapter);
                                 }
                             })
-                            .addOnFailureListener(e -> Toast.makeText(StoreActivity.this,
-                                    "Failed to get download URL", Toast.LENGTH_SHORT).show());
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(StoreActivity.this,
+                                        "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                                imagesToLoad--;
+                            });
                 }
 
             }
@@ -122,6 +129,7 @@ public class StoreActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError error) {
                 Toast.makeText(StoreActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                loadingDialog.dismiss();
             }
         });
     }

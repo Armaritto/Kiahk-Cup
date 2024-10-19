@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.data.Position;
 import com.stgsporting.quiz_fut.adapters.PositionStoreAdapter;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -38,6 +39,8 @@ public class PositionStoreActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        LoadingDialog loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
         setupHeader(FirebaseDatabase.getInstance(data[1]).getReference("/elmilad25/Users"));
@@ -80,11 +83,12 @@ public class PositionStoreActivity extends AppCompatActivity {
                PositionStoreAdapter adapter = new PositionStoreAdapter(
                        PositionStoreActivity.this, positions, database, data[0]);
                recyclerView.setAdapter(adapter);
-
+                loadingDialog.dismiss();
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
+                loadingDialog.dismiss();
                 Toast.makeText(PositionStoreActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

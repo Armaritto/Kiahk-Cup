@@ -16,8 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quiz_fut_draft.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.data.Card;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
 
@@ -30,10 +32,12 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     private final FirebaseDatabase database;
     private final String ID;
     private final String cardPosition;
+    private LoadingDialog loadingDialog;
+    private int imgs;
 
     // data is passed into the constructor
     public StoreAdapter(Context context, ArrayList<Card> cards, int points, FirebaseDatabase database,
-                 String ID, String cardPosition) {
+                 String ID, String cardPosition, LoadingDialog loadingDialog) {
         this.mInflater = LayoutInflater.from(context);
         this.cards = cards;
         this.context = context;
@@ -41,6 +45,8 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         this.database = database;
         this.ID = ID;
         this.cardPosition = cardPosition;
+        this.loadingDialog = loadingDialog;
+        imgs = cards.size();
     }
 
     // inflates the cell layout from xml when needed
@@ -55,7 +61,20 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.price.setText(cards.get(position).getPrice()+"$");
-        Picasso.get().load(cards.get(position).getImageLink()).into(holder.img);
+        Picasso.get().load(cards.get(position).getImageLink()).into(holder.img, new Callback() {
+            @Override
+            public void onSuccess() {
+                imgs--;
+                checkAllImgsLoaded();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                imgs--;
+                Toast.makeText(context, "Image Loading Failed", Toast.LENGTH_SHORT).show();
+                checkAllImgsLoaded();
+            }
+        });
         if (cards.get(position).isOwned()) {
             holder.button.setText("Select");
         }
@@ -113,6 +132,10 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             }
         }
 
+    }
+
+    private void checkAllImgsLoaded() {
+        if (imgs==0) loadingDialog.dismiss();
     }
 
 }

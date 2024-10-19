@@ -19,6 +19,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.stgsporting.quiz_fut.adapters.LeaderboardAdapter;
 import com.stgsporting.quiz_fut.data.Lineup;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +33,6 @@ import java.util.Objects;
 public class LeaderboardActivity extends AppCompatActivity {
 
     private String[] data;
-    private FirebaseStorage storage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +44,12 @@ public class LeaderboardActivity extends AppCompatActivity {
             return insets;
         });
 
+        LoadingDialog loadingDialog = new LoadingDialog(this);
+
         data = getIntent().getStringArrayExtra("Data");
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
-        storage = FirebaseStorage.getInstance(data[2]);
+        FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
         DatabaseReference ref = database.getReference();
 
         setupHeader(ref.child("/elmilad25/Users"));
@@ -80,7 +83,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                 -------------------------------------------
                  */
                 LeaderboardAdapter adapter = new LeaderboardAdapter(LeaderboardActivity.this, lineups,
-                        data, userData, snapshot, storage);
+                        data, userData, snapshot, storage, loadingDialog);
                 recyclerView.setAdapter(adapter);
             }
 

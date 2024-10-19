@@ -32,9 +32,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.data.Option;
 import com.stgsporting.quiz_fut.helpers.ImageProcessor;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -48,6 +50,7 @@ public class UserEditorActivity extends AppCompatActivity {
     private ImageView img;
 
     private ProgressBar progressBar;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,8 @@ public class UserEditorActivity extends AppCompatActivity {
             return insets;
         });
 
+        loadingDialog = new LoadingDialog(this);
+
         TextView name = findViewById(R.id.name);
         TextView rating = findViewById(R.id.rating);
         EditText passcode_edittext = findViewById(R.id.passcode_edittext);
@@ -71,7 +76,6 @@ public class UserEditorActivity extends AppCompatActivity {
         img = findViewById(R.id.img);
         ListView list = findViewById(R.id.list);
         LinearLayout add = findViewById(R.id.add);
-        progressBar = findViewById(R.id.progress_bar);
 
         data = getIntent().getStringArrayExtra("Data");
         userName = getIntent().getStringExtra("SelectedUser");
@@ -93,13 +97,27 @@ public class UserEditorActivity extends AppCompatActivity {
                     stars_edittext.setText(snapshot.child("Stars").getValue().toString());
                 if (snapshot.hasChild("ImageLink")) {
                     String imgLink = snapshot.child("ImageLink").getValue().toString();
-                    Picasso.get().load(imgLink).into(img);
+                    Picasso.get().load(imgLink).into(img, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            loadingDialog.dismiss();
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Toast.makeText(UserEditorActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
+                            loadingDialog.dismiss();
+                        }
+                    });
+                } else {
+                    loadingDialog.dismiss();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(UserEditorActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                loadingDialog.dismiss();
+                Toast.makeText(UserEditorActivity.this, "Database Error", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
@@ -168,46 +186,6 @@ public class UserEditorActivity extends AppCompatActivity {
             Toast.makeText(this, "Stars updated successfully", Toast.LENGTH_SHORT).show();
         });
 
-//        if (getIntent().hasExtra("SelectedUser")) {
-//
-//            // reading existing user data
-
-//
-//        } else {
-//            conf_name.setVisibility(View.VISIBLE);
-//
-//            ref.addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    if (snapshot.hasChild("NextID"))
-//                        nextID = Integer.parseInt(snapshot.child("NextID").getValue().toString());
-//                    passcode.setText(String.valueOf(nextID));
-//
-//                    conf_name.setOnClickListener(v-> {
-//                        if (name.getText().toString().length()<4) {
-//                            name.setError("Enter valid name");
-//                            return;
-//                        }
-//                        userName = name.getText().toString();
-//                        ref.child(userName).child("Passcode").setValue(nextID);
-//                        ref.child("NextID").setValue(nextID+5);
-//                        name.setEnabled(false);
-//                        newUser = false;
-//                        conf_name.setVisibility(View.GONE);
-//                    });
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//                    Toast.makeText(UserEditor.this, "Error", Toast.LENGTH_SHORT).show();
-//                    finish();
-//                }
-//            });
-//
-//        }
-//
-
-//
 //        passcode.setOnClickListener(v-> {
 //            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 //            ClipData clip = ClipData.newPlainText("Passcode", passcode.getText().toString());
@@ -274,7 +252,7 @@ public class UserEditorActivity extends AppCompatActivity {
             Uri imageUri = data.getData();
             if (imageUri == null) return;
 
-            progressBar.setVisibility(View.VISIBLE);
+            loadingDialog.show();
             ImageProcessor processor = new ImageProcessor(this);
             imageUri = processor.compressImage(imageUri);
             processor.removeBackground(imageUri).thenApply(
@@ -289,10 +267,10 @@ public class UserEditorActivity extends AppCompatActivity {
     private void uploadImage(Uri imageUri) {
         if (imageUri == null) {
             Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
-            progressBar.setVisibility(View.GONE);
+            loadingDialog.dismiss();
             return;
         }
-        Toast.makeText(this, "Uploading Pic", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Uploading Image", Toast.LENGTH_SHORT).show();
         // Create a reference to the Firebase Storage location
         FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
         StorageReference storageRef = storage.getReference();
@@ -305,12 +283,25 @@ public class UserEditorActivity extends AppCompatActivity {
                             // Get the download URL
                             String downloadlink = uri.toString();
                             ref.child("Users").child(userName).child("ImageLink").setValue(downloadlink);
-                            Picasso.get().load(uri).into(img);
+                            Picasso.get().load(uri).into(img, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    loadingDialog.dismiss();
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+                                    Toast.makeText(UserEditorActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
+                                    loadingDialog.dismiss();
+                                }
+                            });
                             // Use the download URL as needed
                         }))
-                .addOnFailureListener(e -> Toast.makeText(this, "Upload failed\n"+e.getMessage(), Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Upload failed\n"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    loadingDialog.dismiss();
+                })
                 .addOnCompleteListener(task -> {
-                    progressBar.setVisibility(View.GONE);
                     ImageProcessor processor = new ImageProcessor(this);
                     processor.deleteImage(imageUri);
                 });
@@ -319,6 +310,7 @@ public class UserEditorActivity extends AppCompatActivity {
     private android.app.AlertDialog alertDialog;
 
     private void showAddDialog(DataSnapshot snapshot) {
+        loadingDialog.show();
         // Inflate the custom layout
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.admin_dialog, null);
@@ -348,6 +340,7 @@ public class UserEditorActivity extends AppCompatActivity {
         alertDialog = builder.create();
         alertDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         alertDialog.show();
+        loadingDialog.dismiss();
     }
 
     private class DialogAdapter extends BaseAdapter {
@@ -382,6 +375,7 @@ public class UserEditorActivity extends AppCompatActivity {
             String text = options.get(position).getOptionName()+" ("+options.get(position).getStars()+")";
             option.setText(text);
             option.setOnClickListener(v1-> {
+                loadingDialog.show();
                 int stars = Integer.parseInt(
                         snapshot.child("Users").child(userName).child("Stars").getValue().toString());
                 stars+=options.get(position).getStars();
@@ -395,6 +389,7 @@ public class UserEditorActivity extends AppCompatActivity {
                     ref.child("Users").child(userName).child("Attendance").child(String.valueOf(System.currentTimeMillis())).setValue(text);
                 Toast.makeText(UserEditorActivity.this, options.get(position).getStars()+" stars added",
                         Toast.LENGTH_SHORT).show();
+                loadingDialog.dismiss();
                 alertDialog.dismiss();
             });
             return v;

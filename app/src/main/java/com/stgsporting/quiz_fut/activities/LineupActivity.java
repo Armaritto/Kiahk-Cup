@@ -27,6 +27,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.data.Card;
 import com.stgsporting.quiz_fut.data.TextColor;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,12 +39,16 @@ public class LineupActivity extends AppCompatActivity {
     private String userRating = "0"; //Points in database
     private ImageView[] lineupCards;
     private FirebaseStorage storage;
+    private LoadingDialog loadingDialog;
+    private int allImgsToLoad = 11;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_lineup);
+
+        loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
 
@@ -138,10 +143,28 @@ public class LineupActivity extends AppCompatActivity {
                         storageRef.getDownloadUrl()
                                 .addOnSuccessListener(uri -> {
                                     String downloadUrl = uri.toString();
-                                    Picasso.get().load(downloadUrl).into(cardImage);
+                                    Picasso.get().load(downloadUrl).into(cardImage, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            allImgsToLoad--;
+                                            checkAllLoaded();
+                                        }
+
+                                        @Override
+                                        public void onError(Exception e) {
+                                            allImgsToLoad--;
+                                            checkAllLoaded();
+                                        }
+                                    });
                                 })
-                                .addOnFailureListener(e -> Toast.makeText(LineupActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show());
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(LineupActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                                    allImgsToLoad--;
+                                });
                         totalRating += (double) Integer.parseInt(c.getRating()) / 11;
+                    } else {
+                        allImgsToLoad--;
+                        checkAllLoaded();
                     }
 
                 }
@@ -214,7 +237,10 @@ public class LineupActivity extends AppCompatActivity {
                                     checkIfAllImagesLoaded(v, imageView);                                }
                             });
                         })
-                        .addOnFailureListener(e -> Toast.makeText(LineupActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show());
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(LineupActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                            imagesToLoad--;
+                        });
             }
 
         } else {
@@ -270,6 +296,8 @@ public class LineupActivity extends AppCompatActivity {
                 v.draw(canvas);
                 imageView.setImageBitmap(bitmap);
                 imageView.setScaleX(1.05F);
+                allImgsToLoad--;
+                checkAllLoaded();
             }, 100);
         }
     }
@@ -278,6 +306,10 @@ public class LineupActivity extends AppCompatActivity {
         for (ImageView img : lineupCards) {
             img.setImageDrawable(getResources().getDrawable(R.drawable.empty));
         }
+    }
+
+    private void checkAllLoaded() {
+        if (allImgsToLoad==0) loadingDialog.dismiss();
     }
 
 }

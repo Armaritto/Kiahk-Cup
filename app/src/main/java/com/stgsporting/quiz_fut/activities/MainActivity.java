@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.Objects;
 
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        LoadingDialog loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
 
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
             admin.setVisibility(View.VISIBLE);
             admin.setOnClickListener(v-> showCustomDialog());
             leaderboard.setVisibility(View.VISIBLE);
+            loadingDialog.dismiss();
         }
         else { // View Leaderboard for admin all the time
             database.getReference("elmilad25").addValueEventListener(new ValueEventListener() {
@@ -56,10 +60,12 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         leaderboard.setVisibility(View.GONE);
                     }
+                    loadingDialog.dismiss();
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
+                    loadingDialog.dismiss();
                     Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
                     finish();
                 }

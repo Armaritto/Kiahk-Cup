@@ -29,6 +29,7 @@ import com.stgsporting.quiz_fut.activities.LineupActivity;
 import com.stgsporting.quiz_fut.activities.ViewOthersLineupActivity;
 import com.stgsporting.quiz_fut.data.Lineup;
 import com.stgsporting.quiz_fut.data.TextColor;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -43,10 +44,11 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     private final DataSnapshot snapshot;
     private final int[] imagesToLoad;
     private FirebaseStorage storage;
+    private LoadingDialog loadingDialog;
 
     // data is passed into the constructor
     public LeaderboardAdapter(Context context, ArrayList<Lineup> lineups, String[] data,
-                       DataSnapshot userData, DataSnapshot snapshot, FirebaseStorage storage) {
+                       DataSnapshot userData, DataSnapshot snapshot, FirebaseStorage storage, LoadingDialog loadingDialog) {
         this.mInflater = LayoutInflater.from(context);
         this.lineups = lineups;
         this.context = context;
@@ -55,6 +57,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         this.snapshot = snapshot;
         this.imagesToLoad = new int[lineups.size()];
         this.storage = storage;
+        this.loadingDialog = loadingDialog;
     }
 
     // inflates the cell layout from xml when needed
@@ -148,24 +151,27 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
                                     public void onSuccess() {
                                         imagesToLoad[i]--;
                                         TextColor.setColor(icon, name, position, rating);
-                                        checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
+                                        checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row, i);
                                     }
 
                                     @Override
                                     public void onError(Exception e) {
                                         imagesToLoad[i]--;
-                                        checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
+                                        checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row, i);
                                     }
                                 });
                             })
-                            .addOnFailureListener(e -> Toast.makeText(context,
-                                    "Failed to get download URL", Toast.LENGTH_SHORT).show());
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(context,
+                                        "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                                imagesToLoad[i]--;
+                            });
                 }
 
             } else {
                 icon.setImageDrawable(context.getResources().getDrawable(R.drawable.empty));
                 imagesToLoad[i]--;
-                 checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
+                 checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row, i);
             }
             if (userData.hasChild("ImageLink")) {
                 String imgLink = userData.child("ImageLink").getValue().toString();
@@ -173,18 +179,18 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
                     @Override
                     public void onSuccess() {
                         imagesToLoad[i]--;
-                        checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
+                        checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row, i);
                     }
 
                     @Override
                     public void onError(Exception e) {
                         imagesToLoad[i]--;
-                        checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
+                        checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row, i);
                     }
                 });
             } else {
                 imagesToLoad[i]--;
-                checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row);
+                checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row, i);
             }
             name.setText(userData.getKey());
             if (userData.child("Card").hasChild("Position"))
@@ -194,21 +200,9 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
                 rating.setText(userData.child("Card").child("Rating").getValue().toString());
         }
 
-        private void checkIfAllImagesLoaded(RelativeLayout parent, ImageView cardImage, int imagesToLoad, RelativeLayout row) {
+        private void checkIfAllImagesLoaded(RelativeLayout parent, ImageView cardImage, int imagesToLoad, RelativeLayout row, int i) {
             if (imagesToLoad==0) {
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
-
-//                    ScaleAnimation scaleAnimation = new ScaleAnimation(
-//                            1f, 0.5f, // Start and end scale for X
-//                            1f, 0.5f, // Start and end scale for Y
-//                            Animation.RELATIVE_TO_SELF, 0.5f, // Pivot X
-//                            Animation.RELATIVE_TO_SELF, 0.5f  // Pivot Y
-//                    );
-//                    scaleAnimation.setDuration(2); // Duration of animation
-//                    scaleAnimation.setFillAfter(true); // Keep the scale after animation
-//                    layout.startAnimation(scaleAnimation);
-
-//                     RelativeLayout layout = parent.findViewById(R.id.main);
 
                      parent.measure(View.MeasureSpec.makeMeasureSpec(
                                      parent.getWidth(), View.MeasureSpec.EXACTLY),
@@ -226,30 +220,11 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
                     parent.draw(canvas);
                     cardImage.setImageBitmap(bitmap);
                     row.setVisibility(View.VISIBLE);
-                }, 100);
+
+                    if (i==lineups.size()-1) loadingDialog.dismiss();
+
+                }, 200);
             }
         }
-
-//    public static ViewGroup getParent(View view) {
-//        return (ViewGroup)view.getParent();
-//    }
-
-//    public static void removeView(View view) {
-//        ViewGroup parent = getParent(view);
-//        if(parent != null) {
-//            parent.removeView(view);
-//        }
-//    }
-//
-//    public static void replaceView(View currentView, View newView) {
-//        ViewGroup parent = getParent(currentView);
-//        if(parent == null) {
-//            return;
-//        }
-//        final int index = parent.indexOfChild(currentView);
-//        removeView(currentView);
-//        removeView(newView);
-//        parent.addView(newView, index);
-//    }
 
 }

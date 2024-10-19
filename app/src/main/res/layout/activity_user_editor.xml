@@ -19,13 +19,6 @@
             android:background="@drawable/other_background"
             android:paddingVertical="@dimen/_15sdp">
 
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                />
-
             <ImageView
                 android:id="@+id/img"
                 android:layout_width="@dimen/_120sdp"

@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.data.Mosab2a;
 import com.stgsporting.quiz_fut.adapters.Mosab2atAdapter;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -38,6 +39,9 @@ public class Mosab2aActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        LoadingDialog loadingDialog = new LoadingDialog(this);
+
         data = getIntent().getStringArrayExtra("Data");
 
         RecyclerView mosab2at_list = findViewById(R.id.mosab2at_list);
@@ -69,10 +73,12 @@ public class Mosab2aActivity extends AppCompatActivity {
 
                 Mosab2atAdapter adapter = new Mosab2atAdapter(Mosab2aActivity.this, mosab2at);
                 mosab2at_list.setAdapter(adapter);
+                loadingDialog.dismiss();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                loadingDialog.dismiss();
                 Toast.makeText(Mosab2aActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

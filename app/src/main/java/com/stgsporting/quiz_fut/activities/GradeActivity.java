@@ -14,11 +14,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 
 public class GradeActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
+    private LoadingDialog loadingDialog;
 
 
     @Override
@@ -46,7 +48,7 @@ public class GradeActivity extends AppCompatActivity {
                 Toast.makeText(this, "You must choose your grade", Toast.LENGTH_SHORT).show();
                 return;
             }
-
+            loadingDialog = new LoadingDialog(this);
             switch (selected.getText().toString()) {
 //                case "Junior 1":
 //                    setupDatabase(j1);
@@ -81,6 +83,7 @@ public class GradeActivity extends AppCompatActivity {
         editor.putString("Database", dbURL);
         editor.putString("Storage", storageURL);
         editor.apply();
+        loadingDialog.dismiss();
         moveToLogin(dbURL, storageURL);
     }
 

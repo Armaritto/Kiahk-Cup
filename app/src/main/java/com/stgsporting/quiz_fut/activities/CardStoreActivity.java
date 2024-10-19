@@ -22,6 +22,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.stgsporting.quiz_fut.data.CardIcon;
 import com.stgsporting.quiz_fut.adapters.CardStoreAdapter;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -39,6 +40,8 @@ public class CardStoreActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        LoadingDialog loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
         setupHeader(FirebaseDatabase.getInstance(data[1]).getReference("/elmilad25/Users"));
@@ -94,6 +97,7 @@ public class CardStoreActivity extends AppCompatActivity {
                                     CardStoreAdapter adapter = new CardStoreAdapter(
                                             CardStoreActivity.this, cards, database, data[0]);
                                     recyclerView.setAdapter(adapter);
+                                    loadingDialog.dismiss();
                                 }
                             })
                             .addOnFailureListener(e -> Toast.makeText(CardStoreActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show());

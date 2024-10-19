@@ -1,6 +1,5 @@
 package com.stgsporting.quiz_fut.activities;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,14 +21,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.data.TextColor;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.Objects;
 
 public class MyCardActivity extends AppCompatActivity {
 
     private String[] data;
+    private int imgsToLoad = 2;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +45,7 @@ public class MyCardActivity extends AppCompatActivity {
             return insets;
         });
 
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Loading...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
         setupHeader(FirebaseDatabase.getInstance(data[1]).getReference("/elmilad25/Users"));
@@ -82,26 +82,49 @@ public class MyCardActivity extends AppCompatActivity {
                                         @Override
                                         public void onSuccess() {
                                             TextColor.setColor(cardIcon, name, position, card_rating);
+                                            imgsToLoad--;
+                                            checkAllImgsLoaded();
                                         }
 
                                         @Override
                                         public void onError(Exception e) {
                                             Toast.makeText(MyCardActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
+                                            imgsToLoad--;
+                                            checkAllImgsLoaded();
                                         }
                                     });
                                 })
-                                .addOnFailureListener(e -> Toast.makeText(MyCardActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show());
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(MyCardActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                                    imgsToLoad--;
+                                    checkAllImgsLoaded();
+                                });
                     }
 
                 } else {
                     cardIcon.setImageDrawable(getResources().getDrawable(R.drawable.empty));
+                    imgsToLoad--;
+                    checkAllImgsLoaded();
                 }
 
                 DataSnapshot snapshot = dataS.child("/elmilad25/Users").child(data[0]);
                 DatabaseReference userRef = ref.child("/elmilad25/Users").child(data[0]);
                 if (snapshot.hasChild("ImageLink")) {
                     String imgLink = snapshot.child("ImageLink").getValue().toString();
-                    Picasso.get().load(imgLink).into(img);
+                    Picasso.get().load(imgLink).into(img, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            imgsToLoad--;
+                            checkAllImgsLoaded();
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            imgsToLoad--;
+                            checkAllImgsLoaded();
+                            Toast.makeText(MyCardActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
                 name.setText(snapshot.getKey());
 
@@ -117,7 +140,6 @@ public class MyCardActivity extends AppCompatActivity {
                     card_rating.setText(snapshot.child("Card").child("Rating").getValue().toString());
                 else
                     userRef.child("Card").child("Rating").setValue(50);
-                progressDialog.dismiss();
             }
 
             @Override
@@ -163,4 +185,9 @@ public class MyCardActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void checkAllImgsLoaded() {
+        if (imgsToLoad==0) loadingDialog.dismiss();
+    }
+
 }

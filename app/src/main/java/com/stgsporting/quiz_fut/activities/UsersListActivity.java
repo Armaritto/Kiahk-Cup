@@ -15,6 +15,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.data.User;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -39,6 +41,7 @@ public class UsersListActivity extends AppCompatActivity {
     private ListAdapter listAdapter;
     private String[] data;
     private DatabaseReference ref;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,8 @@ public class UsersListActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        loadingDialog = new LoadingDialog(this);
 
         EditText search = findViewById(R.id.search);
         ListView users_list = findViewById(R.id.users_list);
@@ -82,12 +87,14 @@ public class UsersListActivity extends AppCompatActivity {
 
                 listAdapter = new UsersListActivity.ListAdapter(users);
                 users_list.setAdapter(listAdapter);
+                loadingDialog.dismiss();
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(UsersListActivity.this, "Database Error", Toast.LENGTH_SHORT).show();
+                loadingDialog.dismiss();
             }
         });
 
@@ -209,13 +216,32 @@ public class UsersListActivity extends AppCompatActivity {
         dialogButton.setOnClickListener(v -> {
             String input = dialogInput.getText().toString();
             String[] names = input.split("\n");
-            for (String n : names) {
-                Random random = new Random();
-                int passcode = random.nextInt(9999);
-                if (passcode<1000) passcode+=1000;
-                ref.child("elmilad25/Users").child(n).child("Passcode").setValue(passcode);
-            }
-            alertDialog.dismiss();
+            DatabaseReference usersRef = ref.child("elmilad25/Users");
+
+            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    for (String n : names) {
+                        Random random = new Random();
+                        int passcode = random.nextInt(9999);
+                        if (passcode<1000) passcode+=1000;
+                        if (!snapshot.hasChild(n))
+                            ref.child("elmilad25/Users").child(n).child("Passcode").setValue(passcode);
+                        else Toast.makeText(UsersListActivity.this, n+" already exists!", Toast.LENGTH_SHORT).show();
+                    }
+                    loadingDialog.dismiss();
+                    alertDialog.dismiss();
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(UsersListActivity.this, "Database Error", Toast.LENGTH_SHORT).show();
+                    loadingDialog.dismiss();
+                    alertDialog.dismiss();
+                }
+            });
         });
 
         // Show the dialog

@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.Objects;
 
@@ -38,6 +39,8 @@ public class RatingStoreActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        LoadingDialog loadingDialog = new LoadingDialog(this);
 
         Button purchase = findViewById(R.id.purchase);
         LinearLayout plus = findViewById(R.id.plus);
@@ -94,10 +97,17 @@ public class RatingStoreActivity extends AppCompatActivity {
                     else
                         Toast.makeText(RatingStoreActivity.this, "Not enough Stars", Toast.LENGTH_SHORT).show();
                 });
+
+                loadingDialog.dismiss();
+
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
+            public void onCancelled(@NonNull DatabaseError error) {
+                loadingDialog.dismiss();
+                Toast.makeText(RatingStoreActivity.this, "Database error", Toast.LENGTH_SHORT).show();
+                finish();
+            }
         });
     }
 

@@ -19,11 +19,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 public class LoginActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
     private String dbURL;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void validateLogin(String name, String passcode) {
+        loadingDialog = new LoadingDialog(this);
         FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
         DatabaseReference ref = database.getReference("/elmilad25/Users").child(name);
 
@@ -100,10 +103,12 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(LoginActivity.this, "Name not found", Toast.LENGTH_SHORT).show();
                 }
+                loadingDialog.dismiss();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                loadingDialog.dismiss();
                 Toast.makeText(LoginActivity.this, "Database Error", Toast.LENGTH_SHORT).show();
             }
         });
