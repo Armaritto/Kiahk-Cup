@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         lineup.setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, LineupActivity.class);
             intent.putExtra("Data", data);
+            intent.putExtra("Other_Lineup", false);
             startActivity(intent);
         });
         myCard.setOnClickListener(v-> {
