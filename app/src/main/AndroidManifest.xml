@@ -25,9 +25,6 @@
             android:name="com.stgsporting.quiz_fut.activities.LoginActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.ViewOthersLineupActivity"
-            android:exported="false" />
-        <activity
             android:name="com.stgsporting.quiz_fut.activities.LeaderboardActivity"
             android:exported="false" />
         <activity

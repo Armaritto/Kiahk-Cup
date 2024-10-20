@@ -24,9 +24,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.stgsporting.quiz_fut.activities.LeaderboardActivity;
 import com.stgsporting.quiz_fut.activities.LineupActivity;
-import com.stgsporting.quiz_fut.activities.ViewOthersLineupActivity;
 import com.stgsporting.quiz_fut.data.Lineup;
 import com.stgsporting.quiz_fut.data.TextColor;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
@@ -78,12 +76,15 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         setUserCardImage(holder.cardView, holder.cardImage, userData.child(lineups.get(i).getID()), snapshot, i, holder.row, storage);
         holder.button.setOnClickListener(v-> {
             Intent intent;
+            boolean OtherLineup;
+            intent = new Intent(context, LineupActivity.class);
             if(Objects.equals(lineups.get(i).getID(), data[0]))
-                intent = new Intent(context, LineupActivity.class);
+                OtherLineup = false;
             else
-                intent = new Intent(context, ViewOthersLineupActivity.class);
+                OtherLineup = true;
             data[0] = lineups.get(i).getID();
             intent.putExtra("Data", data);
+            intent.putExtra("OtherLineup", OtherLineup);
             context.startActivity(intent);
         });
     }

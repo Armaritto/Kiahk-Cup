@@ -41,6 +41,7 @@ public class LineupActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private LoadingDialog loadingDialog;
     private int allImgsToLoad = 11;
+    private boolean otherLineup = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,7 @@ public class LineupActivity extends AppCompatActivity {
         loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
+        otherLineup = getIntent().getBooleanExtra("OtherLineup", false);
 
         // All cards IDs
         int[] lineupViewIds = {
@@ -77,19 +79,20 @@ public class LineupActivity extends AppCompatActivity {
             int id = lineupViewIds[i];
             lineupCards[i] = findViewById(id);
             String cardPos = getResources().getResourceEntryName(id);
-            lineupCards[i].setOnClickListener(v-> {
-                String usedPosition = userPos;
-                if (usedPosition.equals("CB")) usedPosition = "LCB";
-                if (usedPosition.equals("CM")) usedPosition = "LCM";
-                Intent int1;
-                if (!usedPosition.equals(cardPos))
-                    int1 = new Intent(LineupActivity.this, StoreActivity.class);
-                else
-                    int1 = new Intent(LineupActivity.this, MyCardActivity.class);
-                int1.putExtra("Data", data);
-                int1.putExtra("Card", cardPos);
-                startActivity(int1);
-            });
+            if(!otherLineup)
+                lineupCards[i].setOnClickListener(v-> {
+                    String usedPosition = userPos;
+                    if (usedPosition.equals("CB")) usedPosition = "LCB";
+                    if (usedPosition.equals("CM")) usedPosition = "LCM";
+                    Intent int1;
+                    if (!usedPosition.equals(cardPos))
+                        int1 = new Intent(LineupActivity.this, StoreActivity.class);
+                    else
+                        int1 = new Intent(LineupActivity.this, MyCardActivity.class);
+                    int1.putExtra("Data", data);
+                    int1.putExtra("Card", cardPos);
+                    startActivity(int1);
+                });
         }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
