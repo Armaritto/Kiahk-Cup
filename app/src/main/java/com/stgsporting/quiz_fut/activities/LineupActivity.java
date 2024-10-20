@@ -30,7 +30,9 @@ import com.stgsporting.quiz_fut.data.TextColor;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 public class LineupActivity extends AppCompatActivity {
 
@@ -267,7 +269,10 @@ public class LineupActivity extends AppCompatActivity {
             imagesToLoad--;
             checkIfAllImagesLoaded(v, imageView);
         }
-        name.setText(data[0]);
+        String new_name = Arrays.stream(data[0].split("\\s+"))
+                .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
+        name.setText(new_name);
         position.setText(userPos);
         if (userData.child("Card").hasChild("Rating")) {
             rating.setText(userData.child("Card").child("Rating").getValue().toString());

@@ -23,7 +23,9 @@ import com.stgsporting.quiz_fut.adapters.PositionStoreAdapter;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class PositionStoreActivity extends AppCompatActivity {
 
@@ -100,7 +102,10 @@ public class PositionStoreActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(data[0]);
+                String new_name = Arrays.stream(data[0].split("\\s+"))
+                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                        .collect(Collectors.joining(" "));
+                name.setText(new_name);
                 stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
                 coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
             }
