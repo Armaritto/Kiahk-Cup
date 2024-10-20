@@ -26,7 +26,9 @@ import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.data.TextColor;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class MyCardActivity extends AppCompatActivity {
 
@@ -126,7 +128,10 @@ public class MyCardActivity extends AppCompatActivity {
                         }
                     });
                 }
-                name.setText(snapshot.getKey());
+                String new_name = Arrays.stream(snapshot.getKey().split("\\s+"))
+                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                        .collect(Collectors.joining(" "));
+                name.setText(new_name);
 
                 if (snapshot.child("Card").hasChild("Position")) {
                     position.setText(snapshot.child("Card").child("Position").getValue().toString());
@@ -174,7 +179,10 @@ public class MyCardActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(data[0]);
+                String new_name = Arrays.stream(data[0].split("\\s+"))
+                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                        .collect(Collectors.joining(" "));
+                name.setText(new_name);
                 stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
                 coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
             }

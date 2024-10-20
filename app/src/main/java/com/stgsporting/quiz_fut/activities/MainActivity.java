@@ -21,7 +21,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         Button leaderboard = findViewById(R.id.leaderboard);
         Button admin = findViewById(R.id.admin);
         Button logout = findViewById(R.id.logout);
-        if(Objects.equals(data[0], "Admin")){
+        if(Objects.equals(data[0], "admin")){
             admin.setVisibility(View.VISIBLE);
             admin.setOnClickListener(v-> showCustomDialog());
             leaderboard.setVisibility(View.VISIBLE);
@@ -109,7 +111,10 @@ public class MainActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(data[0]);
+                String new_name = Arrays.stream(data[0].split("\\s+"))
+                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                        .collect(Collectors.joining(" "));
+                name.setText(new_name);
                 if (!snapshot.child(data[0]).hasChild("Stars")) {
                     ref.child(data[0]).child("Stars").setValue(0);
                     stars.setText("0");

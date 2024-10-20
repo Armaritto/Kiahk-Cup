@@ -32,7 +32,9 @@ import com.stgsporting.quiz_fut.data.TextColor;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.ViewHolder> {
 
@@ -192,7 +194,10 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
                 imagesToLoad[i]--;
                 checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row, i);
             }
-            name.setText(userData.getKey());
+            String new_name = Arrays.stream(userData.getKey().split("\\s+"))
+                    .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                    .collect(Collectors.joining(" "));
+            name.setText(new_name);
             if (userData.child("Card").hasChild("Position"))
                 position.setText(userData.child("Card").child("Position").getValue().toString());
     //        position.setText(userPos);

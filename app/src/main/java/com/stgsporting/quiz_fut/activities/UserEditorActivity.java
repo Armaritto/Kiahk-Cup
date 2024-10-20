@@ -41,6 +41,8 @@ import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class UserEditorActivity extends AppCompatActivity {
 
@@ -86,7 +88,11 @@ public class UserEditorActivity extends AppCompatActivity {
         ref.child("Users").child(userName).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(snapshot.getKey());
+                String new_name = snapshot.getKey();
+                new_name = Arrays.stream(new_name.split("\\s+"))
+                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                        .collect(Collectors.joining(" "));
+                name.setText(new_name);
                 if (snapshot.hasChild("Passcode"))
                     passcode_edittext.setText(snapshot.child("Passcode").getValue().toString());
                 if (snapshot.hasChild("Points"))
