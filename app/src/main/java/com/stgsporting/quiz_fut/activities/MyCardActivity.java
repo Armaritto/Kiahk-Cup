@@ -27,6 +27,9 @@ import com.stgsporting.quiz_fut.data.TextColor;
 import com.stgsporting.quiz_fut.helpers.HeaderSetup;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class MyCardActivity extends AppCompatActivity {
 
     private String[] data;
