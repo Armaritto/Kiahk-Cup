@@ -87,7 +87,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:textSize="@dimen/_27sdp"
+        android:textSize="@dimen/_25sdp"
         android:textColor="@color/white"
         android:fontFamily="@font/segoebold"
         android:textStyle="bold"

@@ -1,7 +1,6 @@
 package com.stgsporting.quiz_fut.activities;
 
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,14 +17,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.stgsporting.quiz_fut.data.Position;
 import com.stgsporting.quiz_fut.adapters.PositionStoreAdapter;
+import com.stgsporting.quiz_fut.data.Position;
+import com.stgsporting.quiz_fut.helpers.HeaderSetup;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class PositionStoreActivity extends AppCompatActivity {
 
@@ -45,7 +42,6 @@ public class PositionStoreActivity extends AppCompatActivity {
         LoadingDialog loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
-        setupHeader(FirebaseDatabase.getInstance(data[1]).getReference("/elmilad25/Users"));
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
 
@@ -58,6 +54,7 @@ public class PositionStoreActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataS) {
+                new HeaderSetup(PositionStoreActivity.this, dataS.child("elmilad25"), data);
                 DataSnapshot snapshot = dataS.child("elmilad25").child("CardPosition");
                 ArrayList<Position> positions = new ArrayList<>();
                 ArrayList<String> positionsIds = new ArrayList<>();
@@ -95,25 +92,5 @@ public class PositionStoreActivity extends AppCompatActivity {
             }
         });
     }
-    private void setupHeader(DatabaseReference ref) {
-        TextView stars = findViewById(R.id.rating);
-        TextView coins = findViewById(R.id.coins);
-        TextView name = findViewById(R.id.nametextview);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String new_name = Arrays.stream(data[0].split("\\s+"))
-                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
-                        .collect(Collectors.joining(" "));
-                name.setText(new_name);
-                stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
 }

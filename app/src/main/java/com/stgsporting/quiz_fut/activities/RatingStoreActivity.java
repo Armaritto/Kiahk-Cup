@@ -18,11 +18,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.stgsporting.quiz_fut.helpers.HeaderSetup;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
-
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class RatingStoreActivity extends AppCompatActivity {
 
@@ -53,13 +50,12 @@ public class RatingStoreActivity extends AppCompatActivity {
         data = getIntent().getStringArrayExtra("Data");
         new_rating.setText(String.valueOf(rating));
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
-        setupHeader(database.getReference("/elmilad25/Users"));
         DatabaseReference ref = database.getReference();
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataS) {
-
+                new HeaderSetup(RatingStoreActivity.this, dataS.child("elmilad25"), data);
                 DataSnapshot userData = dataS.child("/elmilad25/Users").child(data[0]);
                 rating = Integer.parseInt(userData.child("Card").child("Rating").getValue().toString());
                 new_rating.setText(String.valueOf(rating));
@@ -113,33 +109,4 @@ public class RatingStoreActivity extends AppCompatActivity {
         });
     }
 
-    private void setupHeader(DatabaseReference ref) {
-        TextView stars = findViewById(R.id.rating);
-        TextView coins = findViewById(R.id.coins);
-        TextView name = findViewById(R.id.nametextview);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String new_name = Arrays.stream(data[0].split("\\s+"))
-                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
-                        .collect(Collectors.joining(" "));
-                name.setText(new_name);
-                if (!snapshot.child(data[0]).hasChild("Stars")) {
-                    ref.child(data[0]).child("Stars").setValue(0);
-                    stars.setText("0");
-                } else
-                    stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
-                if (!snapshot.child(data[0]).hasChild("Coins")) {
-                    ref.child(data[0]).child("Coins").setValue(0);
-                    coins.setText("0");
-                } else
-                    coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
 }

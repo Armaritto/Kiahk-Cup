@@ -1,7 +1,6 @@
 package com.stgsporting.quiz_fut.activities;
 
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,12 +21,15 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.stgsporting.quiz_fut.data.CardIcon;
 import com.stgsporting.quiz_fut.adapters.CardStoreAdapter;
+import com.stgsporting.quiz_fut.helpers.HeaderSetup;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import okhttp3.internal.http2.Header;
 
 public class CardStoreActivity extends AppCompatActivity {
 
@@ -46,7 +48,6 @@ public class CardStoreActivity extends AppCompatActivity {
         LoadingDialog loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
-        setupHeader(FirebaseDatabase.getInstance(data[1]).getReference("/elmilad25/Users"));
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
@@ -60,6 +61,7 @@ public class CardStoreActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                new HeaderSetup(CardStoreActivity.this, dataSnapshot.child("elmilad25"), data);
                 DataSnapshot snapshot = dataSnapshot.child("elmilad25").child("CardIcon");
                 ArrayList<CardIcon> cards = new ArrayList<>();
                 ArrayList<String> cardsNames = new ArrayList<>();
@@ -97,9 +99,8 @@ public class CardStoreActivity extends AppCompatActivity {
                                 cards.get(j).setImageLink(downloadUrl);
                                 if (j==cards.size()-1) {
                                     CardStoreAdapter adapter = new CardStoreAdapter(
-                                            CardStoreActivity.this, cards, database, data[0]);
+                                            CardStoreActivity.this, cards, database, data[0], loadingDialog);
                                     recyclerView.setAdapter(adapter);
-                                    loadingDialog.dismiss();
                                 }
                             })
                             .addOnFailureListener(e -> Toast.makeText(CardStoreActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show());
@@ -114,25 +115,5 @@ public class CardStoreActivity extends AppCompatActivity {
         });
 
     }
-    private void setupHeader(DatabaseReference ref) {
-        TextView stars = findViewById(R.id.rating);
-        TextView coins = findViewById(R.id.coins);
-        TextView name = findViewById(R.id.nametextview);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String new_name = Arrays.stream(data[0].split("\\s+"))
-                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
-                        .collect(Collectors.joining(" "));
-                name.setText(new_name);
-                stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-         });
-    }
 }

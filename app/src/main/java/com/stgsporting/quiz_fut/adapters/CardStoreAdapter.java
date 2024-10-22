@@ -19,8 +19,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.data.CardIcon;
+import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
 
@@ -31,15 +33,18 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
     private final Context context;
     private final FirebaseDatabase database;
     private final String ID;
+    private LoadingDialog loadingDialog;
+    private int imgs;
 
     // data is passed into the constructor
     public CardStoreAdapter(Context context, ArrayList<CardIcon> cards,
-                     FirebaseDatabase database, String ID) {
+                     FirebaseDatabase database, String ID, LoadingDialog loadingDialog) {
         this.mInflater = LayoutInflater.from(context);
         this.cards = cards;
         this.context = context;
         this.database = database;
         this.ID = ID;
+        this.loadingDialog = loadingDialog;
     }
 
     // inflates the cell layout from xml when needed
@@ -53,8 +58,23 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
     // binds the data to the TextView in each cell
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        loadingDialog.show();
+        imgs++;
         holder.price.setText(cards.get(position).getPrice()+" ★");
-        Picasso.get().load(cards.get(position).getImageLink()).into(holder.img);
+        Picasso.get().load(cards.get(position).getImageLink()).into(holder.img, new Callback() {
+            @Override
+            public void onSuccess() {
+                imgs--;
+                checkAllImgsLoaded();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                imgs--;
+                Toast.makeText(context, "Image Loading Failed", Toast.LENGTH_SHORT).show();
+                checkAllImgsLoaded();
+            }
+        });
         holder.button.setOnClickListener(v-> {
             purchaseObject(getItem(position));
         });
@@ -75,6 +95,7 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
         ImageView img;
         TextView price;
         Button button;
+
         ViewHolder(View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.img);
@@ -126,6 +147,10 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
                 Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void checkAllImgsLoaded() {
+        if (imgs==0) loadingDialog.dismiss();
     }
 
 }
