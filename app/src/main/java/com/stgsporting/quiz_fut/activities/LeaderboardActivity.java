@@ -25,9 +25,11 @@ import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 public class LeaderboardActivity extends AppCompatActivity {
 
@@ -71,15 +73,6 @@ public class LeaderboardActivity extends AppCompatActivity {
                 List<Map.Entry<String, Integer>> list = new ArrayList<>(allUsersRatings.entrySet());
                 list.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
                 ArrayList<Lineup> lineups = getLineups(list);
-                // Display the sorted Lineups in the Leaderboard UI
-                /*
-                -------------------------------------------
-                | 1. User1: 100 OVR          view lineup  |
-                | 2. User2: 90 OVR           view lineup  |
-                | 3. User3: 80 OVR           view lineup  |
-                | 4. User4: 70 OVR           view lineup  |
-                -------------------------------------------
-                 */
                 LeaderboardAdapter adapter = new LeaderboardAdapter(LeaderboardActivity.this, lineups,
                         data, userData, snapshot, storage, loadingDialog);
                 recyclerView.setAdapter(adapter);
@@ -104,5 +97,4 @@ public class LeaderboardActivity extends AppCompatActivity {
         }
         return lineups;
     }
-
 }

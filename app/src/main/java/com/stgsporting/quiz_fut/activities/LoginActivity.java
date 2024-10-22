@@ -21,6 +21,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class LoginActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
@@ -61,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
             String name = name_edittext.getText().toString();
             String passcode = passcode_edittext.getText().toString();
             if (!name.isEmpty() && !passcode.isEmpty()) {
+                name = name.toLowerCase();
                 validateLogin(name, passcode);
             } else {
                 Toast.makeText(LoginActivity.this, "Please enter both ID and Password", Toast.LENGTH_SHORT).show();
@@ -79,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     if (!dataSnapshot.hasChild("Passcode")) {
-                        Toast.makeText(LoginActivity.this, "Authenication Failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     String storedPasscode = dataSnapshot.child("Passcode").getValue().toString();

@@ -226,6 +226,7 @@ public class UsersListActivity extends AppCompatActivity {
                         Random random = new Random();
                         int passcode = random.nextInt(9999);
                         if (passcode<1000) passcode+=1000;
+                        n = n.toLowerCase();
                         if (!snapshot.hasChild(n))
                             ref.child("elmilad25/Users").child(n).child("Passcode").setValue(passcode);
                         else Toast.makeText(UsersListActivity.this, n+" already exists!", Toast.LENGTH_SHORT).show();

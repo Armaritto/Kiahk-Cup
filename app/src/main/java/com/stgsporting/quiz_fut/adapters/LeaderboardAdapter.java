@@ -24,15 +24,15 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.stgsporting.quiz_fut.activities.LeaderboardActivity;
 import com.stgsporting.quiz_fut.activities.LineupActivity;
-import com.stgsporting.quiz_fut.activities.ViewOthersLineupActivity;
 import com.stgsporting.quiz_fut.data.Lineup;
 import com.stgsporting.quiz_fut.data.TextColor;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.ViewHolder> {
 
@@ -78,12 +78,15 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         setUserCardImage(holder.cardView, holder.cardImage, userData.child(lineups.get(i).getID()), snapshot, i, holder.row, storage);
         holder.button.setOnClickListener(v-> {
             Intent intent;
+            boolean OtherLineup;
+            intent = new Intent(context, LineupActivity.class);
             if(Objects.equals(lineups.get(i).getID(), data[0]))
-                intent = new Intent(context, LineupActivity.class);
+                OtherLineup = false;
             else
-                intent = new Intent(context, ViewOthersLineupActivity.class);
+                OtherLineup = true;
             data[0] = lineups.get(i).getID();
             intent.putExtra("Data", data);
+            intent.putExtra("OtherLineup", OtherLineup);
             context.startActivity(intent);
         });
     }
@@ -192,7 +195,10 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
                 imagesToLoad[i]--;
                 checkIfAllImagesLoaded(parent, cardImage, imagesToLoad[i], row, i);
             }
-            name.setText(userData.getKey());
+            String new_name = Arrays.stream(userData.getKey().split("\\s+"))
+                    .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                    .collect(Collectors.joining(" "));
+            name.setText(new_name);
             if (userData.child("Card").hasChild("Position"))
                 position.setText(userData.child("Card").child("Position").getValue().toString());
     //        position.setText(userPos);

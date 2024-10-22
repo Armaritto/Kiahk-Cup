@@ -131,5 +131,4 @@ public class StoreActivity extends AppCompatActivity {
             }
         });
     }
-
 }

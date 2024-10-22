@@ -125,7 +125,10 @@ public class MyCardActivity extends AppCompatActivity {
                         }
                     });
                 }
-                name.setText(snapshot.getKey());
+                String new_name = Arrays.stream(snapshot.getKey().split("\\s+"))
+                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                        .collect(Collectors.joining(" "));
+                name.setText(new_name);
 
                 if (snapshot.child("Card").hasChild("Position")) {
                     position.setText(snapshot.child("Card").child("Position").getValue().toString());

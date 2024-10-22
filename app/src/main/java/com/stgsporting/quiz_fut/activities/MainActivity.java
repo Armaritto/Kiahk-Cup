@@ -20,7 +20,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.helpers.HeaderSetup;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         Button leaderboard = findViewById(R.id.leaderboard);
         Button admin = findViewById(R.id.admin);
         Button logout = findViewById(R.id.logout);
-        if(Objects.equals(data[0], "Admin")){
+        if(Objects.equals(data[0], "admin")){
             admin.setVisibility(View.VISIBLE);
             admin.setOnClickListener(v-> showCustomDialog());
             leaderboard.setVisibility(View.VISIBLE);
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         lineup.setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, LineupActivity.class);
             intent.putExtra("Data", data);
+            intent.putExtra("Other_Lineup", false);
             startActivity(intent);
         });
         myCard.setOnClickListener(v-> {
