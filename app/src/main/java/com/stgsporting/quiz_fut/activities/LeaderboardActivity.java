@@ -19,16 +19,15 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.stgsporting.quiz_fut.adapters.LeaderboardAdapter;
 import com.stgsporting.quiz_fut.data.Lineup;
+import com.stgsporting.quiz_fut.helpers.HeaderSetup;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class LeaderboardActivity extends AppCompatActivity {
 
@@ -52,8 +51,6 @@ public class LeaderboardActivity extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
         DatabaseReference ref = database.getReference();
 
-        setupHeader(ref.child("/elmilad25/Users"));
-
         RecyclerView recyclerView = findViewById(R.id.recycler_view_lineups);
         int numberOfColumns = 1;
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
@@ -61,6 +58,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                new HeaderSetup(LeaderboardActivity.this, snapshot.child("elmilad25"), data);
                 DataSnapshot userData = snapshot.child("/elmilad25/Users");
                 HashMap<String,Integer> allUsersRatings = new HashMap<>();
                 for (DataSnapshot aUserData : snapshot.child("/elmilad25/Users").getChildren()) {
@@ -107,22 +105,4 @@ public class LeaderboardActivity extends AppCompatActivity {
         return lineups;
     }
 
-    private void setupHeader(DatabaseReference ref) {
-        TextView stars = findViewById(R.id.rating);
-        TextView coins = findViewById(R.id.coins);
-        TextView name = findViewById(R.id.nametextview);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
-                name.setText(data[0]);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
 }

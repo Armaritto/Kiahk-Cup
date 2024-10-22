@@ -1,7 +1,6 @@
 package com.stgsporting.quiz_fut.activities;
 
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,10 +19,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.data.Mosab2a;
 import com.stgsporting.quiz_fut.adapters.Mosab2atAdapter;
+import com.stgsporting.quiz_fut.helpers.HeaderSetup;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class Mosab2aActivity extends AppCompatActivity {
 
@@ -47,13 +46,13 @@ public class Mosab2aActivity extends AppCompatActivity {
         RecyclerView mosab2at_list = findViewById(R.id.mosab2at_list);
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         DatabaseReference ref = database.getReference();
-        setupHeader(ref);
         int numberOfColumns = 2;
         mosab2at_list.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                new HeaderSetup(Mosab2aActivity.this, snapshot.child("elmilad25"), data);
                 ArrayList<Mosab2a> mosab2at = new ArrayList<>();
                 ArrayList<String> mosab2atIDs = new ArrayList<>();
                 DataSnapshot mosab2atData = snapshot.child("/elmilad25/Mosab2at");
@@ -83,23 +82,5 @@ public class Mosab2aActivity extends AppCompatActivity {
             }
         });
     }
-    private void setupHeader(DatabaseReference ref) {
-        TextView stars = findViewById(R.id.rating);
-        TextView coins = findViewById(R.id.coins);
-        TextView name = findViewById(R.id.nametextview);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(data[0]);
-                snapshot = snapshot.child("/elmilad25/Users");
-                stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
 }

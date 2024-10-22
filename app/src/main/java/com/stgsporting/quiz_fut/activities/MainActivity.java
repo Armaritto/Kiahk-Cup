@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,9 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.quiz_fut_draft.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.stgsporting.quiz_fut.helpers.HeaderSetup;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.Objects;
@@ -37,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
         data = getIntent().getStringArrayExtra("Data");
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
-        setupHeader(database.getReference("/elmilad25/Users"));
         Button mosab2a = findViewById(R.id.mosab2a);
         Button lineup = findViewById(R.id.lineup);
         Button myCard = findViewById(R.id.myCard);
@@ -54,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
             database.getReference("elmilad25").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    new HeaderSetup(MainActivity.this, snapshot, data);
                     if (snapshot.hasChild("Leaderboard") &&
                             Boolean.parseBoolean(snapshot.child("Leaderboard").getValue().toString())) {
                         leaderboard.setVisibility(View.VISIBLE);
@@ -101,34 +100,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
         });
     }
-
-    private void setupHeader(DatabaseReference ref) {
-        TextView stars = findViewById(R.id.rating);
-        TextView coins = findViewById(R.id.coins);
-        TextView name = findViewById(R.id.nametextview);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(data[0]);
-                if (!snapshot.child(data[0]).hasChild("Stars")) {
-                    ref.child(data[0]).child("Stars").setValue(0);
-                    stars.setText("0");
-                } else
-                    stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
-                if (!snapshot.child(data[0]).hasChild("Coins")) {
-                    ref.child(data[0]).child("Coins").setValue(0);
-                    coins.setText("0");
-                } else
-                    coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
 
     private android.app.AlertDialog alertDialog;
 

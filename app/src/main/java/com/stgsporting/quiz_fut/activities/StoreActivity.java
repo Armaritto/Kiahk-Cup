@@ -1,7 +1,6 @@
 package com.stgsporting.quiz_fut.activities;
 
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,12 +19,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.stgsporting.quiz_fut.data.Card;
 import com.stgsporting.quiz_fut.adapters.StoreAdapter;
+import com.stgsporting.quiz_fut.data.Card;
+import com.stgsporting.quiz_fut.helpers.HeaderSetup;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class StoreActivity extends AppCompatActivity {
 
@@ -65,11 +64,10 @@ public class StoreActivity extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
         DatabaseReference ref = database.getReference();
 
-        setupHeader(database.getReference("/elmilad25/Users"));
-
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                new HeaderSetup(StoreActivity.this, snapshot.child("elmilad25"), data);
 
                 DataSnapshot storeData = snapshot.child("elmilad25").child("Store");
                 DataSnapshot ownedData = snapshot.child("/elmilad25/Users").child(data[0]).child("Owned Cards");
@@ -133,27 +131,5 @@ public class StoreActivity extends AppCompatActivity {
             }
         });
     }
-
-    private void setupHeader(DatabaseReference ref) {
-        TextView stars = findViewById(R.id.rating);
-        TextView coins = findViewById(R.id.coins);
-        TextView name = findViewById(R.id.nametextview);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(data[0]);
-                stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
-                StoreActivity.coins = Integer.parseInt(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-
 
 }

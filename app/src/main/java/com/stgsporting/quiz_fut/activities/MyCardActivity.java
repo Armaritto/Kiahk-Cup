@@ -1,11 +1,11 @@
 package com.stgsporting.quiz_fut.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Button;
-import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,9 +24,8 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.data.TextColor;
+import com.stgsporting.quiz_fut.helpers.HeaderSetup;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
-
-import java.util.Objects;
 
 public class MyCardActivity extends AppCompatActivity {
 
@@ -48,7 +47,6 @@ public class MyCardActivity extends AppCompatActivity {
         loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
-        setupHeader(FirebaseDatabase.getInstance(data[1]).getReference("/elmilad25/Users"));
 
         Button positionBtn = findViewById(R.id.position_btn);
         Button cardBtn = findViewById(R.id.card_btn);
@@ -66,6 +64,7 @@ public class MyCardActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataS) {
+                new HeaderSetup(MyCardActivity.this, dataS.child("elmilad25"), data);
                 if (dataS.child("/elmilad25/Users").child(data[0])
                         .child("Owned Card Icons").hasChild("Selected")) {
                     String selected = dataS.child("/elmilad25/Users").child(data[0]).child("Owned Card Icons").child("Selected").getValue().toString();
@@ -164,25 +163,6 @@ public class MyCardActivity extends AppCompatActivity {
             Intent intent = new Intent(MyCardActivity.this, RatingStoreActivity.class);
             intent.putExtra("Data",data);
             startActivity(intent);
-        });
-    }
-
-    private void setupHeader(DatabaseReference ref) {
-        TextView stars = findViewById(R.id.rating);
-        TextView coins = findViewById(R.id.coins);
-        TextView name = findViewById(R.id.nametextview);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(data[0]);
-                stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
         });
     }
 
