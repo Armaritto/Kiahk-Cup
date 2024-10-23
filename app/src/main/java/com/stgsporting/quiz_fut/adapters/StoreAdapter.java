@@ -37,7 +37,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
 
     // data is passed into the constructor
     public StoreAdapter(Context context, ArrayList<Card> cards, int points, FirebaseDatabase database,
-                 String ID, String cardPosition, LoadingDialog loadingDialog) {
+                        String ID, String cardPosition, LoadingDialog loadingDialog) {
         this.mInflater = LayoutInflater.from(context);
         this.cards = cards;
         this.context = context;
@@ -77,10 +77,17 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             }
         });
         if (cards.get(position).isOwned()) {
-            holder.button.setText("Select");
+            holder.purchaseButton.setText("Select");
+            holder.sellButton.setVisibility(View.VISIBLE);
         }
-        holder.button.setOnClickListener(v-> {
-            purchaseObject(getItem(position));
+        else{
+            holder.sellButton.setVisibility(View.INVISIBLE);
+        }
+        holder.purchaseButton.setOnClickListener(v-> {
+            purchasePlayer(getItem(position));
+        });
+        holder.sellButton.setOnClickListener(v -> {
+            sellPlayer(getItem(position));
         });
     }
 
@@ -94,13 +101,15 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView img;
         TextView price;
-        Button button;
+        Button purchaseButton;
+        Button sellButton;
 
         ViewHolder(View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.img);
             price = itemView.findViewById(R.id.price);
-            button = itemView.findViewById(R.id.purchase);
+            purchaseButton = itemView.findViewById(R.id.purchase);
+            sellButton = itemView.findViewById(R.id.sell);
         }
 
         @Override
@@ -112,7 +121,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         return cards.get(id);
     }
 
-    public void purchaseObject(Card card) {
+    public void purchasePlayer(Card card) {
 
         DatabaseReference userRef = database.getReference("/elmilad25/Users").child(ID);
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
@@ -132,6 +141,22 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 ((Activity) context).finish();
             }
         }
+
+    }
+
+    public void sellPlayer(Card card) {
+
+        DatabaseReference userRef = database.getReference("/elmilad25/Users").child(ID);
+        DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
+
+        int price = card.getPrice();
+        points += price/2;
+        userRef.child("Coins").setValue(points);
+        cardRef.removeValue();
+        if(userRef.child("Lineup").child(cardPosition).toString().equals(card.getID()))
+            userRef.child("Lineup").child(cardPosition).removeValue();
+        card.setOwned(false);
+        ((Activity) context).finish();
 
     }
 
