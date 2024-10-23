@@ -121,7 +121,8 @@ public class Http {
 
             return new Response(connection.getResponseCode(), connection.getResponseMessage(), inputStream);
         } catch (Exception e) {
-            return new Response(-1, e.getMessage(), null);
+            e.printStackTrace();
+            return new Response(-2, e.getMessage(), null);
         } finally {
             connection.disconnect();
         }

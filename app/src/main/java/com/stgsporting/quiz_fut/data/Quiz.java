@@ -1,10 +1,13 @@
 package com.stgsporting.quiz_fut.data;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Quiz {
@@ -23,7 +26,25 @@ public class Quiz {
     }
 
     public static Quiz fromJson(JSONObject json) throws JSONException {
-        return new Quiz(json.getInt("id"), json.getString("name"), json.getInt("coins"));
+        Quiz quiz = new Quiz(json.getInt("id"), json.getString("name"), json.getInt("coins"));
+
+        if(json.has("questions")) {
+            JSONArray questions = json.getJSONArray("questions");
+            for (int i = 0; i < questions.length(); i++) {
+                quiz.addQuestion(Question.fromJson(questions.getJSONObject(i)));
+            }
+        }
+
+        return quiz;
+    }
+
+    public void addEmptyQuestion() {
+        Question question = questions
+                .stream()
+                .max(Comparator.comparingInt(Question::getId)).orElse(null);
+        int id = question == null ? -1 : question.getId();
+
+        addQuestion(new Question(id + 1, "", -1, new ArrayList<>(), 0));
     }
 
     public JSONObject toJson() {
@@ -79,5 +100,16 @@ public class Quiz {
             return;
         }
         questions.remove(question);
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Quiz{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", coins=" + coins +
+                ", questions=" + questions +
+                '}';
     }
 }

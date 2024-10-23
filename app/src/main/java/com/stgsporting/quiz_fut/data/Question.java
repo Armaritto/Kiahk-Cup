@@ -1,19 +1,23 @@
 package com.stgsporting.quiz_fut.data;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Question {
     private final int id;
     private String title;
     private int correctOption;
     private int points;
-    private String[] options;
+    private List<String> options;
 
-    public Question(int id, String title, int correctOption, String[] options, int points) {
+    public Question(int id, String title, int correctOption, List<String> options, int points) {
         this.id = id;
         this.title = title;
         this.correctOption = correctOption;
@@ -30,7 +34,7 @@ public class Question {
     }
 
     public String getOption() {
-        return options[correctOption];
+        return options.get(correctOption);
     }
 
     public void setCorrectOption(int correctOption) {
@@ -53,8 +57,30 @@ public class Question {
         this.points = points;
     }
 
-    public void setOptions(String[] options) {
+    public void setOptions(List<String> options) {
         this.options = options;
+    }
+
+    public List<String> getOptions() {
+        return options;
+    }
+
+    public void addOption(String option) {
+        options.add(option);
+    }
+
+    public static Question fromJson(JSONObject json) throws JSONException {
+        int id = json.getInt("id");
+        String title = json.getString("title");
+        int correctOption = json.getInt("correct_option");
+        int points = json.getInt("points");
+        JSONArray options = json.getJSONArray("options");
+        List<String> optionsArray = new ArrayList<>();
+        for (int i = 0; i < options.length(); i++) {
+            optionsArray.add(options.getString(i));
+        }
+
+        return new Question(id, title, correctOption, optionsArray, points);
     }
 
     public JSONObject toJson() {
@@ -68,11 +94,32 @@ public class Question {
             data
                     .put("id", id)
                     .put("title", title)
-                    .put("correctOption", correctOption)
+                    .put("correct_option", correctOption)
                     .put("points", points)
                     .put("options", options);
         }catch (JSONException ignored) {}
 
         return data;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        Question q = (Question) obj;
+
+        return q.id == id;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Question{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", correctOption=" + correctOption +
+                ", points=" + points +
+                ", options=" + options +
+                '}';
     }
 }
