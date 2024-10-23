@@ -25,6 +25,7 @@ import com.stgsporting.quiz_fut.helpers.HeaderSetup;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class StoreActivity extends AppCompatActivity {
 
@@ -68,7 +69,7 @@ public class StoreActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 new HeaderSetup(StoreActivity.this, snapshot.child("elmilad25"), data);
-
+                coins = Integer.parseInt(Objects.requireNonNull(snapshot.child("elmilad25").child("Users").child(data[0]).child("Coins").getValue()).toString());
                 DataSnapshot storeData = snapshot.child("elmilad25").child("Store");
                 DataSnapshot ownedData = snapshot.child("/elmilad25/Users").child(data[0]).child("Owned Cards");
                 DataSnapshot lineupData = snapshot.child("/elmilad25/Users").child(data[0]).child("Lineup");
