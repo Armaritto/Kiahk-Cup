@@ -19,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.data.Card;
+import com.stgsporting.quiz_fut.helpers.ConfirmDialog;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
@@ -87,7 +88,20 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             purchasePlayer(getItem(position));
         });
         holder.sellButton.setOnClickListener(v -> {
-            sellPlayer(getItem(position));
+//            ConfirmDialog dialog = new ConfirmDialog(context, new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+                    sellPlayer(getItem(holder.getAdapterPosition()));
+//                }
+//            }, new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    // For No action, just close the dialog
+//                    // No need to manually call dialog.dismiss() if auto-dismiss is enabled
+//                }
+//            });
+//            dialog.dismiss();
+
         });
     }
 
@@ -156,6 +170,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         if(userRef.child("Lineup").child(cardPosition).toString().equals(card.getID()))
             userRef.child("Lineup").child(cardPosition).removeValue();
         card.setOwned(false);
+
         ((Activity) context).finish();
 
     }
