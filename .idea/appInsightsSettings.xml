@@ -27,10 +27,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.example.quiz_fut_draft" />
-                  <option name="mobileSdkAppId" value="1:406323866428:android:0d2314c59ccbc17a3a0c39" />
-                  <option name="projectId" value="quiz-fut-draft" />
-                  <option name="projectNumber" value="406323866428" />
+                  <option name="appId" value="PLACEHOLDER" />
+                  <option name="mobileSdkAppId" value="" />
+                  <option name="projectId" value="" />
+                  <option name="projectNumber" value="" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

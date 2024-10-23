@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
             String input = dialogInput.getText().toString();
             // Handle the input
             if (input.equals("admin")) {
-                Intent intent = new Intent(MainActivity.this, UsersListActivity.class);
+                Intent intent = new Intent(MainActivity.this, AdminActivity.class);
                 intent.putExtra("Data", data);
                 startActivity(intent);
             }

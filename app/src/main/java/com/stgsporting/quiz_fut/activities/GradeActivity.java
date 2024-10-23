@@ -78,21 +78,22 @@ public class GradeActivity extends AppCompatActivity {
 //                    break;
                 case "Junior 6":
                     setupDatabase("https://j6-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://j6-fut-draft.appspot.com/");
+                            "gs://j6-fut-draft.appspot.com/", "6");
                     break;
                 default:
                     setupDatabase("https://quiz-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://quiz-fut-draft.appspot.com/");
+                            "gs://quiz-fut-draft.appspot.com/", "6");
                     break;
             }
         });
 
     }
 
-    private void setupDatabase(String dbURL, String storageURL) {
+    private void setupDatabase(String dbURL, String storageURL, String schoolYear) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("Database", dbURL);
         editor.putString("Storage", storageURL);
+        editor.putString("school_year", schoolYear);
         editor.apply();
         checkMaintenance(dbURL, storageURL);
     }

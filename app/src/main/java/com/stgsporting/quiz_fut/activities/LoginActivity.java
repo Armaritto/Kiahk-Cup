@@ -49,7 +49,8 @@ public class LoginActivity extends AppCompatActivity {
             String[] data = {
                     sharedPreferences.getString("Name", ""),
                     sharedPreferences.getString("Database", ""),
-                    sharedPreferences.getString("Storage", "")
+                    sharedPreferences.getString("Storage", ""),
+                    sharedPreferences.getString("school_year", "")
             };
             intent.putExtra("Data", data);
             startActivity(intent);
@@ -96,7 +97,8 @@ public class LoginActivity extends AppCompatActivity {
                         String[] data = {
                                 name,
                                 sharedPreferences.getString("Database", ""),
-                                sharedPreferences.getString("Storage", "")
+                                sharedPreferences.getString("Storage", ""),
+                                sharedPreferences.getString("school_year", "")
                         };
                         intent.putExtra("Data", data);
                         startActivity(intent);

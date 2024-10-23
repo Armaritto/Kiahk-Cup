@@ -56,8 +56,8 @@
         <Button
             android:id="@+id/logout"
             style="@style/main_button"
-            android:text="logout"
-            android:background="@drawable/t5"/>
+            android:background="@drawable/t5"
+            android:text="Logout" />
 
     </LinearLayout>
 
