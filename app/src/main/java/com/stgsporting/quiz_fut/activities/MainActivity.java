@@ -50,11 +50,11 @@ public class MainActivity extends AppCompatActivity {
             leaderboard.setVisibility(View.VISIBLE);
             loadingDialog.dismiss();
         }
-        else { // View Leaderboard for admin all the time
-            database.getReference("elmilad25").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    new HeaderSetup(MainActivity.this, snapshot, data);
+        database.getReference("elmilad25").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                new HeaderSetup(MainActivity.this, snapshot, data);
+                if(!Objects.equals(data[0], "admin")){
                     if (snapshot.hasChild("Leaderboard") &&
                             Boolean.parseBoolean(snapshot.child("Leaderboard").getValue().toString())) {
                         leaderboard.setVisibility(View.VISIBLE);
@@ -63,15 +63,18 @@ public class MainActivity extends AppCompatActivity {
                     }
                     loadingDialog.dismiss();
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                if(!Objects.equals(data[0], "admin")){
                     loadingDialog.dismiss();
                     Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
                     finish();
                 }
-            });
-        }
+            }
+        });
+
 
         mosab2a.setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, Mosab2aActivity.class);
