@@ -1,7 +1,6 @@
 package com.stgsporting.quiz_fut.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,23 +10,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.example.quiz_fut_draft.R;
-import com.stgsporting.quiz_fut.activities.QuizActivity;
+import com.stgsporting.quiz_fut.data.Question;
 import com.stgsporting.quiz_fut.data.Quiz;
 
-import java.util.List;
+public class QuestionsQuizAdapter extends RecyclerView.Adapter<QuestionsQuizAdapter.ViewHolder> {
 
-public class QuizzesAdapter extends RecyclerView.Adapter<QuizzesAdapter.ViewHolder> {
-
-    private final List<Quiz> quizzes;
+    private final Quiz quiz;
     private final LayoutInflater mInflater;
-    private final Context context;
 
-    public QuizzesAdapter(Context context, List<Quiz> quizzes) {
+    public QuestionsQuizAdapter(Context context, Quiz quiz) {
         this.mInflater = LayoutInflater.from(context);
-        this.quizzes = quizzes;
-        this.context = context;
+        this.quiz = quiz;
     }
 
     @Override
@@ -39,23 +33,14 @@ public class QuizzesAdapter extends RecyclerView.Adapter<QuizzesAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Quiz q = this.quizzes.get(position);
+        Question q = this.quiz.getQuestions().get(position);
 
-        holder.title.setText(q.getName());
-
-        String coins = q.getCoins() + " Coins";
-        holder.coins.setText(coins);
-
-        holder.quiz.setOnClickListener(v-> {
-            Intent intent = new Intent(context, QuizActivity.class);
-            intent.putExtra("quiz", q.toJson().toString());
-            context.startActivity(intent);
-        });
+        holder.title.setText(q.getTitle());
     }
 
     @Override
     public int getItemCount() {
-        return quizzes.size();
+        return quiz.getQuestions().size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

@@ -21,9 +21,9 @@
             android:background="@drawable/settings"/>
 
         <Button
-            android:id="@+id/add_mosab2a"
+            android:id="@+id/manage_quizzes"
             style="@style/main_button"
-            android:text="Add Mosab2a"
+            android:text="Manage Quizzes"
             android:background="@drawable/settings"/>
 
 

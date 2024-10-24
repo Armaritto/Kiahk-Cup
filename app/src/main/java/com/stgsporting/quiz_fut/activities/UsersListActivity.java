@@ -2,6 +2,7 @@ package com.stgsporting.quiz_fut.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,7 +31,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.data.User;
+import com.stgsporting.quiz_fut.helpers.Http;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -221,19 +227,43 @@ public class UsersListActivity extends AppCompatActivity {
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    JSONObject dataRequest = new JSONObject();
+                    JSONArray users = new JSONArray();
 
                     for (String n : names) {
                         Random random = new Random();
                         int passcode = random.nextInt(9999);
+
+                        try {
+                            users.put(new JSONObject().put("name", n));
+                        }catch (JSONException ignored) {}
+
                         if (passcode<1000) passcode+=1000;
                         n = n.toLowerCase();
                         if (!snapshot.hasChild(n))
                             ref.child("elmilad25/Users").child(n).child("Passcode").setValue(passcode);
                         else Toast.makeText(UsersListActivity.this, n+" already exists!", Toast.LENGTH_SHORT).show();
                     }
-                    loadingDialog.dismiss();
-                    alertDialog.dismiss();
 
+                    try {
+                        dataRequest.put("users", users);
+                        dataRequest.put("school_year_id", data[3]);
+                    } catch (JSONException ignored) {}
+
+                    Http.post(Uri.parse(Http.URL + "/users"))
+                            .expectsJson()
+                            .addData(dataRequest)
+                            .sendAsync().thenApply(res -> {
+                                runOnUiThread(() -> {
+                                    loadingDialog.dismiss();
+                                    alertDialog.dismiss();
+
+                                    if (res.getCode() == 200) {
+                                        Toast.makeText(UsersListActivity.this, "Users added successfully", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                return null;
+                            });
                 }
 
                 @Override

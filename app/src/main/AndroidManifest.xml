@@ -64,6 +64,9 @@
             android:name="com.stgsporting.quiz_fut.activities.AddQuestionsToQuizActivity"
             android:exported="false" />
         <activity
+            android:name="com.stgsporting.quiz_fut.activities.QuizActivity"
+            android:exported="false" />
+        <activity
             android:name="com.stgsporting.quiz_fut.activities.GradeActivity"
             android:exported="true">
             <intent-filter>
