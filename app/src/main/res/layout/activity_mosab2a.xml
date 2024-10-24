@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/other_background"
-    tools:context="com.stgsporting.quiz_fut.activities.Mosab2aActivity">
+    tools:context="com.stgsporting.quiz_fut.activities.ShowQuizzesActivity">
 
     <include
         android:id="@+id/header"

@@ -49,7 +49,7 @@
             android:name="com.stgsporting.quiz_fut.activities.LineupActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.Mosab2aActivity"
+            android:name="com.stgsporting.quiz_fut.activities.ShowQuizzesActivity"
             android:exported="false" />
         <activity
             android:name="com.stgsporting.quiz_fut.activities.MainActivity"

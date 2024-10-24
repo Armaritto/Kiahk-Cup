@@ -1,5 +1,6 @@
 package com.stgsporting.quiz_fut.activities;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,18 +19,27 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.stgsporting.quiz_fut.data.Mosab2a;
-import com.stgsporting.quiz_fut.adapters.Mosab2atAdapter;
+import com.stgsporting.quiz_fut.adapters.QuizzesAdapter;
+import com.stgsporting.quiz_fut.data.Quiz;
+import com.stgsporting.quiz_fut.helpers.Http;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Mosab2aActivity extends AppCompatActivity {
+public class ShowQuizzesActivity extends AppCompatActivity {
 
     private String[] data;
+
+    RecyclerView quizzesListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,45 +56,43 @@ public class Mosab2aActivity extends AppCompatActivity {
 
         data = getIntent().getStringArrayExtra("Data");
 
-        RecyclerView mosab2at_list = findViewById(R.id.mosab2at_list);
+        quizzesListView = findViewById(R.id.mosab2at_list);
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         DatabaseReference ref = database.getReference();
         setupHeader(ref);
         int numberOfColumns = 2;
-        mosab2at_list.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
+        quizzesListView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
 
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<Mosab2a> mosab2at = new ArrayList<>();
-                ArrayList<String> mosab2atIDs = new ArrayList<>();
-                DataSnapshot mosab2atData = snapshot.child("/elmilad25/Mosab2at");
-                for (DataSnapshot mosab2a : mosab2atData.getChildren()) {
-                    Mosab2a m = new Mosab2a();
-                    mosab2atIDs.add(mosab2a.getKey());
-                    m.setId(mosab2a.getKey());
-                    m.setTitle(mosab2a.child("Title").getValue(String.class));
-                    m.setCoins(mosab2a.child("Points").getValue().toString());
-                    m.setLink(mosab2a.child("Link").getValue(String.class));
-                    mosab2at.add(m);
-                }
-                DataSnapshot userM = snapshot.child("/elmilad25/Users").child(data[0]).child("Mosab2at");
-                for (DataSnapshot mosab2a : userM.getChildren()) {
-                    if (mosab2atIDs.contains(mosab2a.getKey())) mosab2at.remove(mosab2atIDs.indexOf(mosab2a.getKey()));
-                }
-
-                Mosab2atAdapter adapter = new Mosab2atAdapter(Mosab2aActivity.this, mosab2at);
-                mosab2at_list.setAdapter(adapter);
-                loadingDialog.dismiss();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                loadingDialog.dismiss();
-                Toast.makeText(Mosab2aActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        Http.get(Uri.parse(Http.URL + "/quizzes"), Map.of("school_year_id", data[3], "user", data[0]))
+                .expectsJson()
+                .sendAsync().thenApply(res -> {
+                    runOnUiThread(() -> handleResponse(res, loadingDialog));
+                    return null;
+                });
     }
+
+    private void handleResponse(Http.Response res, LoadingDialog loadingDialog) {
+        loadingDialog.dismiss();
+
+        if (res.getCode() != 200) {
+            Toast.makeText(ShowQuizzesActivity.this, res.getMessage(), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        JSONObject responseData = res.getJson();
+        List<Quiz> quizzes = new ArrayList<>();
+        try {
+            JSONArray quizzesJSON = responseData.getJSONArray("data");
+            for (int i = 0; i < quizzesJSON.length(); i++) {
+                quizzes.add(Quiz.fromJson(quizzesJSON.getJSONObject(i)));
+            }
+        }catch (JSONException ignored) {}
+
+        RecyclerView.Adapter<QuizzesAdapter.ViewHolder> adapter = new QuizzesAdapter(ShowQuizzesActivity.this, quizzes);
+        quizzesListView.setAdapter(adapter);
+        loadingDialog.dismiss();
+    }
+
     private void setupHeader(DatabaseReference ref) {
         TextView stars = findViewById(R.id.rating);
         TextView coins = findViewById(R.id.coins);

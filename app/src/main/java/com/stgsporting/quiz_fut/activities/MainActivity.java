@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mosab2a.setOnClickListener(v-> {
-            Intent intent = new Intent(MainActivity.this, Mosab2aActivity.class);
+            Intent intent = new Intent(MainActivity.this, ShowQuizzesActivity.class);
             intent.putExtra("Data", data);
             startActivity(intent);
         });

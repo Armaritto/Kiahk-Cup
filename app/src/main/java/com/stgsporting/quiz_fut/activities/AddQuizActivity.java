@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -53,7 +54,7 @@ public class AddQuizActivity extends AppCompatActivity {
                 });
 
 
-        AppCompatEditText quizName = findViewById(R.id.quiz_name_text);
+        EditText quizName = findViewById(R.id.quiz_name_text);
         TextView startedAtdate = findViewById(R.id.started_at_date);
         startedAtdate.setText("-- Select Date --");
 
@@ -84,7 +85,10 @@ public class AddQuizActivity extends AppCompatActivity {
         Button submit = findViewById(R.id.create_quiz_btn);
 
         submit.setOnClickListener((v) -> {
-            if (quizName.getText() == null || startedAtdate.getText() == null) {
+            if (
+                    quizName.getText() == null || quizName.getText().toString().isEmpty() ||
+                            startedAtdate.getText() == null || startedAtdate.getText().toString().isEmpty()
+            ) {
                 return;
             }
 
