@@ -3,6 +3,7 @@ package com.stgsporting.quiz_fut.adapters;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import com.stgsporting.quiz_fut.helpers.ConfirmDialog;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> {
 
@@ -159,10 +161,16 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         points += price/2;
         userRef.child("Coins").setValue(points);
         cardRef.removeValue();
-        if(userRef.child("Lineup").child(cardPosition).toString().equals(card.getID()))
-            userRef.child("Lineup").child(cardPosition).removeValue();
+        userRef.child("Lineup").child(cardPosition).addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
+                if(Objects.requireNonNull(snapshot.getValue()).toString().equals(card.getID()))
+                    userRef.child("Lineup").child(cardPosition).removeValue();
+            }
+            @Override
+            public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
+        });
         card.setOwned(false);
-
         ((Activity) context).finish();
 
     }
