@@ -7,7 +7,7 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 
 
 public class AdminActivity extends AppCompatActivity {

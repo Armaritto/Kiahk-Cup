@@ -27,8 +27,8 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.example.quiz_fut_draft" />
-                  <option name="mobileSdkAppId" value="1:647723803338:android:a7670a77baffa38c8d0a33" />
+                  <option name="appId" value="com.stgsporting.quiz_fut" />
+                  <option name="mobileSdkAppId" value="1:647723803338:android:6edfb49f754fbb5f8d0a33" />
                   <option name="projectId" value="j6-fut-draft" />
                   <option name="projectNumber" value="647723803338" />
                 </ConnectionSetting>

@@ -11,7 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 import com.stgsporting.quiz_fut.adapters.QuizzesAdapter;
 import com.stgsporting.quiz_fut.data.Quiz;
 import com.stgsporting.quiz_fut.helpers.Header;

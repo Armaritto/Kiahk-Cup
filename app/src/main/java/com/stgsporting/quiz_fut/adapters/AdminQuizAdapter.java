@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 import com.stgsporting.quiz_fut.activities.AddQuestionsToQuizActivity;
 import com.stgsporting.quiz_fut.data.Quiz;
 

@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 import com.stgsporting.quiz_fut.adapters.QuestionsQuizAdapter;
 import com.stgsporting.quiz_fut.data.Quiz;
 import com.stgsporting.quiz_fut.helpers.Header;

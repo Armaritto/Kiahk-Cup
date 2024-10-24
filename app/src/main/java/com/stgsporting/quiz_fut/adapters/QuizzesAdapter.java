@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 import com.stgsporting.quiz_fut.activities.QuizActivity;
 import com.stgsporting.quiz_fut.data.Quiz;
 

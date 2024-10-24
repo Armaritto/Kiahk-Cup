@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stgsporting.quiz_fut.adapters.AddQuestionAdapter;
 import com.stgsporting.quiz_fut.data.Question;
