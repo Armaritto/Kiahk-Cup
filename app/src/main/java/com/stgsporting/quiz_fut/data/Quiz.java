@@ -75,6 +75,7 @@ public class Quiz {
                     .put("id", id)
                     .put("name", name)
                     .put("coins", coins)
+                    .put("started_at", getStartedAtFormat("yyyy-MM-dd HH:mm:ss"))
                     .put("questions", questions)
             ;
         }catch (JSONException ignored) {}
@@ -133,7 +134,10 @@ public class Quiz {
     }
 
     public String getStartedAtFormatted() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
+        return getStartedAtFormat("dd/MM/yyyy hh:mm a");
+    }
+    public String getStartedAtFormat(String format) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
 
         return startedAt.format(formatter);
     }

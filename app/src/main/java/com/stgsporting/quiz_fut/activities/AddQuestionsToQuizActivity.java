@@ -86,8 +86,7 @@ public class AddQuestionsToQuizActivity extends AppCompatActivity {
                                 Toast.makeText(this, "Questions saved", Toast.LENGTH_SHORT).show();
                                 finish();
                             } else {
-                                System.out.println(res.getMessage());
-                                System.out.println(res.getCode());
+                                Toast.makeText(this, "Failed to save questions", Toast.LENGTH_SHORT).show();
                             }
                         });
                         return null;
