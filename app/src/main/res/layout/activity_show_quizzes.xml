@@ -17,7 +17,7 @@
         android:layout_alignParentTop="true"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/mosab2at_list"
+        android:id="@+id/quizzes_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"

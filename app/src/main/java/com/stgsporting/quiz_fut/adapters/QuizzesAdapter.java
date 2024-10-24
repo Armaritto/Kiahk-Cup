@@ -1,6 +1,6 @@
 package com.stgsporting.quiz_fut.adapters;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,12 +22,12 @@ public class QuizzesAdapter extends RecyclerView.Adapter<QuizzesAdapter.ViewHold
 
     private final List<Quiz> quizzes;
     private final LayoutInflater mInflater;
-    private final Context context;
+    private final Activity activity;
 
-    public QuizzesAdapter(Context context, List<Quiz> quizzes) {
-        this.mInflater = LayoutInflater.from(context);
+    public QuizzesAdapter(Activity activity, List<Quiz> quizzes) {
+        this.mInflater = LayoutInflater.from(activity);
         this.quizzes = quizzes;
-        this.context = context;
+        this.activity = activity;
     }
 
     @Override
@@ -47,9 +47,10 @@ public class QuizzesAdapter extends RecyclerView.Adapter<QuizzesAdapter.ViewHold
         holder.coins.setText(coins);
 
         holder.quiz.setOnClickListener(v-> {
-            Intent intent = new Intent(context, QuizActivity.class);
+            Intent intent = new Intent(activity, QuizActivity.class);
             intent.putExtra("quiz", q.toJson().toString());
-            context.startActivity(intent);
+            intent.putExtra("Data", activity.getIntent().getStringArrayExtra("Data"));
+            activity.startActivity(intent);
         });
     }
 

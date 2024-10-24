@@ -27,7 +27,7 @@ public class QuestionsQuizAdapter extends RecyclerView.Adapter<QuestionsQuizAdap
     @Override
     @NonNull
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.quiz_listitem, parent, false);
+        View view = mInflater.inflate(R.layout.question_listitem, parent, false);
         return new ViewHolder(view);
     }
 

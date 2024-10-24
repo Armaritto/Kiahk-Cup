@@ -47,7 +47,7 @@ public class ShowQuizzesActivity extends AppCompatActivity {
         String[] data = getIntent().getStringArrayExtra("Data");
         Header.render(this, Objects.requireNonNull(data));
 
-        quizzesListView = findViewById(R.id.mosab2at_list);
+        quizzesListView = findViewById(R.id.quizzes_list);
         int numberOfColumns = 2;
         quizzesListView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
 
@@ -76,7 +76,7 @@ public class ShowQuizzesActivity extends AppCompatActivity {
             }
         }catch (JSONException ignored) {}
 
-        RecyclerView.Adapter<QuizzesAdapter.ViewHolder> adapter = new QuizzesAdapter(ShowQuizzesActivity.this, quizzes);
+        RecyclerView.Adapter<QuizzesAdapter.ViewHolder> adapter = new QuizzesAdapter(this, quizzes);
         quizzesListView.setAdapter(adapter);
         loadingDialog.dismiss();
     }
