@@ -24,6 +24,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.data.TextColor;
+import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.Arrays;
@@ -50,7 +51,7 @@ public class MyCardActivity extends AppCompatActivity {
         loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
-        setupHeader(FirebaseDatabase.getInstance(data[1]).getReference("/elmilad25/Users"));
+        Header.render(this, Objects.requireNonNull(data));
 
         Button positionBtn = findViewById(R.id.position_btn);
         Button cardBtn = findViewById(R.id.card_btn);
@@ -169,28 +170,6 @@ public class MyCardActivity extends AppCompatActivity {
             Intent intent = new Intent(MyCardActivity.this, RatingStoreActivity.class);
             intent.putExtra("Data",data);
             startActivity(intent);
-        });
-    }
-
-    private void setupHeader(DatabaseReference ref) {
-        TextView stars = findViewById(R.id.rating);
-        TextView coins = findViewById(R.id.coins);
-        TextView name = findViewById(R.id.nametextview);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String new_name = Arrays.stream(data[0].split("\\s+"))
-                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
-                        .collect(Collectors.joining(" "));
-                name.setText(new_name);
-                stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
         });
     }
 
