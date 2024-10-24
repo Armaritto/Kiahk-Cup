@@ -1,6 +1,7 @@
 package com.stgsporting.quiz_fut.adapters;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,20 +89,11 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             purchasePlayer(getItem(position));
         });
         holder.sellButton.setOnClickListener(v -> {
-//            ConfirmDialog dialog = new ConfirmDialog(context, new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-                    sellPlayer(getItem(holder.getAdapterPosition()));
-//                }
-//            }, new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    // For No action, just close the dialog
-//                    // No need to manually call dialog.dismiss() if auto-dismiss is enabled
-//                }
-//            });
-//            dialog.dismiss();
-
+            View.OnClickListener yesListener = v1 -> {
+                sellPlayer(getItem(position));
+            };
+            View.OnClickListener noListener = v1 -> {};
+            new ConfirmDialog(context,yesListener);
         });
     }
 

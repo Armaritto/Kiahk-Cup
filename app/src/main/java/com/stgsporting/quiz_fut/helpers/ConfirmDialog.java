@@ -1,5 +1,6 @@
 package com.stgsporting.quiz_fut.helpers;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
@@ -12,17 +13,17 @@ import com.example.quiz_fut_draft.R;
 
 public class ConfirmDialog extends Dialog {
 
-    public ConfirmDialog(@NonNull Context context, View.OnClickListener yesListener, View.OnClickListener noListener) {
+    public ConfirmDialog(@NonNull Context context, View.OnClickListener yesListener) {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.loading_dialog);
+        setContentView(R.layout.confirm_dialog);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         setCancelable(true);
         Button yesButton = findViewById(R.id.yes);
         Button noButton = findViewById(R.id.no);
 
         yesButton.setOnClickListener(yesListener);
-        noButton.setOnClickListener(noListener);
+        noButton.setOnClickListener(view -> dismiss());
         show();
     }
 
