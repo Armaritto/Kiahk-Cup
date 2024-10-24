@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quiz_fut_draft.R;
@@ -41,12 +42,18 @@ public class AdminQuizAdapter extends RecyclerView.Adapter<AdminQuizAdapter.View
     // binds the data to the TextView in each cell
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.title.setText(quizzes.get(position).getName());
-        String coins = quizzes.get(position).getCoins() + " Coins";
+        Quiz q = quizzes.get(position);
+
+        holder.title.setText(q.getName());
+
+        String coins = q.getCoins() + " Coins";
         holder.coins.setText(coins);
+
+        holder.startedAt.setText(q.getStartedAtFormatted());
+
         holder.quiz.setOnClickListener(v -> {
             Intent intent = new Intent(context, AddQuestionsToQuizActivity.class);
-            intent.putExtra("quiz", quizzes.get(position).toJson().toString());
+            intent.putExtra("quiz", q.toJson().toString());
             context.startActivity(intent);
         });
     }
@@ -61,13 +68,15 @@ public class AdminQuizAdapter extends RecyclerView.Adapter<AdminQuizAdapter.View
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         TextView coins;
-        RelativeLayout quiz;
+        TextView startedAt;
+        CardView quiz;
 
         ViewHolder(View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.title);
-            coins = itemView.findViewById(R.id.coins);
-            quiz = itemView.findViewById(R.id.quiz);
+            title = itemView.findViewById(R.id.quiz_title);
+            coins = itemView.findViewById(R.id.quiz_coins);
+            startedAt = itemView.findViewById(R.id.quiz_stated_at);
+            quiz = itemView.findViewById(R.id.quiz_card);
         }
     }
 }

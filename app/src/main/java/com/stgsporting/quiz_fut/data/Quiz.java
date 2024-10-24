@@ -6,27 +6,42 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class Quiz {
     private final int id;
     private final String name;
-
     private final int coins;
+
+    private final LocalDateTime startedAt;
 
     private List<Question> questions;
 
-    public Quiz(int id, String name, int coins) {
+    public Quiz(int id, String name, int coins, LocalDateTime startedAt) {
         this.id = id;
         this.name = name;
         this.coins = coins;
         questions = new ArrayList<>();
+        this.startedAt = startedAt;
     }
 
     public static Quiz fromJson(JSONObject json) throws JSONException {
-        Quiz quiz = new Quiz(json.getInt("id"), json.getString("name"), json.getInt("coins"));
+        String startedAtString = json.getString("started_at");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime startedAt = LocalDateTime.parse(startedAtString, formatter);
+
+        Quiz quiz = new Quiz(
+                json.getInt("id"),
+                json.getString("name"),
+                json.getInt("coins"),
+                startedAt
+        );
 
         if(json.has("questions")) {
             JSONArray questions = json.getJSONArray("questions");
@@ -111,5 +126,15 @@ public class Quiz {
                 ", coins=" + coins +
                 ", questions=" + questions +
                 '}';
+    }
+
+    public LocalDateTime getStartedAt() {
+        return startedAt;
+    }
+
+    public String getStartedAtFormatted() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
+
+        return startedAt.format(formatter);
     }
 }

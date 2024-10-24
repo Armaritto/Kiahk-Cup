@@ -1,24 +1,65 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:id="@+id/quiz"
-    style="@style/home_button"
-android:layout_width="match_parent"
-android:layout_height="@dimen/_150sdp">
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    android:id="@+id/quiz_card">
 
-<ImageView
-    android:id="@+id/pic1"
-    style="@style/pic_home_btn"
-    android:src="@drawable/quiz"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
 
-<TextView
-    android:id="@+id/coins"
-    style="@style/sub_home_btn"/>
+        <!-- Quiz Image -->
+        <ImageView
+            android:id="@+id/pic1"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/quiz"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="Quiz Image"
+            android:scaleType="centerCrop"
+            android:paddingHorizontal="@dimen/_10sdp"
+            android:layout_marginEnd="16dp"/>
 
-<TextView
-    style="@style/title_home_btn"
-    android:id="@+id/title"
-    android:paddingTop="@dimen/_10sdp"
-    android:layout_above="@+id/coins"
-    android:layout_below="@+id/pic1"/>
+        <!-- Quiz Title -->
+        <TextView
+            android:id="@+id/quiz_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Quiz Name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/pic1"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
-</RelativeLayout>
+        <!-- Coins -->
+        <TextView
+            android:id="@+id/quiz_coins"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="50 Coins"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/quiz_title"
+            app:layout_constraintStart_toEndOf="@id/pic1"/>
+
+        <!-- Quiz Date -->
+        <TextView
+            android:id="@+id/quiz_stated_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="01/01/2024"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
