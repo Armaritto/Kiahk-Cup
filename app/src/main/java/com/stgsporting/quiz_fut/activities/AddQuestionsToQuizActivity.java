@@ -99,6 +99,10 @@ public class AddQuestionsToQuizActivity extends AppCompatActivity {
         TextView quizName = findViewById(R.id.quiz_name_title);
         quizName.setText(quiz.getName());
 
+        if(quiz.getQuestions().isEmpty()) {
+            quiz.addEmptyQuestion();
+        }
+
         RecyclerView questions = findViewById(R.id.add_questions_list);
         RecyclerView.Adapter<AddQuestionAdapter.ViewHolder> questionsAdapter = new AddQuestionAdapter(this, quiz);
         questions.setAdapter(questionsAdapter);

@@ -44,7 +44,7 @@ public class Quiz {
                 .max(Comparator.comparingInt(Question::getId)).orElse(null);
         int id = question == null ? -1 : question.getId();
 
-        addQuestion(new Question(id + 1, "", -1, new ArrayList<>(), 0));
+        addQuestion(new Question(id + 1, "", -1, new ArrayList<>(), -1));
     }
 
     public JSONObject toJson() {

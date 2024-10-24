@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -42,7 +43,9 @@ public class AddQuestionAdapter extends RecyclerView.Adapter<AddQuestionAdapter.
         Question q = quiz.getQuestions().get(position);
 
         holder.title.setText(q.getTitle());
-        holder.points.setText(Integer.toString(q.getPoints()));
+        if(q.getPoints() >= 0) {
+            holder.points.setText(String.format("%s", q.getPoints()));
+        }
 
         for (int i = 0; i < Math.min(4, q.getOptions().size()); i++) {
             holder.options.get(i).setText(q.getOptions().get(i));
@@ -97,6 +100,11 @@ public class AddQuestionAdapter extends RecyclerView.Adapter<AddQuestionAdapter.
                 q.setCorrectOption(finalI);
             });
         }
+
+        holder.delete.setOnClickListener((v) -> {
+            quiz.removeQuestion(q);
+            notifyDataSetChanged();
+        });
     }
 
     @Override
@@ -112,11 +120,14 @@ public class AddQuestionAdapter extends RecyclerView.Adapter<AddQuestionAdapter.
         List<EditText> options;
         List<RadioButton> optionsCorrect;
 
+        ImageButton delete;
+
         ViewHolder(View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.question_title_editor);
             correctOption = itemView.findViewById(R.id.correct_option_radio);
             points = itemView.findViewById(R.id.points_editor);
+            delete = itemView.findViewById(R.id.delete_question_button);
 
             options = new ArrayList<>();
             optionsCorrect = new ArrayList<>();
