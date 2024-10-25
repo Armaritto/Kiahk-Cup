@@ -49,10 +49,22 @@
             android:name="com.stgsporting.quiz_fut.activities.LineupActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.Mosab2aActivity"
+            android:name="com.stgsporting.quiz_fut.activities.ShowQuizzesActivity"
             android:exported="false" />
         <activity
             android:name="com.stgsporting.quiz_fut.activities.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.stgsporting.quiz_fut.activities.AdminActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.stgsporting.quiz_fut.activities.AddQuizActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.stgsporting.quiz_fut.activities.AddQuestionsToQuizActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.stgsporting.quiz_fut.activities.QuizActivity"
             android:exported="false" />
         <activity
             android:name="com.stgsporting.quiz_fut.activities.GradeActivity"

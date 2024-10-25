@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/other_background"
+    tools:context="com.stgsporting.quiz_fut.activities.AddQuizActivity">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_18sdp"
+        android:layout_marginVertical="@dimen/_10sdp"
+        android:backgroundTint="#FFFFFF"
+        app:cardBackgroundColor="#BCD6E6CD">
+
+        <LinearLayout
+            android:paddingHorizontal="@dimen/_7sdp"
+            android:paddingVertical="@dimen/_8sdp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@drawable/empty_tall_divider"
+            android:isScrollContainer="true"
+            android:orientation="vertical"
+            android:showDividers="middle">
+
+            <EditText
+                android:id="@+id/quiz_name_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Name"
+                android:inputType="text" />
+
+            <TextView
+                android:id="@+id/started_at_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                tools:text="-- Choose Date --" />
+
+            <Button
+                android:id="@+id/create_quiz_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Create Quiz" />
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/quizzes_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/cardView"
+        android:paddingHorizontal="@dimen/_4sdp"
+        android:paddingVertical="@dimen/_4sdp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+
+</RelativeLayout>

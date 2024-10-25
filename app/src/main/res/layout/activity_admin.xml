@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/other_background"
+    tools:context="com.stgsporting.quiz_fut.activities.AdminActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingVertical="0dp">
+
+        <Button
+            android:id="@+id/view_users_list"
+            style="@style/main_button"
+            android:text="Users List"
+            android:background="@drawable/settings"/>
+
+        <Button
+            android:id="@+id/manage_quizzes"
+            style="@style/main_button"
+            android:text="Manage Quizzes"
+            android:background="@drawable/settings"/>
+
+
+    </LinearLayout>
+
+
+</ScrollView>

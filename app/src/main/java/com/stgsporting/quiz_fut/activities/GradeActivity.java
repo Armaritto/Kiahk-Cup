@@ -14,7 +14,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -63,44 +63,45 @@ public class GradeActivity extends AppCompatActivity {
             switch (selected.getText().toString()) {
                 case "Junior 1":
 //                    setupDatabase("https://j1-fut-draft-default-rtdb.firebaseio.com/",
-//                            "gs://j1-fut-draft.appspot.com/");
+//                            "gs://j1-fut-draft.appspot.com/", "1");
                     Intent intent = new Intent(GradeActivity.this, MaintenanceActivity.class);
                     startActivity(intent);
                     finish();
                     break;
                 case "Junior 2":
                     setupDatabase("https://j2-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://j2-fut-draft.appspot.com/");
+                            "gs://j2-fut-draft.appspot.com/", "2");
                     break;
                 case "Junior 3":
                     setupDatabase("https://j3-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://j3-fut-draft.appspot.com/");
+                            "gs://j3-fut-draft.appspot.com/", "3");
                     break;
                 case "Junior 4":
                     setupDatabase("https://j4-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://j4-fut-draft.appspot.com/");
+                            "gs://j4-fut-draft.appspot.com/", "4");
                     break;
                 case "Junior 5":
                     setupDatabase("https://j5-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://j5-fut-draft.appspot.com/");
+                            "gs://j5-fut-draft.appspot.com/", "5");
                     break;
                 case "Junior 6":
                     setupDatabase("https://j6-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://j6-fut-draft.appspot.com/");
+                            "gs://j6-fut-draft.appspot.com/", "6");
                     break;
                 default:
                     setupDatabase("https://quiz-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://quiz-fut-draft.appspot.com/");
+                            "gs://quiz-fut-draft.appspot.com/", "6");
                     break;
             }
         });
 
     }
 
-    private void setupDatabase(String dbURL, String storageURL) {
+    private void setupDatabase(String dbURL, String storageURL, String schoolYear) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("Database", dbURL);
         editor.putString("Storage", storageURL);
+        editor.putString("school_year", schoolYear);
         editor.apply();
         checkMaintenance(dbURL, storageURL);
     }

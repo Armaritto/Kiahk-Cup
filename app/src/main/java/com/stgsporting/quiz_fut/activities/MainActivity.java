@@ -12,17 +12,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.stgsporting.quiz_fut.helpers.HeaderSetup;
+import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         data = getIntent().getStringArrayExtra("Data");
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
+        Header.render(this, Objects.requireNonNull(data));
         Button mosab2a = findViewById(R.id.mosab2a);
         Button lineup = findViewById(R.id.lineup);
         Button myCard = findViewById(R.id.myCard);
@@ -53,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
         database.getReference("elmilad25").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                new HeaderSetup(MainActivity.this, snapshot, data);
                 if(!Objects.equals(data[0], "admin")){
                     if (snapshot.hasChild("Leaderboard") &&
                             Boolean.parseBoolean(snapshot.child("Leaderboard").getValue().toString())) {
@@ -77,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         mosab2a.setOnClickListener(v-> {
-            Intent intent = new Intent(MainActivity.this, Mosab2aActivity.class);
+            Intent intent = new Intent(MainActivity.this, ShowQuizzesActivity.class);
             intent.putExtra("Data", data);
             startActivity(intent);
         });
@@ -127,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
             String input = dialogInput.getText().toString();
             // Handle the input
             if (input.equals("admin")) {
-                Intent intent = new Intent(MainActivity.this, UsersListActivity.class);
+                Intent intent = new Intent(MainActivity.this, AdminActivity.class);
                 intent.putExtra("Data", data);
                 startActivity(intent);
             }

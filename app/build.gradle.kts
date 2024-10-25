@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.quiz_fut_draft"
+    namespace = "com.stgsporting.quiz_fut"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.quiz_fut_draft"
+        applicationId = "com.stgsporting.quiz_fut"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

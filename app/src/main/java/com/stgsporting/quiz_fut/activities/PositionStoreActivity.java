@@ -11,7 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,10 +19,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.adapters.PositionStoreAdapter;
 import com.stgsporting.quiz_fut.data.Position;
-import com.stgsporting.quiz_fut.helpers.HeaderSetup;
+import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class PositionStoreActivity extends AppCompatActivity {
 
@@ -42,6 +43,7 @@ public class PositionStoreActivity extends AppCompatActivity {
         LoadingDialog loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
+        Header.render(this, Objects.requireNonNull(data));
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
 
@@ -54,7 +56,6 @@ public class PositionStoreActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataS) {
-                new HeaderSetup(PositionStoreActivity.this, dataS.child("elmilad25"), data);
                 DataSnapshot snapshot = dataS.child("elmilad25").child("CardPosition");
                 ArrayList<Position> positions = new ArrayList<>();
                 ArrayList<String> positionsIds = new ArrayList<>();
@@ -92,5 +93,4 @@ public class PositionStoreActivity extends AppCompatActivity {
             }
         });
     }
-
 }

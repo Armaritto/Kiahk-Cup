@@ -13,7 +13,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,10 +24,11 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.data.TextColor;
-import com.stgsporting.quiz_fut.helpers.HeaderSetup;
+import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MyCardActivity extends AppCompatActivity {
@@ -50,6 +51,7 @@ public class MyCardActivity extends AppCompatActivity {
         loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
+        Header.render(this, Objects.requireNonNull(data));
 
         Button positionBtn = findViewById(R.id.position_btn);
         Button cardBtn = findViewById(R.id.card_btn);
@@ -67,7 +69,6 @@ public class MyCardActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataS) {
-                new HeaderSetup(MyCardActivity.this, dataS.child("elmilad25"), data);
                 if (dataS.child("/elmilad25/Users").child(data[0])
                         .child("Owned Card Icons").hasChild("Selected")) {
                     String selected = dataS.child("/elmilad25/Users").child(data[0]).child("Owned Card Icons").child("Selected").getValue().toString();

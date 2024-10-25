@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/other_background"
-    tools:context="com.stgsporting.quiz_fut.activities.Mosab2aActivity">
+    tools:context="com.stgsporting.quiz_fut.activities.ShowQuizzesActivity">
 
     <include
         android:id="@+id/header"
@@ -17,7 +17,7 @@
         android:layout_alignParentTop="true"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/mosab2at_list"
+        android:id="@+id/quizzes_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"

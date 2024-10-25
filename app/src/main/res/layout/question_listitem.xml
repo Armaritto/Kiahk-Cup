@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/question"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/_10sdp"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/question_title"
+        style="@style/title_home_btn"
+        android:paddingVertical="@dimen/_10sdp"
+        app:flow_horizontalAlign="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_8sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        app:layout_constraintStart_toStartOf="@+id/question_title"
+        app:layout_constraintTop_toBottomOf="@+id/question_title"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:id="@+id/options"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

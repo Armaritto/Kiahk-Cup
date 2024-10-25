@@ -6,7 +6,7 @@ import android.view.Window;
 
 import androidx.annotation.NonNull;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 
 public class LoadingDialog extends Dialog {
 

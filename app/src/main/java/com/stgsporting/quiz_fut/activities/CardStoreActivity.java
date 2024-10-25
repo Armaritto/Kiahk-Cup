@@ -11,7 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,15 +21,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.stgsporting.quiz_fut.data.CardIcon;
 import com.stgsporting.quiz_fut.adapters.CardStoreAdapter;
-import com.stgsporting.quiz_fut.helpers.HeaderSetup;
+import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
-
-import okhttp3.internal.http2.Header;
 
 public class CardStoreActivity extends AppCompatActivity {
 
@@ -48,6 +44,7 @@ public class CardStoreActivity extends AppCompatActivity {
         LoadingDialog loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
+        Header.render(this, Objects.requireNonNull(data));
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
@@ -61,7 +58,6 @@ public class CardStoreActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                new HeaderSetup(CardStoreActivity.this, dataSnapshot.child("elmilad25"), data);
                 DataSnapshot snapshot = dataSnapshot.child("elmilad25").child("CardIcon");
                 ArrayList<CardIcon> cards = new ArrayList<>();
                 ArrayList<String> cardsNames = new ArrayList<>();
@@ -115,5 +111,4 @@ public class CardStoreActivity extends AppCompatActivity {
         });
 
     }
-
 }

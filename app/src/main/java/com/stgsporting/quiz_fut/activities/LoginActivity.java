@@ -13,7 +13,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,7 +49,8 @@ public class LoginActivity extends AppCompatActivity {
             String[] data = {
                     sharedPreferences.getString("Name", ""),
                     sharedPreferences.getString("Database", ""),
-                    sharedPreferences.getString("Storage", "")
+                    sharedPreferences.getString("Storage", ""),
+                    sharedPreferences.getString("school_year", "")
             };
             intent.putExtra("Data", data);
             startActivity(intent);
@@ -96,7 +97,8 @@ public class LoginActivity extends AppCompatActivity {
                         String[] data = {
                                 name,
                                 sharedPreferences.getString("Database", ""),
-                                sharedPreferences.getString("Storage", "")
+                                sharedPreferences.getString("Storage", ""),
+                                sharedPreferences.getString("school_year", "")
                         };
                         intent.putExtra("Data", data);
                         startActivity(intent);

@@ -10,7 +10,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quiz_fut_draft.R;
+import com.google.android.gms.tasks.Task;
+import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,16 +20,16 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.stgsporting.quiz_fut.adapters.LeaderboardAdapter;
 import com.stgsporting.quiz_fut.data.Lineup;
-import com.stgsporting.quiz_fut.helpers.HeaderSetup;
+import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class LeaderboardActivity extends AppCompatActivity {
@@ -48,6 +49,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         LoadingDialog loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
+        Header.render(this, Objects.requireNonNull(data));
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
@@ -57,10 +59,12 @@ public class LeaderboardActivity extends AppCompatActivity {
         int numberOfColumns = 1;
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
 
+//        Task<DataSnapshot> task = ref.child("/elmilad25/Users").get();
+//        task.
+
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                new HeaderSetup(LeaderboardActivity.this, snapshot.child("elmilad25"), data);
                 DataSnapshot userData = snapshot.child("/elmilad25/Users");
                 HashMap<String,Integer> allUsersRatings = new HashMap<>();
                 for (DataSnapshot aUserData : snapshot.child("/elmilad25/Users").getChildren()) {

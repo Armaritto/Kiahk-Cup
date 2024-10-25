@@ -12,14 +12,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.stgsporting.quiz_fut.helpers.HeaderSetup;
+import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
+
+import java.util.Objects;
 
 public class RatingStoreActivity extends AppCompatActivity {
 
@@ -50,12 +52,13 @@ public class RatingStoreActivity extends AppCompatActivity {
         data = getIntent().getStringArrayExtra("Data");
         new_rating.setText(String.valueOf(rating));
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
+        Header.render(this, Objects.requireNonNull(data));
         DatabaseReference ref = database.getReference();
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataS) {
-                new HeaderSetup(RatingStoreActivity.this, dataS.child("elmilad25"), data);
+
                 DataSnapshot userData = dataS.child("/elmilad25/Users").child(data[0]);
                 rating = Integer.parseInt(userData.child("Card").child("Rating").getValue().toString());
                 new_rating.setText(String.valueOf(rating));
@@ -108,5 +111,4 @@ public class RatingStoreActivity extends AppCompatActivity {
             }
         });
     }
-
 }

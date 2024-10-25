@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/question_form"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/_8sdp"
+    android:layout_marginVertical="@dimen/_15sdp"
+    android:background="@color/white"
+    android:divider="@drawable/empty_tall_divider"
+    android:orientation="vertical"
+    android:showDividers="middle">
+
+
+    <ImageButton
+        android:id="@+id/delete_question_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="Delete Question"
+        app:srcCompat="@android:drawable/ic_delete" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputEditText.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Title">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/question_title_editor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint=""
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputEditText.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Points">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/points_editor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint=""
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/option1_text"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_40sdp"
+                android:ems="10"
+                android:hint="Option 1"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/option2_text"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_40sdp"
+                android:ems="10"
+                android:hint="Option 2"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/option3_text"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_40sdp"
+                android:ems="10"
+                android:hint="Option 3"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/option4_text"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_40sdp"
+                android:ems="10"
+                android:hint="Option 4"
+                android:inputType="text" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RadioGroup
+                android:id="@+id/correct_option_radio"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RadioButton
+                    android:id="@+id/option1_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_40sdp"
+                    android:text="Correct" />
+
+                <RadioButton
+                    android:id="@+id/option2_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_40sdp"
+                    android:text="Correct" />
+
+                <RadioButton
+                    android:id="@+id/option3_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_40sdp"
+                    android:text="Correct" />
+
+                <RadioButton
+                    android:id="@+id/option4_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_40sdp"
+                    android:text="Correct" />
+
+            </RadioGroup>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

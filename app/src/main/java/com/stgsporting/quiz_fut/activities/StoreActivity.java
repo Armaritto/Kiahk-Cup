@@ -11,7 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,9 +19,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.stgsporting.quiz_fut.adapters.StoreAdapter;
 import com.stgsporting.quiz_fut.data.Card;
-import com.stgsporting.quiz_fut.helpers.HeaderSetup;
+import com.stgsporting.quiz_fut.adapters.StoreAdapter;
+import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
@@ -65,10 +65,11 @@ public class StoreActivity extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
         DatabaseReference ref = database.getReference();
 
+        Header.render(this, Objects.requireNonNull(data));
+
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                new HeaderSetup(StoreActivity.this, snapshot.child("elmilad25"), data);
                 coins = Integer.parseInt(Objects.requireNonNull(snapshot.child("elmilad25").child("Users").child(data[0]).child("Coins").getValue()).toString());
                 DataSnapshot storeData = snapshot.child("elmilad25").child("Store");
                 DataSnapshot ownedData = snapshot.child("/elmilad25/Users").child(data[0]).child("Owned Cards");
