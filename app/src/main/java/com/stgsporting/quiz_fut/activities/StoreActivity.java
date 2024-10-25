@@ -1,7 +1,6 @@
 package com.stgsporting.quiz_fut.activities;
 
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,9 +25,7 @@ import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class StoreActivity extends AppCompatActivity {
 
@@ -73,10 +70,9 @@ public class StoreActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                coins = Integer.parseInt(Objects.requireNonNull(snapshot.child("elmilad25").child("Users").child(data[0]).child("Coins").getValue()).toString());
                 DataSnapshot storeData = snapshot.child("elmilad25").child("Store");
                 DataSnapshot ownedData = snapshot.child("/elmilad25/Users").child(data[0]).child("Owned Cards");
-                DataSnapshot lineupData = snapshot.child("/elmilad25/Users").child(data[0]).child("Lineup");
 
                 ArrayList<Card> cards = new ArrayList<>();
                 for (DataSnapshot cardData : storeData.getChildren()) {
@@ -95,12 +91,7 @@ public class StoreActivity extends AppCompatActivity {
                         card.setOwned(true);
                     else
                         card.setOwned(false);
-                    boolean flag = false;
-                    for (DataSnapshot usedCard : lineupData.getChildren()) {
-                        if (card.getID().equals(usedCard.getValue().toString())) flag = true;
-                    }
-
-                    if (!flag) cards.add(card);
+                    cards.add(card);
                 }
 
                 imagesToLoad = cards.size();
@@ -116,7 +107,7 @@ public class StoreActivity extends AppCompatActivity {
                                 imagesToLoad--;
                                 if (imagesToLoad==0) {
                                     adapter = new StoreAdapter(
-                                            StoreActivity.this, cards, coins, database, data[0], cardPosition, loadingDialog);
+                                            StoreActivity.this, cards, coins, database, data[0], cardPosition, loadingDialog, storage);
                                     recyclerView.setAdapter(adapter);
                                 }
                             })

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/popup_background"
+    android:gravity="center"
+    android:paddingHorizontal="@dimen/_40sdp"
+    android:paddingVertical="@dimen/_26sdp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Are You Sure?"
+        android:textSize="@dimen/_27sdp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/yes"
+            android:layout_width="@dimen/_70sdp"
+            android:layout_height="wrap_content"
+            android:text="Yes"
+            android:textAllCaps="false"
+            android:background="@drawable/button_background5"
+            android:fontFamily="@font/segoebold"
+            android:textStyle="bold"
+            android:textSize="@dimen/_18sdp"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/_19sdp"
+            android:layout_marginRight="@dimen/_30sdp"
+            android:padding="@dimen/_8sdp"/>
+
+        <Button
+            android:id="@+id/no"
+            android:layout_width="@dimen/_70sdp"
+            android:layout_height="wrap_content"
+            android:text="No"
+            android:textAllCaps="false"
+            android:background="@drawable/button_background5"
+            android:fontFamily="@font/segoebold"
+            android:textStyle="bold"
+            android:textSize="@dimen/_18sdp"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/_19sdp"
+            android:padding="@dimen/_8sdp"/>
+    </LinearLayout>
+
+
+</LinearLayout>

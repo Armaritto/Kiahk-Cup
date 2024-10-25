@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,15 +15,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,10 +49,10 @@ public class MainActivity extends AppCompatActivity {
             leaderboard.setVisibility(View.VISIBLE);
             loadingDialog.dismiss();
         }
-        else { // View Leaderboard for admin all the time
-            database.getReference("elmilad25").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
+        database.getReference("elmilad25").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(!Objects.equals(data[0], "admin")){
                     if (snapshot.hasChild("Leaderboard") &&
                             Boolean.parseBoolean(snapshot.child("Leaderboard").getValue().toString())) {
                         leaderboard.setVisibility(View.VISIBLE);
@@ -65,15 +61,18 @@ public class MainActivity extends AppCompatActivity {
                     }
                     loadingDialog.dismiss();
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                if(!Objects.equals(data[0], "admin")){
                     loadingDialog.dismiss();
                     Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
                     finish();
                 }
-            });
-        }
+            }
+        });
+
 
         mosab2a.setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, ShowQuizzesActivity.class);

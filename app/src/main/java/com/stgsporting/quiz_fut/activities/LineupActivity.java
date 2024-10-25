@@ -1,11 +1,15 @@
 package com.stgsporting.quiz_fut.activities;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -14,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
@@ -24,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.data.Card;
 import com.stgsporting.quiz_fut.data.TextColor;
@@ -94,6 +100,7 @@ public class LineupActivity extends AppCompatActivity {
                     int1.putExtra("Data", data);
                     int1.putExtra("Card", cardPos);
                     startActivity(int1);
+                    finish();
                 });
         }
 
@@ -103,6 +110,7 @@ public class LineupActivity extends AppCompatActivity {
         DatabaseReference userRef = ref.child("/elmilad25/Users").child(data[0]);
 
         ref.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -129,6 +137,7 @@ public class LineupActivity extends AppCompatActivity {
                     String usedPosition = userPos;
                     if (usedPosition.equals("CB")) usedPosition = "LCB";
                     if (usedPosition.equals("CM")) usedPosition = "LCM";
+
                     if (cardPos.equals(usedPosition)) {
                         setUserCardImage(cardImage, userData, snapshot);
                         if (userData.child("Card").hasChild("Rating"))
@@ -311,6 +320,7 @@ public class LineupActivity extends AppCompatActivity {
     }
 
     private void resetImages() {
+        Log.println(Log.INFO, "Reset", "Images");
         for (ImageView img : lineupCards) {
             img.setImageDrawable(getResources().getDrawable(R.drawable.empty));
         }

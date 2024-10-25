@@ -23,16 +23,14 @@ import com.stgsporting.quiz_fut.data.Lineup;
 import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
+
 
 public class LeaderboardActivity extends AppCompatActivity {
 
@@ -56,8 +54,6 @@ public class LeaderboardActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
         DatabaseReference ref = database.getReference();
-
-        Header.render(this, Objects.requireNonNull(data));
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view_lineups);
         int numberOfColumns = 1;

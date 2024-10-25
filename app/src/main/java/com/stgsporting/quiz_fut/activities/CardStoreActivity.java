@@ -1,7 +1,6 @@
 package com.stgsporting.quiz_fut.activities;
 
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,9 +25,7 @@ import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class CardStoreActivity extends AppCompatActivity {
 
@@ -98,9 +95,8 @@ public class CardStoreActivity extends AppCompatActivity {
                                 cards.get(j).setImageLink(downloadUrl);
                                 if (j==cards.size()-1) {
                                     CardStoreAdapter adapter = new CardStoreAdapter(
-                                            CardStoreActivity.this, cards, database, data[0]);
+                                            CardStoreActivity.this, cards, database, data[0], loadingDialog);
                                     recyclerView.setAdapter(adapter);
-                                    loadingDialog.dismiss();
                                 }
                             })
                             .addOnFailureListener(e -> Toast.makeText(CardStoreActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show());

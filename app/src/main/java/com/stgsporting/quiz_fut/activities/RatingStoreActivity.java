@@ -21,9 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class RatingStoreActivity extends AppCompatActivity {
 

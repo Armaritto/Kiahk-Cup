@@ -61,21 +61,29 @@ public class GradeActivity extends AppCompatActivity {
             }
             loadingDialog = new LoadingDialog(this);
             switch (selected.getText().toString()) {
-//                case "Junior 1":
-//                    setupDatabase(j1);
-//                    break;
-//                case "Junior 2":
-//                    setupDatabase(j2);
-//                    break;
-//                case "Junior 3":
-//                    setupDatabase(j3);
-//                    break;
-//                case "Junior 4":
-//                    setupDatabase(j4);
-//                    break;
-//                case "Junior 5":
-//                    setupDatabase(j5);
-//                    break;
+                case "Junior 1":
+//                    setupDatabase("https://j1-fut-draft-default-rtdb.firebaseio.com/",
+//                            "gs://j1-fut-draft.appspot.com/");
+                    Intent intent = new Intent(GradeActivity.this, MaintenanceActivity.class);
+                    startActivity(intent);
+                    finish();
+                    break;
+                case "Junior 2":
+                    setupDatabase("https://j2-fut-draft-default-rtdb.firebaseio.com/",
+                            "gs://j2-fut-draft.appspot.com/");
+                    break;
+                case "Junior 3":
+                    setupDatabase("https://j3-fut-draft-default-rtdb.firebaseio.com/",
+                            "gs://j3-fut-draft.appspot.com/");
+                    break;
+                case "Junior 4":
+                    setupDatabase("https://j4-fut-draft-default-rtdb.firebaseio.com/",
+                            "gs://j4-fut-draft.appspot.com/");
+                    break;
+                case "Junior 5":
+                    setupDatabase("https://j5-fut-draft-default-rtdb.firebaseio.com/",
+                            "gs://j5-fut-draft.appspot.com/");
+                    break;
                 case "Junior 6":
                     setupDatabase("https://j6-fut-draft-default-rtdb.firebaseio.com/",
                             "gs://j6-fut-draft.appspot.com/", "6");
