@@ -25,6 +25,7 @@ import com.stgsporting.quiz_fut.helpers.HeaderSetup;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class StoreActivity extends AppCompatActivity {
 
@@ -68,10 +69,9 @@ public class StoreActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 new HeaderSetup(StoreActivity.this, snapshot.child("elmilad25"), data);
-
+                coins = Integer.parseInt(Objects.requireNonNull(snapshot.child("elmilad25").child("Users").child(data[0]).child("Coins").getValue()).toString());
                 DataSnapshot storeData = snapshot.child("elmilad25").child("Store");
                 DataSnapshot ownedData = snapshot.child("/elmilad25/Users").child(data[0]).child("Owned Cards");
-                DataSnapshot lineupData = snapshot.child("/elmilad25/Users").child(data[0]).child("Lineup");
 
                 ArrayList<Card> cards = new ArrayList<>();
                 for (DataSnapshot cardData : storeData.getChildren()) {
@@ -90,12 +90,7 @@ public class StoreActivity extends AppCompatActivity {
                         card.setOwned(true);
                     else
                         card.setOwned(false);
-                    boolean flag = false;
-                    for (DataSnapshot usedCard : lineupData.getChildren()) {
-                        if (card.getID().equals(usedCard.getValue().toString())) flag = true;
-                    }
-
-                    if (!flag) cards.add(card);
+                    cards.add(card);
                 }
 
                 imagesToLoad = cards.size();
@@ -111,7 +106,7 @@ public class StoreActivity extends AppCompatActivity {
                                 imagesToLoad--;
                                 if (imagesToLoad==0) {
                                     adapter = new StoreAdapter(
-                                            StoreActivity.this, cards, coins, database, data[0], cardPosition, loadingDialog);
+                                            StoreActivity.this, cards, coins, database, data[0], cardPosition, loadingDialog, storage);
                                     recyclerView.setAdapter(adapter);
                                 }
                             })

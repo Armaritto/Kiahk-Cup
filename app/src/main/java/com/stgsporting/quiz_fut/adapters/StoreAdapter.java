@@ -2,6 +2,7 @@ package com.stgsporting.quiz_fut.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +17,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quiz_fut_draft.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.stgsporting.quiz_fut.activities.LineupActivity;
 import com.stgsporting.quiz_fut.data.Card;
+import com.stgsporting.quiz_fut.helpers.ConfirmDialog;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> {
 
@@ -30,22 +35,24 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     private final Context context;
     private int points;
     private final FirebaseDatabase database;
-    private final String ID;
+    private final String name;
     private final String cardPosition;
     private LoadingDialog loadingDialog;
     private int imgs;
+    private FirebaseStorage storage;
 
     // data is passed into the constructor
     public StoreAdapter(Context context, ArrayList<Card> cards, int points, FirebaseDatabase database,
-                 String ID, String cardPosition, LoadingDialog loadingDialog) {
+                        String name, String cardPosition, LoadingDialog loadingDialog, FirebaseStorage storage) {
         this.mInflater = LayoutInflater.from(context);
         this.cards = cards;
         this.context = context;
         this.points = points;
         this.database = database;
-        this.ID = ID;
+        this.name = name;
         this.cardPosition = cardPosition;
         this.loadingDialog = loadingDialog;
+        this.storage = storage;
     }
 
     // inflates the cell layout from xml when needed
@@ -61,7 +68,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         loadingDialog.show();
         imgs++;
-        holder.price.setText(cards.get(position).getPrice()+"$");
+        holder.price.setText(cards.get(position).getPrice()+" €");
         Picasso.get().load(cards.get(position).getImageLink()).into(holder.img, new Callback() {
             @Override
             public void onSuccess() {
@@ -77,10 +84,21 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             }
         });
         if (cards.get(position).isOwned()) {
-            holder.button.setText("Select");
+            holder.purchaseButton.setText("Select");
+            holder.sellButton.setVisibility(View.VISIBLE);
         }
-        holder.button.setOnClickListener(v-> {
-            purchaseObject(getItem(position));
+        else{
+            holder.sellButton.setVisibility(View.INVISIBLE);
+        }
+        holder.purchaseButton.setOnClickListener(v-> {
+            purchasePlayer(getItem(position));
+        });
+        holder.sellButton.setOnClickListener(v -> {
+            View.OnClickListener yesListener = v1 -> {
+                sellPlayer(getItem(position));
+            };
+            View.OnClickListener noListener = v1 -> {};
+            new ConfirmDialog(context,yesListener);
         });
     }
 
@@ -94,13 +112,15 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView img;
         TextView price;
-        Button button;
+        Button purchaseButton;
+        Button sellButton;
 
         ViewHolder(View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.img);
             price = itemView.findViewById(R.id.price);
-            button = itemView.findViewById(R.id.purchase);
+            purchaseButton = itemView.findViewById(R.id.purchase);
+            sellButton = itemView.findViewById(R.id.sell);
         }
 
         @Override
@@ -112,9 +132,9 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         return cards.get(id);
     }
 
-    public void purchaseObject(Card card) {
+    public void purchasePlayer(Card card) {
 
-        DatabaseReference userRef = database.getReference("/elmilad25/Users").child(ID);
+        DatabaseReference userRef = database.getReference("/elmilad25/Users").child(name);
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
 
         if (card.isOwned()) {
@@ -129,9 +149,50 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 userRef.child("Coins").setValue(points);
                 cardRef.setValue(true);
                 userRef.child("Lineup").child(cardPosition).setValue(card.getID());
+                Intent intent = new Intent(context, LineupActivity.class);
+                String[] data = {
+                        name,
+                        database.getReference().toString(),
+                        storage.getReference().toString()
+                };
+                intent.putExtra("Data",data);
+                intent.putExtra("OtherLineup",false);
+                context.startActivity(intent);
                 ((Activity) context).finish();
             }
         }
+
+    }
+
+    public void sellPlayer(Card card) {
+
+        DatabaseReference userRef = database.getReference("/elmilad25/Users").child(name);
+        DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
+
+        int price = card.getPrice();
+        points += price/2;
+        userRef.child("Coins").setValue(points);
+        cardRef.removeValue();
+        userRef.child("Lineup").child(cardPosition).addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
+                if(Objects.requireNonNull(snapshot.getValue()).toString().equals(card.getID()))
+                    userRef.child("Lineup").child(cardPosition).removeValue();
+            }
+            @Override
+            public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
+        });
+        card.setOwned(false);
+        Intent intent = new Intent(context, LineupActivity.class);
+        String[] data = {
+                name,
+                database.getReference().toString(),
+                storage.getReference().toString()
+        };
+        intent.putExtra("Data",data);
+        intent.putExtra("OtherLineup",false);
+        context.startActivity(intent);
+        ((Activity) context).finish();
 
     }
 
