@@ -17,6 +17,8 @@ public class Question {
     private int points;
     private List<String> options;
 
+    private int selectedOption = -1;
+
     public Question(int id, String title, int correctOption, List<String> options, int points) {
         this.id = id;
         this.title = title;
@@ -121,5 +123,13 @@ public class Question {
                 ", points=" + points +
                 ", options=" + options +
                 '}';
+    }
+
+    public int getSelectedOption() {
+        return selectedOption;
+    }
+
+    public void setSelectedOption(int selectedOption) {
+        this.selectedOption = selectedOption;
     }
 }

@@ -50,7 +50,7 @@ public class QuestionsQuizAdapter extends RecyclerView.Adapter<QuestionsQuizAdap
 
         optionSelected.add((optionPosition) -> {
             holder.options.post(() -> adapter.get(position).notifyDataSetChanged());
-            q.setCorrectOption(optionPosition);
+            q.setSelectedOption(optionPosition);
         });
 
         adapter.add(new OptionsAdapter(context, q.getOptions(), optionSelected.get(position)));
