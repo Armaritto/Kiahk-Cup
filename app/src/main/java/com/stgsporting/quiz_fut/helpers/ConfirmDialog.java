@@ -1,6 +1,5 @@
 package com.stgsporting.quiz_fut.helpers;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
@@ -9,7 +8,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 
-import com.example.quiz_fut_draft.R;
+import com.stgsporting.quiz_fut.R;
 
 public class ConfirmDialog extends Dialog {
 

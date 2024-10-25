@@ -63,26 +63,26 @@ public class GradeActivity extends AppCompatActivity {
             switch (selected.getText().toString()) {
                 case "Junior 1":
 //                    setupDatabase("https://j1-fut-draft-default-rtdb.firebaseio.com/",
-//                            "gs://j1-fut-draft.appspot.com/");
+//                            "gs://j1-fut-draft.appspot.com/", "1");
                     Intent intent = new Intent(GradeActivity.this, MaintenanceActivity.class);
                     startActivity(intent);
                     finish();
                     break;
                 case "Junior 2":
                     setupDatabase("https://j2-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://j2-fut-draft.appspot.com/");
+                            "gs://j2-fut-draft.appspot.com/", "2");
                     break;
                 case "Junior 3":
                     setupDatabase("https://j3-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://j3-fut-draft.appspot.com/");
+                            "gs://j3-fut-draft.appspot.com/", "3");
                     break;
                 case "Junior 4":
                     setupDatabase("https://j4-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://j4-fut-draft.appspot.com/");
+                            "gs://j4-fut-draft.appspot.com/", "4");
                     break;
                 case "Junior 5":
                     setupDatabase("https://j5-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://j5-fut-draft.appspot.com/");
+                            "gs://j5-fut-draft.appspot.com/", "5");
                     break;
                 case "Junior 6":
                     setupDatabase("https://j6-fut-draft-default-rtdb.firebaseio.com/",
