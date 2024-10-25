@@ -74,7 +74,8 @@ public class ShowQuizzesActivity extends AppCompatActivity {
             for (int i = 0; i < quizzesJSON.length(); i++) {
                 quizzes.add(Quiz.fromJson(quizzesJSON.getJSONObject(i)));
             }
-        }catch (JSONException ignored) {}
+        }catch (JSONException ignored) {
+        }
 
         RecyclerView.Adapter<QuizzesAdapter.ViewHolder> adapter = new QuizzesAdapter(this, quizzes);
         quizzesListView.setAdapter(adapter);

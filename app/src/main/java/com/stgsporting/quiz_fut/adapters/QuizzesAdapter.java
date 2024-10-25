@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,11 +48,21 @@ public class QuizzesAdapter extends RecyclerView.Adapter<QuizzesAdapter.ViewHold
         holder.coins.setText(coins);
 
         holder.quiz.setOnClickListener(v-> {
+            if(q.isSolved()) {
+                Toast.makeText(activity, "حليت المسابقة قبل كده", Toast.LENGTH_LONG).show();
+
+                return;
+            }
+
             Intent intent = new Intent(activity, QuizActivity.class);
             intent.putExtra("quiz", q.toJson().toString());
             intent.putExtra("Data", activity.getIntent().getStringArrayExtra("Data"));
             activity.startActivity(intent);
         });
+
+        if(q.isSolved()) {
+            holder.isSolvedIcon.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -63,12 +74,14 @@ public class QuizzesAdapter extends RecyclerView.Adapter<QuizzesAdapter.ViewHold
         TextView title;
         TextView coins;
         RelativeLayout quiz;
+        View isSolvedIcon;
 
         ViewHolder(View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.title);
             coins = itemView.findViewById(R.id.coins);
             quiz = itemView.findViewById(R.id.mosab2a);
+            isSolvedIcon = itemView.findViewById(R.id.is_solved_icon);
         }
     }
 }

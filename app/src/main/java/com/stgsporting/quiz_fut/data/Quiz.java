@@ -1,5 +1,8 @@
 package com.stgsporting.quiz_fut.data;
 
+import android.icu.text.SimpleDateFormat;
+import android.os.Build;
+
 import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
@@ -10,9 +13,11 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class Quiz {
     private final int id;
@@ -21,14 +26,17 @@ public class Quiz {
 
     private final LocalDateTime startedAt;
 
+    private final Boolean isSolved;
+
     private List<Question> questions;
 
-    public Quiz(int id, String name, int coins, LocalDateTime startedAt) {
+    public Quiz(int id, String name, int coins, LocalDateTime startedAt, Boolean isSolved) {
         this.id = id;
         this.name = name;
         this.coins = coins;
         questions = new ArrayList<>();
         this.startedAt = startedAt;
+        this.isSolved = isSolved;
     }
 
     public static Quiz fromJson(JSONObject json) throws JSONException {
@@ -36,11 +44,17 @@ public class Quiz {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime startedAt = LocalDateTime.parse(startedAtString, formatter);
 
+        boolean isSolved = false;
+        if (json.has("is_solved")) {
+            isSolved = json.getInt("is_solved") == 1;
+        }
+
         Quiz quiz = new Quiz(
                 json.getInt("id"),
                 json.getString("name"),
                 json.getInt("coins"),
-                startedAt
+                startedAt,
+                isSolved
         );
 
         if(json.has("questions")) {
@@ -76,6 +90,7 @@ public class Quiz {
                     .put("name", name)
                     .put("coins", coins)
                     .put("started_at", getStartedAtFormat("yyyy-MM-dd HH:mm:ss"))
+                    .put("is_solved", isSolved() ? 1 : 0)
                     .put("questions", questions)
             ;
         }catch (JSONException ignored) {}
@@ -126,6 +141,7 @@ public class Quiz {
                 ", name='" + name + '\'' +
                 ", coins=" + coins +
                 ", questions=" + questions +
+                ", startedAt=" + startedAt +
                 '}';
     }
 
@@ -140,5 +156,9 @@ public class Quiz {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
 
         return startedAt.format(formatter);
+    }
+
+    public Boolean isSolved() {
+        return isSolved;
     }
 }

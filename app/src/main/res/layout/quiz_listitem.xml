@@ -1,24 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:id="@+id/mosab2a"
+    android:id="@+id/mosab2a"
     style="@style/home_button"
-android:layout_width="match_parent"
-android:layout_height="@dimen/_150sdp">
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_150sdp">
 
-<ImageView
-    android:id="@+id/pic1"
-    style="@style/pic_home_btn"
-    android:src="@drawable/quiz"/>
+    <ImageView
+        android:id="@+id/pic1"
+        style="@style/pic_home_btn"
+        android:src="@drawable/quiz" />
 
-<TextView
-    android:id="@+id/coins"
-    style="@style/sub_home_btn"/>
+    <ImageView
+        android:id="@+id/is_solved_icon"
+        style="@style/pic_home_btn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/checkmark"
+        android:layout_margin="@dimen/_10sdp"
+        android:visibility="gone"
+        />
 
-<TextView
-    style="@style/title_home_btn"
-    android:id="@+id/title"
-    android:paddingTop="@dimen/_10sdp"
-    android:layout_above="@+id/coins"
-    android:layout_below="@+id/pic1"/>
+    <TextView
+        android:id="@+id/coins"
+        style="@style/sub_home_btn" />
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/title_home_btn"
+        android:layout_above="@+id/coins"
+        android:layout_below="@+id/pic1"
+        android:paddingTop="@dimen/_10sdp" />
 
 </RelativeLayout>
