@@ -13,6 +13,7 @@ import com.stgsporting.quiz_fut.adapters.QuestionsQuizAdapter;
 import com.stgsporting.quiz_fut.data.Quiz;
 import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.Http;
+import com.stgsporting.quiz_fut.helpers.ItemClickListener;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import org.json.JSONException;

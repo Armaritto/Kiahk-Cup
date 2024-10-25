@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.Task;
 import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -61,6 +62,9 @@ public class LeaderboardActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recycler_view_lineups);
         int numberOfColumns = 1;
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
+
+//        Task<DataSnapshot> task = ref.child("/elmilad25/Users").get();
+//        task.
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override

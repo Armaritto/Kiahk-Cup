@@ -13,15 +13,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.stgsporting.quiz_fut.R;
 import com.stgsporting.quiz_fut.data.Question;
 import com.stgsporting.quiz_fut.data.Quiz;
+import com.stgsporting.quiz_fut.helpers.ItemClickListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuestionsQuizAdapter extends RecyclerView.Adapter<QuestionsQuizAdapter.ViewHolder> {
 
     private final Quiz quiz;
     private final LayoutInflater mInflater;
+    private final Context context;
+    private final List<ItemClickListener> optionSelected;
+    private final List<OptionsAdapter> adapter;
 
     public QuestionsQuizAdapter(Context context, Quiz quiz) {
         this.mInflater = LayoutInflater.from(context);
         this.quiz = quiz;
+        this.context = context;
+
+        optionSelected = new ArrayList<>();
+        adapter = new ArrayList<>();
     }
 
     @Override
@@ -36,6 +47,15 @@ public class QuestionsQuizAdapter extends RecyclerView.Adapter<QuestionsQuizAdap
         Question q = this.quiz.getQuestions().get(position);
 
         holder.title.setText(q.getTitle());
+
+        optionSelected.add((optionPosition) -> {
+            holder.options.post(() -> adapter.get(position).notifyDataSetChanged());
+            q.setCorrectOption(optionPosition);
+        });
+
+        adapter.add(new OptionsAdapter(context, q.getOptions(), optionSelected.get(position)));
+
+        holder.options.setAdapter(adapter.get(position));
     }
 
     @Override
@@ -45,14 +65,12 @@ public class QuestionsQuizAdapter extends RecyclerView.Adapter<QuestionsQuizAdap
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView title;
-        TextView coins;
-        RelativeLayout quiz;
+        RecyclerView options;
 
         ViewHolder(View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.title);
-            coins = itemView.findViewById(R.id.coins);
-            quiz = itemView.findViewById(R.id.mosab2a);
+            title = itemView.findViewById(R.id.question_title);
+            options = itemView.findViewById(R.id.options);
         }
     }
 }

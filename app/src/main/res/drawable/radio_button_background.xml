@@ -1,0 +1,17 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/cardview_light_background" />
+            <corners android:radius="16dp" />
+            <stroke android:width="2dp" android:color="@android:color/primary_text_dark" />
+        </shape>
+    </item>
+
+    <item android:state_checked="false">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/white" />
+            <corners android:radius="16dp" />
+            <stroke android:width="2dp" android:color="@android:color/darker_gray" />
+        </shape>
+    </item>
+</selector>
