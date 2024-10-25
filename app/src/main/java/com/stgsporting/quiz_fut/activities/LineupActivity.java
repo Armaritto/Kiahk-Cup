@@ -1,6 +1,7 @@
 package com.stgsporting.quiz_fut.activities;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -99,6 +100,7 @@ public class LineupActivity extends AppCompatActivity {
                     int1.putExtra("Data", data);
                     int1.putExtra("Card", cardPos);
                     startActivity(int1);
+                    finish();
                 });
         }
 

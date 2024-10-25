@@ -149,6 +149,15 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 userRef.child("Coins").setValue(points);
                 cardRef.setValue(true);
                 userRef.child("Lineup").child(cardPosition).setValue(card.getID());
+                Intent intent = new Intent(context, LineupActivity.class);
+                String[] data = {
+                        name,
+                        database.getReference().toString(),
+                        storage.getReference().toString()
+                };
+                intent.putExtra("Data",data);
+                intent.putExtra("OtherLineup",false);
+                context.startActivity(intent);
                 ((Activity) context).finish();
             }
         }
