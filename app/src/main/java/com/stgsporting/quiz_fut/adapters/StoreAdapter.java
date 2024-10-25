@@ -1,9 +1,8 @@
 package com.stgsporting.quiz_fut.adapters;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.util.Log;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quiz_fut_draft.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.stgsporting.quiz_fut.activities.LineupActivity;
 import com.stgsporting.quiz_fut.data.Card;
 import com.stgsporting.quiz_fut.helpers.ConfirmDialog;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
@@ -34,22 +35,24 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     private final Context context;
     private int points;
     private final FirebaseDatabase database;
-    private final String ID;
+    private final String name;
     private final String cardPosition;
     private LoadingDialog loadingDialog;
     private int imgs;
+    private FirebaseStorage storage;
 
     // data is passed into the constructor
     public StoreAdapter(Context context, ArrayList<Card> cards, int points, FirebaseDatabase database,
-                        String ID, String cardPosition, LoadingDialog loadingDialog) {
+                        String name, String cardPosition, LoadingDialog loadingDialog, FirebaseStorage storage) {
         this.mInflater = LayoutInflater.from(context);
         this.cards = cards;
         this.context = context;
         this.points = points;
         this.database = database;
-        this.ID = ID;
+        this.name = name;
         this.cardPosition = cardPosition;
         this.loadingDialog = loadingDialog;
+        this.storage = storage;
     }
 
     // inflates the cell layout from xml when needed
@@ -65,7 +68,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         loadingDialog.show();
         imgs++;
-        holder.price.setText(cards.get(position).getPrice()+"$");
+        holder.price.setText(cards.get(position).getPrice()+" €");
         Picasso.get().load(cards.get(position).getImageLink()).into(holder.img, new Callback() {
             @Override
             public void onSuccess() {
@@ -131,7 +134,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
 
     public void purchasePlayer(Card card) {
 
-        DatabaseReference userRef = database.getReference("/elmilad25/Users").child(ID);
+        DatabaseReference userRef = database.getReference("/elmilad25/Users").child(name);
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
 
         if (card.isOwned()) {
@@ -154,7 +157,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
 
     public void sellPlayer(Card card) {
 
-        DatabaseReference userRef = database.getReference("/elmilad25/Users").child(ID);
+        DatabaseReference userRef = database.getReference("/elmilad25/Users").child(name);
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
 
         int price = card.getPrice();
@@ -171,6 +174,15 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
         });
         card.setOwned(false);
+        Intent intent = new Intent(context, LineupActivity.class);
+        String[] data = {
+                name,
+                database.getReference().toString(),
+                storage.getReference().toString()
+        };
+        intent.putExtra("Data",data);
+        intent.putExtra("OtherLineup",false);
+        context.startActivity(intent);
         ((Activity) context).finish();
 
     }

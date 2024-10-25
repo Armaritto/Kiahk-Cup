@@ -175,7 +175,6 @@ public class LineupActivity extends AppCompatActivity {
                                 });
                         totalRating += (double) Integer.parseInt(c.getRating()) / 11;
                     } else {
-                        //-------------------------------------------------cardImage.setImageDrawable();
                         allImgsToLoad--;
                         checkAllLoaded();
                     }

@@ -106,7 +106,7 @@ public class StoreActivity extends AppCompatActivity {
                                 imagesToLoad--;
                                 if (imagesToLoad==0) {
                                     adapter = new StoreAdapter(
-                                            StoreActivity.this, cards, coins, database, data[0], cardPosition, loadingDialog);
+                                            StoreActivity.this, cards, coins, database, data[0], cardPosition, loadingDialog, storage);
                                     recyclerView.setAdapter(adapter);
                                 }
                             })
