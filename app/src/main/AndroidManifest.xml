@@ -16,58 +16,67 @@
         android:theme="@style/Theme.QuizFUTDraft"
         tools:targetApi="31">
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.MaintenanceActivity"
+            android:name=".activities.AddCardActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.UserEditorActivity"
+            android:name=".activities.CardEditorActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.LoginActivity"
+            android:name=".activities.CardsListActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.LeaderboardActivity"
+            android:name=".activities.MaintenanceActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.RatingStoreActivity"
+            android:name=".activities.UserEditorActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.PositionStoreActivity"
+            android:name=".activities.LoginActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.CardStoreActivity"
+            android:name=".activities.LeaderboardActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.StoreActivity"
+            android:name=".activities.RatingStoreActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.UsersListActivity"
+            android:name=".activities.PositionStoreActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.MyCardActivity"
+            android:name=".activities.CardStoreActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.LineupActivity"
+            android:name=".activities.StoreActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.ShowQuizzesActivity"
+            android:name=".activities.UsersListActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.MainActivity"
+            android:name=".activities.MyCardActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.AdminActivity"
+            android:name=".activities.LineupActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.AddQuizActivity"
+            android:name=".activities.ShowQuizzesActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.AddQuestionsToQuizActivity"
+            android:name=".activities.MainActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.QuizActivity"
+            android:name=".activities.AdminActivity"
             android:exported="false" />
         <activity
-            android:name="com.stgsporting.quiz_fut.activities.GradeActivity"
+            android:name=".activities.AddQuizActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.AddQuestionsToQuizActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.QuizActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.GradeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

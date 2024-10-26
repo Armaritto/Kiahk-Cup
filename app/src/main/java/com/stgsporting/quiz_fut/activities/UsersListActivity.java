@@ -81,7 +81,6 @@ public class UsersListActivity extends AppCompatActivity {
                 ArrayList<User> users = new ArrayList<>();
 
                 for (DataSnapshot user : userData.getChildren()) {
-                    if (user.getKey().equals("NextID")) continue;
                     User u = new User();
                     u.setName(user.getKey());
                     if (user.hasChild("Passcode"))

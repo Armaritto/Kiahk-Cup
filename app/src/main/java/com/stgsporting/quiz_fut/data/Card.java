@@ -9,6 +9,7 @@ public class Card {
     private String position;
     private boolean owned;
     private String imagePath;
+    private String name;
 
     public Card(String ID, int price, String imageLink, String rating, String position) {
         this.ID = ID;
@@ -74,5 +75,13 @@ public class Card {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

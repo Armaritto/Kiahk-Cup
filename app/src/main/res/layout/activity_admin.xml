@@ -17,13 +17,19 @@
         <Button
             android:id="@+id/view_users_list"
             style="@style/main_button"
-            android:text="Users List"
+            android:text="Manage Users"
             android:background="@drawable/settings"/>
 
         <Button
             android:id="@+id/manage_quizzes"
             style="@style/main_button"
             android:text="Manage Quizzes"
+            android:background="@drawable/settings"/>
+
+        <Button
+            android:id="@+id/manage_cards"
+            style="@style/main_button"
+            android:text="Manage Cards"
             android:background="@drawable/settings"/>
 
 
