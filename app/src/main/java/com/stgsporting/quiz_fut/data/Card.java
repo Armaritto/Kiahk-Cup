@@ -1,5 +1,7 @@
 package com.stgsporting.quiz_fut.data;
 
+import androidx.annotation.NonNull;
+
 public class Card {
 
     private String ID;
@@ -74,5 +76,19 @@ public class Card {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Card{" +
+                "ID='" + ID + '\'' +
+                ", price=" + price +
+                ", imageLink='" + imageLink + '\'' +
+                ", rating='" + rating + '\'' +
+                ", position='" + position + '\'' +
+                ", owned=" + owned +
+                ", imagePath='" + imagePath + '\'' +
+                '}';
     }
 }

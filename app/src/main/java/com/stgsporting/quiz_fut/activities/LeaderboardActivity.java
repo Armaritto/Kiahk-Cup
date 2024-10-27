@@ -2,33 +2,26 @@ package com.stgsporting.quiz_fut.activities;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.Task;
 import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.stgsporting.quiz_fut.adapters.LeaderboardAdapter;
-import com.stgsporting.quiz_fut.data.Lineup;
+import com.stgsporting.quiz_fut.adapters.LeaderboardUserAdapter;
+import com.stgsporting.quiz_fut.data.Card;
+import com.stgsporting.quiz_fut.data.User;
 import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
-import android.widget.Toast;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 
@@ -52,53 +45,76 @@ public class LeaderboardActivity extends AppCompatActivity {
         Header.render(this, Objects.requireNonNull(data));
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
-        FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
         DatabaseReference ref = database.getReference();
 
-        RecyclerView recyclerView = findViewById(R.id.recycler_view_lineups);
-        int numberOfColumns = 1;
-        recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
+        RecyclerView lineupsView = findViewById(R.id.recycler_view_lineups);
+        lineupsView.setLayoutManager(new GridLayoutManager(this, 1));
 
-//        Task<DataSnapshot> task = ref.child("/elmilad25/Users").get();
-//        task.
+        ref.child("/elmilad25").get().addOnSuccessListener(snapshot -> {
+            Iterable<DataSnapshot> usersIterate = snapshot.child("/Users").getChildren();
+            DataSnapshot cardSnapshot = snapshot.child("/Store");
+            DataSnapshot cardIconsSnapshot = snapshot.child("/CardIcon");
 
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                DataSnapshot userData = snapshot.child("/elmilad25/Users");
-                HashMap<String,Integer> allUsersRatings = new HashMap<>();
-                for (DataSnapshot aUserData : snapshot.child("/elmilad25/Users").getChildren()) {
-                    if (aUserData.getKey().equals("Admin")) continue;
-                    if (aUserData.hasChild("Points")) {
-                        int aUserPoints = Integer.parseInt(aUserData.child("Points").getValue().toString());
-                        allUsersRatings.put(aUserData.getKey(),aUserPoints);
+            List<User> users = new ArrayList<>();
+            for (DataSnapshot user : usersIterate) {
+                if (Objects.equals(user.getKey(), "Admin")) continue;
+
+                User aUser = new User();
+                aUser.setName(user.getKey());
+                if (user.hasChild("Points")) {
+                    aUser.setPoints(Integer.parseInt(user.child("Points").getValue().toString()));
+                }
+                if (user.hasChild("ImageLink")) {
+                    aUser.setImageLink(user.child("ImageLink").getValue().toString());
+                }
+
+                if (Objects.equals(aUser.getName(), data[0])) {
+                    aUser.setCurrent(true);
+                }
+                Card card = new Card();
+                if (user.hasChild("Card")) {
+                    card.setPosition(user.child("Card").child("Position").getValue().toString());
+                    card.setRating(user.child("Card").child("Rating").getValue().toString());
+                }
+                aUser.setCard(card);
+
+                if (user.hasChild("/Owned Card Icons/Selected")) {
+                    String selectedCardIcon = user.child("/Owned Card Icons/Selected").getValue().toString();
+                    if (cardIconsSnapshot.hasChild(selectedCardIcon)) {
+                        aUser.setCardIcon(cardIconsSnapshot.child(selectedCardIcon + "/Image").getValue().toString());
                     }
                 }
-                List<Map.Entry<String, Integer>> list = new ArrayList<>(allUsersRatings.entrySet());
-                list.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
-                ArrayList<Lineup> lineups = getLineups(list);
-                LeaderboardAdapter adapter = new LeaderboardAdapter(LeaderboardActivity.this, lineups,
-                        data, userData, snapshot, storage, loadingDialog);
-                recyclerView.setAdapter(adapter);
+                Iterable<DataSnapshot> ownedCardsIterate = user.child("Owned Cards").getChildren();
+                for (DataSnapshot ownedCardItem : ownedCardsIterate) {
+                    Card ownedCard = new Card();
+                    String cardKey = ownedCardItem.getKey();
+                    DataSnapshot cardData = cardSnapshot.child(Objects.requireNonNull(cardKey));
+
+                    if (cardData.hasChild("Position")) {
+                        ownedCard.setPosition(cardData.child("Position").getValue().toString());
+                    }
+
+                    if (cardData.hasChild("Rating")) {
+                        ownedCard.setRating(cardData.child("Rating").getValue().toString());
+                    }
+
+                    if (cardData.hasChild("Image")) {
+                        ownedCard.setImagePath(cardData.child("Image").getValue().toString());
+                    }
+                    if (cardData.hasChild("Price")) {
+                        ownedCard.setPrice(Integer.parseInt(cardData.child("Price").getValue().toString()));
+                    }
+                    aUser.addOwnedCard(ownedCard);
+                }
+                users.add(aUser);
             }
 
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Toast.makeText(LeaderboardActivity.this, "Failed to read value.", Toast.LENGTH_SHORT).show();
-            }
+            loadingDialog.dismiss();
+
+            System.out.println(users);
+
+            RecyclerView.Adapter<LeaderboardUserAdapter.ViewHolder> adapter = new LeaderboardUserAdapter(LeaderboardActivity.this, users, data);
+            lineupsView.setAdapter(adapter);
         });
-    }
-
-    private @NonNull ArrayList<Lineup> getLineups(List<Map.Entry<String, Integer>> list) {
-        ArrayList<Lineup> lineups = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : list) {
-            if(entry.getValue() > 0){
-                Lineup lineup = new Lineup();
-                lineup.setID(entry.getKey());
-                lineup.setOVR(entry.getValue().toString());
-                lineups.add(lineup);
-            }
-        }
-        return lineups;
     }
 }
