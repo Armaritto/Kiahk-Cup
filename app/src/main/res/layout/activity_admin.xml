@@ -32,6 +32,12 @@
             android:text="Manage Cards"
             android:background="@drawable/settings"/>
 
+        <Button
+            android:id="@+id/manage_stars"
+            style="@style/main_button"
+            android:text="Manage Stars"
+            android:background="@drawable/settings"/>
+
 
     </LinearLayout>
 

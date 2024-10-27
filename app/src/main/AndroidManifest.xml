@@ -16,6 +16,9 @@
         android:theme="@style/Theme.QuizFUTDraft"
         tools:targetApi="31">
         <activity
+            android:name=".activities.ManageStarsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.AddCardActivity"
             android:exported="false" />
         <activity

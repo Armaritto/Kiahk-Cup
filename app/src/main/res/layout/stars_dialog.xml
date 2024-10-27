@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/popup_background"
+    android:gravity="center"
+    android:paddingVertical="@dimen/_26sdp">
+
+    <EditText
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Title"
+        android:layout_marginHorizontal="@dimen/_31sdp"
+        android:background="@drawable/button_background3"
+        android:fontFamily="@font/segoebold"
+        android:gravity="center_vertical|left"
+        android:padding="@dimen/_12sdp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray_hint"
+        android:textSize="@dimen/_18sdp"
+        android:textStyle="bold"
+        android:inputType="text"
+        android:layout_marginTop="@dimen/_15sdp"/>
+
+    <EditText
+        android:id="@+id/stars"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Stars"
+        android:layout_marginHorizontal="@dimen/_31sdp"
+        android:background="@drawable/button_background3"
+        android:fontFamily="@font/segoebold"
+        android:gravity="center_vertical|left"
+        android:padding="@dimen/_12sdp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray_hint"
+        android:textSize="@dimen/_18sdp"
+        android:textStyle="bold"
+        android:inputType="numberSigned"
+        android:layout_marginTop="@dimen/_12sdp"/>
+
+    <Button
+        android:id="@+id/dialog_button"
+        android:layout_width="@dimen/_177sdp"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:textAllCaps="false"
+        android:background="@drawable/button_background5"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:textSize="@dimen/_18sdp"
+        android:textColor="@color/white"
+        android:layout_marginTop="@dimen/_19sdp"
+        android:padding="@dimen/_8sdp"/>
+
+    <TextView
+        android:id="@+id/delete"
+        android:layout_width="@dimen/_177sdp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Delete"
+        android:textAllCaps="false"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:textSize="@dimen/_18sdp"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:padding="@dimen/_3sdp"
+        android:visibility="gone"/>
+
+</LinearLayout>
