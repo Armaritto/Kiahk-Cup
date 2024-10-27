@@ -128,6 +128,9 @@ public class MyCardActivity extends AppCompatActivity {
                             Toast.makeText(MyCardActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
                         }
                     });
+                } else {
+                    imgsToLoad--;
+                    checkAllImgsLoaded();
                 }
                 String new_name = Arrays.stream(snapshot.getKey().split("\\s+"))
                         .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
