@@ -192,9 +192,15 @@ public class CardsListActivity extends AppCompatActivity {
                     } else {
                         constraint = constraint.toString().toLowerCase();
                         for (int i = 0; i < originalCards.size(); i++) {
-                            String data1 = originalCards.get(i).getName();
-                            if (data1.toLowerCase().startsWith(constraint.toString())) {
-                                FilteredArrList.add(originalCards.get(i));
+                            if (originalCards.get(i).getName()!=null) {
+                                String data1 = originalCards.get(i).getName().toLowerCase();
+                                if (data1.startsWith(constraint.toString())) {
+                                    if (!FilteredArrList.contains(originalCards.get(i))) FilteredArrList.add(originalCards.get(i));
+                                }
+                            }
+                            String data2 = originalCards.get(i).getID().toLowerCase();
+                            if (data2.startsWith(constraint.toString())) {
+                                if (!FilteredArrList.contains(originalCards.get(i))) FilteredArrList.add(originalCards.get(i));
                             }
                         }
                         results.count = FilteredArrList.size();
