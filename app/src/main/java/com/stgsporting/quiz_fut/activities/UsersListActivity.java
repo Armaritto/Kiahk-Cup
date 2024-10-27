@@ -239,9 +239,16 @@ public class UsersListActivity extends AppCompatActivity {
 
                         if (passcode<1000) passcode+=1000;
                         n = n.toLowerCase();
-                        if (!snapshot.hasChild(n))
+                        if (!snapshot.hasChild(n)) {
                             ref.child("elmilad25/Users").child(n).child("Passcode").setValue(passcode);
-                        else Toast.makeText(UsersListActivity.this, n+" already exists!", Toast.LENGTH_SHORT).show();
+                            ref.child("elmilad25/Users").child(n).child("Owned Positions").child("position1").child("Owned").setValue(true);
+                            ref.child("elmilad25/Users").child(n).child("Stars").setValue(0);
+                            ref.child("elmilad25/Users").child(n).child("Points").setValue(0);
+                            ref.child("elmilad25/Users").child(n).child("Stars").setValue(0);
+                            ref.child("elmilad25/Users").child(n).child("Coins").setValue(0);
+                            ref.child("elmilad25/Users").child(n).child("Card").child("Position").setValue("GK");
+                            ref.child("elmilad25/Users").child(n).child("Card").child("Rating").setValue(50);
+                        } else Toast.makeText(UsersListActivity.this, n+" already exists!", Toast.LENGTH_SHORT).show();
                     }
 
                     try {
