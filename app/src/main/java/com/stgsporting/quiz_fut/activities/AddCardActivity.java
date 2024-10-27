@@ -28,6 +28,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.R;
+import com.stgsporting.quiz_fut.helpers.ImageProcessor;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.Random;
@@ -166,7 +167,8 @@ public class AddCardActivity extends AppCompatActivity {
             if (imageUri == null) return;
 
             loadingDialog.show();
-            uploadImage(imageUri);
+            ImageProcessor processor = new ImageProcessor(this);
+            uploadImage(processor.compressImage(imageUri));
         }
     }
 
