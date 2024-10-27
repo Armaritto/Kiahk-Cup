@@ -75,6 +75,20 @@
         android:layout_marginTop="@dimen/_10sdp"
         android:inputType="numberSigned"/>
 
+    <CheckBox
+        android:id="@+id/available"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:padding="@dimen/_12sdp"
+        android:textSize="@dimen/_14sdp"
+        android:background="@drawable/button_background3"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:text="Available in Store"
+        android:checked="true"
+        android:layout_marginTop="@dimen/_10sdp"/>
+
     <Button
         android:id="@+id/submit"
         android:layout_width="@dimen/_180sdp"

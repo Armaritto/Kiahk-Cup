@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -69,6 +70,7 @@ public class CardEditorActivity extends AppCompatActivity {
         AutoCompleteTextView position = findViewById(R.id.position);
         EditText price = findViewById(R.id.price);
         EditText rating = findViewById(R.id.rating);
+        CheckBox available = findViewById(R.id.available);
         Button submit = findViewById(R.id.submit);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -114,6 +116,8 @@ public class CardEditorActivity extends AppCompatActivity {
                     rating.setText(cardData.child("Rating").getValue().toString());
                 if (cardData.hasChild("Name"))
                     name.setText(cardData.child("Name").getValue().toString());
+                if (cardData.hasChild("Available") && !Boolean.parseBoolean(cardData.child("Available").getValue().toString()))
+                    available.setChecked(false);
 
                 loadingDialog.dismiss();
                 submit.setOnClickListener(v-> {
@@ -149,6 +153,7 @@ public class CardEditorActivity extends AppCompatActivity {
                     ref.child("Position").setValue(position.getText().toString());
                     ref.child("Price").setValue(Integer.parseInt(price.getText().toString()));
                     ref.child("Rating").setValue(Integer.parseInt(rating.getText().toString()));
+                    ref.child("Available").setValue(available.isChecked());
                     ref.child("Image").setValue(imgPath);
                     finish();
                 });
