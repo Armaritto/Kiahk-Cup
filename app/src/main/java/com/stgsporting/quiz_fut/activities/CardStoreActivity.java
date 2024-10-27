@@ -68,6 +68,10 @@ public class CardStoreActivity extends AppCompatActivity {
                     String imagePath = card.child("Image").getValue().toString();
                     c.setImagePath(imagePath);
                     c.setPrice(Double.parseDouble(card.child("Price").getValue().toString()));
+                    if (card.hasChild("Available"))
+                        c.setAvailable(Boolean.parseBoolean(card.child("Available").getValue().toString()));
+                    else
+                        c.setAvailable(true);
                     cards.add(c);
                     cardsNames.add(c.getCard());
                 }
@@ -78,10 +82,16 @@ public class CardStoreActivity extends AppCompatActivity {
                     if (!icon.getKey().equals("Selected")) {
                         if (Boolean.parseBoolean(icon.child("Owned").getValue().toString())) {
                             String card = icon.getKey();
-                            if (cardsNames.contains(card)) {
+                            if (cardsNames.contains(card))
                                 cards.get(cardsNames.indexOf(card)).setOwned(true);
-                            }
                         }
+                    }
+                }
+
+                for (int i=0;i<cards.size();i++) {
+                    if (!cards.get(i).isOwned() && !cards.get(i).isAvailable()) {
+                        cards.remove(i);
+                        cardsNames.remove(i);
                     }
                 }
 

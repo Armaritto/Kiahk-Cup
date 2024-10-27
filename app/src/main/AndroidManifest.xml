@@ -16,6 +16,15 @@
         android:theme="@style/Theme.QuizFUTDraft"
         tools:targetApi="31">
         <activity
+            android:name=".activities.CardIconsListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.AddCardIconActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.CardIconEditorActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.ManageStarsActivity"
             android:exported="false" />
         <activity
