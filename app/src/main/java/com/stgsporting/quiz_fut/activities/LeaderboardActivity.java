@@ -1,6 +1,8 @@
 package com.stgsporting.quiz_fut.activities;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -10,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.stgsporting.quiz_fut.R;
@@ -25,6 +28,12 @@ import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Executors;
 
 
 public class LeaderboardActivity extends AppCompatActivity {
@@ -51,7 +60,6 @@ public class LeaderboardActivity extends AppCompatActivity {
         StorageReference storageRef = FirebaseStorage.getInstance(data[2]).getReference();
 
         RecyclerView lineupsView = findViewById(R.id.recycler_view_lineups);
-        lineupsView.setLayoutManager(new GridLayoutManager(this, 1));
 
         ref.child("/elmilad25").get().addOnSuccessListener(snapshot -> {
             Iterable<DataSnapshot> usersIterate = snapshot.child("/Users").getChildren();
@@ -59,6 +67,8 @@ public class LeaderboardActivity extends AppCompatActivity {
             DataSnapshot cardIconsSnapshot = snapshot.child("/CardIcon");
 
             List<User> users = new ArrayList<>();
+
+            List<CompletableFuture<Void>> futures = new ArrayList<>();
             for (DataSnapshot user : usersIterate) {
                 if (Objects.equals(user.getKey(), "Admin")) continue;
 
@@ -111,17 +121,30 @@ public class LeaderboardActivity extends AppCompatActivity {
                     }
                     aUser.addOwnedCard(ownedCard);
                 }
+                futures.add(CompletableFuture.runAsync(() -> {
+                    if (aUser.hasCardIcon()) {
+                        Task<Uri> task = storageRef.child(aUser.getCardIcon()).getDownloadUrl();
+
+                        while (!task.isComplete()) {
+                            try {
+                                Thread.sleep(5);
+                            } catch (InterruptedException ignored) {}
+                        }
+                        aUser.setCardIcon(task.getResult().toString());
+                    }
+                }));
+
                 users.add(aUser);
             }
 
             users.sort((o1, o2) -> o2.getPoints() - o1.getPoints());
 
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
             loadingDialog.dismiss();
-
-            System.out.println(users);
-
-            RecyclerView.Adapter<LeaderboardUserAdapter.ViewHolder> adapter = new LeaderboardUserAdapter(LeaderboardActivity.this, users, data, storageRef);
+            RecyclerView.Adapter<LeaderboardUserAdapter.ViewHolder> adapter = new LeaderboardUserAdapter(this, users, data, storageRef);
             lineupsView.setAdapter(adapter);
+
         });
     }
 }

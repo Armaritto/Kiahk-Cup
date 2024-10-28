@@ -11,6 +11,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.stgsporting.quiz_fut.data.User;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -27,10 +28,10 @@ public class Header {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String new_name = Arrays.stream(data[0].split("\\s+"))
-                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
-                        .collect(Collectors.joining(" "));
-                name.setText(new_name);
+                User user = new User();
+                user.setName(data[0]);
+                name.setText(user.getDisplayName());
+
                 snapshot = snapshot.child("/elmilad25/Users");
                 stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
                 coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());

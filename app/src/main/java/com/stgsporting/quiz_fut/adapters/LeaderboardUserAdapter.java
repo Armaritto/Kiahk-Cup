@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.R;
 import com.stgsporting.quiz_fut.activities.LineupActivity;
@@ -96,52 +97,18 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter<LeaderboardUser
             TextView rating = parent.findViewById(R.id.card_rating);
             TextView position = parent.findViewById(R.id.position);
 
-            if (user.hasCardIcon()) {
-                storageRef.child(user.getCardIcon())
-                        .getDownloadUrl()
-                        .addOnSuccessListener(uri -> Picasso.get().load(uri).into(icon, new com.squareup.picasso.Callback() {
-                            @Override
-                            public void onSuccess() {
-                                TextColor.setColor(icon, name, rating, position);
-                            }
 
-                            @Override
-                            public void onError(Exception e) {
+            Callback callback = new Callback() {
+                public void onSuccess() {TextColor.setColor(icon, name, rating, position);}
+                public void onError(Exception e) {}
+            };
 
-                            }
-                        }));
-            } else {
-                icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.empty));
-            }
-
-            if (user.getImageLink() != null && ! user.getImageLink().isEmpty()) {
-                Picasso.get().load(user.getImageLink()).into(img);
-            }
+            Picasso.get().load(user.getCardIcon()).placeholder(R.drawable.empty).into(icon, callback);
+            Picasso.get().load(user.getImageLink()).into(img);
 
             name.setText(user.getFirstName());
-
-            if (user.getCard().getPosition() != null)
-                position.setText(user.getCard().getPosition());
-
-            if (user.getCard().getRating() != null)
-                rating.setText(user.getCard().getRating());
-
-
-//        parent.measure(
-//                View.MeasureSpec.makeMeasureSpec(parent.getWidth(), View.MeasureSpec.EXACTLY),
-//                View.MeasureSpec.makeMeasureSpec(parent.getHeight(), View.MeasureSpec.EXACTLY)
-//        );
-
-//        parent.setVisibility(View.GONE);
-//        parent.layout(0, 0, parent.getMeasuredWidth(), parent.getMeasuredHeight());
-//
-//        int totalHeight = parent.getMeasuredHeight();
-//        int totalWidth  = parent.getMeasuredWidth();
-//
-//        Bitmap bitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888);
-//        Canvas canvas = new Canvas(bitmap);
-//        parent.draw(canvas);
-//        cardImage.setImageBitmap(bitmap);
+            position.setText(user.getCard().getPosition());
+            rating.setText(user.getCard().getRating());
     }
 
 

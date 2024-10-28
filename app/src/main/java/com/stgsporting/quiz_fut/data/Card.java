@@ -48,7 +48,7 @@ public class Card {
     }
 
     public String getRating() {
-        return rating;
+        return rating == null ? "" : rating;
     }
 
     public void setRating(String rating) {
@@ -56,7 +56,7 @@ public class Card {
     }
 
     public String getPosition() {
-        return position;
+        return position == null ? "" : position;
     }
 
     public void setPosition(String position) {
