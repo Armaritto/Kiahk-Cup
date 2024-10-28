@@ -1,53 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="@dimen/_84sdp"
+    android:layout_height="@dimen/_120sdp"
     android:id="@+id/main">
 
     <ImageView
         android:id="@+id/card_icon"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_455sdp"
-        android:scaleType="fitCenter"/>
+        android:layout_width="@dimen/_84sdp"
+        android:layout_height="@dimen/_120sdp"
+        android:scaleType="fitCenter"
+        />
 
-    <ImageView
-        android:id="@+id/img"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_350sdp"
-        android:scaleType="centerInside"
-        android:layout_centerInParent="true"
-        android:scaleX="1.2"
-        android:scaleY="1.2"
-        android:paddingBottom="@dimen/_30sdp"/>
+    <FrameLayout
+        android:layout_width="@dimen/_84sdp"
+        android:layout_height="@dimen/_120sdp"
+        >
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_72sdp"
+            android:scaleType="centerInside"
+            android:paddingBottom="@dimen/_10sdp"
+            android:layout_gravity="center" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/_250sdp"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/_30sdp"
         android:fontFamily="@font/segoebold"
         android:textStyle="bold"
-        android:layout_centerInParent="true"
-        android:paddingTop="@dimen/_220sdp"/>
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:layout_marginTop="@dimen/_85sdp"
+        />
+
+    <TextView
+        android:id="@+id/card_rating"
+        android:gravity="top|start"
+        android:paddingStart="@dimen/_12sdp"
+        android:paddingTop="@dimen/_15sdp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_14sdp"
+        />
 
     <TextView
         android:id="@+id/position"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/_20sdp"
+        android:gravity="center_horizontal"
         android:fontFamily="@font/segoebold"
-        android:textStyle="bold"
-        android:layout_marginLeft="@dimen/_50sdp"
-        android:layout_marginTop="@dimen/_121sdp" />
-
-    <TextView
-        android:id="@+id/card_rating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/_37sdp"
-        android:fontFamily="@font/segoebold"
-        android:textStyle="bold"
-        android:layout_marginLeft="@dimen/_43sdp"
-        android:layout_marginTop="@dimen/_76sdp"/>
+        android:textColor="@color/white"
+        android:paddingStart="@dimen/_12sdp"
+        android:paddingTop="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:textSize="@dimen/_8sdp"
+        android:textAlignment="center"
+        />
 
 </RelativeLayout>

@@ -84,32 +84,44 @@ public class Http {
     }
 
     public void addImage(String name, InputStream inputStream) throws IOException {
-        String boundary = UUID.randomUUID().toString();
-        connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-
-        DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+        String boundary = UUID.randomUUID().toString(); // Unique boundary for multipart
         String lineEnd = "\r\n";
         String twoHyphens = "--";
 
-        // Set up the file part
-        wr.writeBytes(twoHyphens + boundary + lineEnd);
-        wr.writeBytes("Content-Disposition: form-data; name=\"" + name +"\"; filename=\"image.jpeg\"" + lineEnd);
-        wr.writeBytes("Content-Type: image/jpeg" + lineEnd);
-        wr.writeBytes(lineEnd);
+        // Set request properties for multipart form data
+        connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+        connection.setDoOutput(true); // Ensure the connection allows output
 
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-            wr.write(buffer, 0, bytesRead);
+        try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+
+            // Set up the file part
+            wr.writeBytes(twoHyphens + boundary + lineEnd);
+            wr.writeBytes("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"image.jpeg\"" + lineEnd);
+            wr.writeBytes("Content-Type: image/jpeg" + lineEnd);
+            wr.writeBytes(lineEnd);
+
+            // Write the image bytes from InputStream to the DataOutputStream
+            byte[] buffer = new byte[4096]; // Use a larger buffer for efficiency
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                wr.write(buffer, 0, bytesRead);
+            }
+
+            inputStream.close(); // Close input stream after reading
+
+            wr.writeBytes(lineEnd); // End of file part
+
+            // Final boundary
+            wr.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+            // Ensure everything is flushed out
+            wr.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("Failed to upload the image", e);
         }
-        inputStream.close();
-
-        wr.writeBytes(lineEnd);
-
-        wr.writeBytes("--" + boundary + "--\r\n");
-        wr.flush();
-        wr.close();
     }
+
 
     public CompletableFuture<Response> sendAsync() {
         return CompletableFuture.supplyAsync(this::send);
@@ -123,8 +135,6 @@ public class Http {
         } catch (Exception e) {
             e.printStackTrace();
             return new Response(-2, e.getMessage(), null);
-        } finally {
-            connection.disconnect();
         }
     }
 

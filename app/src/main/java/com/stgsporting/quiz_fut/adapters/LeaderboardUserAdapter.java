@@ -2,7 +2,10 @@ package com.stgsporting.quiz_fut.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,12 +34,14 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter<LeaderboardUser
     private final Context context;
     private final List<User> users;
     private final String[] data;
+    private final StorageReference storageRef;
 
-    public LeaderboardUserAdapter(Context context, List<User> users, String[] data) {
+    public LeaderboardUserAdapter(Context context, List<User> users, String[] data, StorageReference storageRef) {
         this.mInflater = LayoutInflater.from(context);
         this.users = users;
         this.context = context;
         this.data = data;
+        this.storageRef = storageRef;
     }
 
     @Override
@@ -52,7 +57,7 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter<LeaderboardUser
         User user = users.get(i);
         holder.ovr.setText(String.format("%s", user.getPoints()));
 
-        setUserCardImage(holder.cardView, holder.cardImage, user);
+        setUserCardImage(holder.cardView, user, storageRef);
         holder.button.setOnClickListener(v -> {
             Intent intent;
             intent = new Intent(context, LineupActivity.class);
@@ -70,7 +75,6 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter<LeaderboardUser
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView rank;
         RelativeLayout cardView;
-        ImageView cardImage;
         TextView ovr;
         Button button;
         RelativeLayout row;
@@ -78,7 +82,6 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter<LeaderboardUser
         ViewHolder(View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.card_view);
-            cardImage = itemView.findViewById(R.id.card_image);
             ovr = itemView.findViewById(R.id.ovr);
             button = itemView.findViewById(R.id.viewLineup);
             rank = itemView.findViewById(R.id.rank);
@@ -86,27 +89,27 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter<LeaderboardUser
         }
     }
 
-    private void setUserCardImage(RelativeLayout parent, ImageView cardImage, User user) {
+    private void setUserCardImage(RelativeLayout parent, User user, StorageReference storageRef) {
             ImageView icon = parent.findViewById(R.id.card_icon);
             ImageView img = parent.findViewById(R.id.img);
             TextView name = parent.findViewById(R.id.name);
             TextView rating = parent.findViewById(R.id.card_rating);
             TextView position = parent.findViewById(R.id.position);
 
-
             if (user.hasCardIcon()) {
+                storageRef.child(user.getCardIcon())
+                        .getDownloadUrl()
+                        .addOnSuccessListener(uri -> Picasso.get().load(uri).into(icon, new com.squareup.picasso.Callback() {
+                            @Override
+                            public void onSuccess() {
+                                TextColor.setColor(icon, name, rating, position);
+                            }
 
-                if (user.getCardIcon() != null) {
-                    String cardIconPath = user.getCardIcon();
+                            @Override
+                            public void onError(Exception e) {
 
-                    FirebaseStorage database = FirebaseStorage.getInstance(data[2]);
-                    StorageReference storageRef = database.getReference().child(cardIconPath);
-
-                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        Picasso.get().load(uri).into(icon);
-                    });
-                }
-
+                            }
+                        }));
             } else {
                 icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.empty));
             }
@@ -115,14 +118,31 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter<LeaderboardUser
                 Picasso.get().load(user.getImageLink()).into(img);
             }
 
-            name.setText(user.getDisplayName());
+            name.setText(user.getFirstName());
 
             if (user.getCard().getPosition() != null)
                 position.setText(user.getCard().getPosition());
 
             if (user.getCard().getRating() != null)
                 rating.setText(user.getCard().getRating());
-        }
+
+
+//        parent.measure(
+//                View.MeasureSpec.makeMeasureSpec(parent.getWidth(), View.MeasureSpec.EXACTLY),
+//                View.MeasureSpec.makeMeasureSpec(parent.getHeight(), View.MeasureSpec.EXACTLY)
+//        );
+
+//        parent.setVisibility(View.GONE);
+//        parent.layout(0, 0, parent.getMeasuredWidth(), parent.getMeasuredHeight());
+//
+//        int totalHeight = parent.getMeasuredHeight();
+//        int totalWidth  = parent.getMeasuredWidth();
+//
+//        Bitmap bitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888);
+//        Canvas canvas = new Canvas(bitmap);
+//        parent.draw(canvas);
+//        cardImage.setImageBitmap(bitmap);
+    }
 
 
 }

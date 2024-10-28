@@ -36,6 +36,10 @@ public class User {
                 .collect(Collectors.joining(" "));
     }
 
+    public String getFirstName() {
+        return getDisplayName().split(" ")[0];
+    }
+
     public Boolean isCurrent() {
         return current;
     }
@@ -114,13 +118,11 @@ public class User {
         return "User{" +
                 "passcode='" + passcode + '\'' +
                 ", name='" + name + '\'' +
-                ", imageLink='" + imageLink + '\'' +
-                ", points=" + points +
-                ", stars=" + stars +
-                ", card=" + card +
-                ", ownedCards=" + ownedCards +
                 ", cardIcon='" + cardIcon + '\'' +
                 ", current=" + current +
+                ", points=" + points +
+                ", stars=" + stars +
+                ", imageLink='" + imageLink + '\'' +
                 '}';
     }
 }

@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.stgsporting.quiz_fut.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -46,6 +48,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         DatabaseReference ref = database.getReference();
+        StorageReference storageRef = FirebaseStorage.getInstance(data[2]).getReference();
 
         RecyclerView lineupsView = findViewById(R.id.recycler_view_lineups);
         lineupsView.setLayoutManager(new GridLayoutManager(this, 1));
@@ -81,9 +84,11 @@ public class LeaderboardActivity extends AppCompatActivity {
                 if (user.hasChild("/Owned Card Icons/Selected")) {
                     String selectedCardIcon = user.child("/Owned Card Icons/Selected").getValue().toString();
                     if (cardIconsSnapshot.hasChild(selectedCardIcon)) {
-                        aUser.setCardIcon(cardIconsSnapshot.child(selectedCardIcon + "/Image").getValue().toString());
+                        String cardIconPath = cardIconsSnapshot.child(selectedCardIcon + "/Image").getValue().toString();
+                        aUser.setCardIcon(cardIconPath);
                     }
                 }
+
                 Iterable<DataSnapshot> ownedCardsIterate = user.child("Owned Cards").getChildren();
                 for (DataSnapshot ownedCardItem : ownedCardsIterate) {
                     Card ownedCard = new Card();
@@ -109,11 +114,13 @@ public class LeaderboardActivity extends AppCompatActivity {
                 users.add(aUser);
             }
 
+            users.sort((o1, o2) -> o2.getPoints() - o1.getPoints());
+
             loadingDialog.dismiss();
 
             System.out.println(users);
 
-            RecyclerView.Adapter<LeaderboardUserAdapter.ViewHolder> adapter = new LeaderboardUserAdapter(LeaderboardActivity.this, users, data);
+            RecyclerView.Adapter<LeaderboardUserAdapter.ViewHolder> adapter = new LeaderboardUserAdapter(LeaderboardActivity.this, users, data, storageRef);
             lineupsView.setAdapter(adapter);
         });
     }
