@@ -30,13 +30,16 @@ public class Quiz {
 
     private List<Question> questions;
 
-    public Quiz(int id, String name, int coins, LocalDateTime startedAt, Boolean isSolved) {
+    private final String url;
+
+    public Quiz(int id, String name, int coins, LocalDateTime startedAt, Boolean isSolved, String url) {
         this.id = id;
         this.name = name;
         this.coins = coins;
         questions = new ArrayList<>();
         this.startedAt = startedAt;
         this.isSolved = isSolved;
+        this.url = url;
     }
 
     public static Quiz fromJson(JSONObject json) throws JSONException {
@@ -49,12 +52,18 @@ public class Quiz {
             isSolved = json.getInt("is_solved") == 1;
         }
 
+        String url = "";
+        if (json.has("url")) {
+            url = json.getString("url");
+        }
+
         Quiz quiz = new Quiz(
                 json.getInt("id"),
                 json.getString("name"),
                 json.getInt("coins"),
                 startedAt,
-                isSolved
+                isSolved,
+                url
         );
 
         if(json.has("questions")) {
@@ -92,6 +101,7 @@ public class Quiz {
                     .put("started_at", getStartedAtFormat("yyyy-MM-dd HH:mm:ss"))
                     .put("is_solved", isSolved() ? 1 : 0)
                     .put("questions", questions)
+                    .put("url", url)
             ;
         }catch (JSONException ignored) {}
 
@@ -160,5 +170,9 @@ public class Quiz {
 
     public Boolean isSolved() {
         return isSolved;
+    }
+
+    public String getUrl() {
+        return url;
     }
 }

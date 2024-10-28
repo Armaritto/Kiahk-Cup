@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 public class Http {
     private HttpURLConnection connection;
 
-    public static final String URL = "https://quizzes-fc.stgsporting.com/api";
+    public static final String URL = "https://cup.stgsporting.com/api";
 
     public Http(Uri uri, String method) {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build();
