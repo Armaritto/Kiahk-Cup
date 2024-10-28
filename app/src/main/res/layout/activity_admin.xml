@@ -38,6 +38,12 @@
             android:text="Manage Stars"
             android:background="@drawable/settings"/>
 
+        <Button
+            android:id="@+id/manage_cardicons"
+            style="@style/main_button"
+            android:text="Manage Card Icons"
+            android:background="@drawable/settings"/>
+
 
     </LinearLayout>
 

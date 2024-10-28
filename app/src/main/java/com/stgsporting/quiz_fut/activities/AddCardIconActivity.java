@@ -3,8 +3,6 @@ package com.stgsporting.quiz_fut.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -18,7 +16,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.gms.common.util.ArrayUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,7 +31,7 @@ import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.Random;
 
-public class AddCardActivity extends AppCompatActivity {
+public class AddCardIconActivity extends AppCompatActivity {
 
     private ImageView img;
     private String imgPath;
@@ -45,7 +42,7 @@ public class AddCardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_card_editor);
+        setContentView(R.layout.activity_card_icon_editor);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -55,30 +52,10 @@ public class AddCardActivity extends AppCompatActivity {
         loadingDialog = new LoadingDialog(this);
         loadingDialog.dismiss();
 
-        String[] positions = {
-                "ST",
-                "LW",
-                "RW",
-                "CAM",
-                "CM",
-                "LB",
-                "CB",
-                "RB",
-                "GK"
-        };
-
         img = findViewById(R.id.img);
-        EditText name = findViewById(R.id.name);
-        AutoCompleteTextView position = findViewById(R.id.position);
         EditText price = findViewById(R.id.price);
-        EditText rating = findViewById(R.id.rating);
         CheckBox available = findViewById(R.id.available);
         Button submit = findViewById(R.id.submit);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, positions);
-        position.setThreshold(1);
-        position.setAdapter(adapter);
 
         String[] data = getIntent().getStringArrayExtra("Data");
 
@@ -88,36 +65,18 @@ public class AddCardActivity extends AppCompatActivity {
         img.setOnClickListener(v-> openFileChooser());
 
         submit.setOnClickListener(v-> {
-            if (name.getText().toString().isEmpty()) {
-                name.setError("Please enter name");
-                return;
-            }
-            if (position.getText().toString().isEmpty()) {
-                position.setError("Please enter position");
-                return;
-            }
-            if (!ArrayUtils.contains(positions, position.getText().toString())) {
-                position.setError("Please enter a valid position");
-                return;
-            }
             try {
                 Integer.parseInt(price.getText().toString());
             } catch (Exception e) {
                 price.setError("Please enter price (digits only)");
                 return;
             }
-            try {
-                Integer.parseInt(rating.getText().toString());
-            } catch (Exception e) {
-                rating.setError("Please enter rating (digits only)");
-                return;
-            }
             if (imgPath==null) {
-                Toast.makeText(AddCardActivity.this, "Please select card image", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddCardIconActivity.this, "Please select card image", Toast.LENGTH_SHORT).show();
                 return;
             }
             loadingDialog.show();
-            DatabaseReference storeRef = database.getReference("elmilad25").child("Store");
+            DatabaseReference storeRef = database.getReference("elmilad25").child("CardIcon");
             storeRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -128,11 +87,8 @@ public class AddCardActivity extends AppCompatActivity {
                         if (ID < 1000000) ID += 1000000;
                         cardID = String.valueOf(ID);
                     } while (snapshot.hasChild(cardID));
-                    DatabaseReference ref = database.getReference("elmilad25").child("Store").child(cardID);
-                    ref.child("Name").setValue(name.getText().toString());
-                    ref.child("Position").setValue(position.getText().toString());
+                    DatabaseReference ref = database.getReference("elmilad25").child("CardIcon").child(cardID);
                     ref.child("Price").setValue(Integer.parseInt(price.getText().toString()));
-                    ref.child("Rating").setValue(Integer.parseInt(rating.getText().toString()));
                     ref.child("Available").setValue(available.isChecked());
                     ref.child("Image").setValue(imgPath);
                     loadingDialog.dismiss();
@@ -141,8 +97,8 @@ public class AddCardActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(AddCardActivity.this, "Database Error", Toast.LENGTH_SHORT).show();
-                    Toast.makeText(AddCardActivity.this, "Cannot add card", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddCardIconActivity.this, "Database Error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddCardIconActivity.this, "Cannot add card", Toast.LENGTH_SHORT).show();
                     loadingDialog.dismiss();
                 }
             });
@@ -184,7 +140,7 @@ public class AddCardActivity extends AppCompatActivity {
         Toast.makeText(this, "Uploading Image", Toast.LENGTH_SHORT).show();
         // Create a reference to the Firebase Storage location
         StorageReference storageRef = storage.getReference();
-        StorageReference fileRef = storageRef.child("Cards/").child(System.currentTimeMillis() + ".png");
+        StorageReference fileRef = storageRef.child("CardIcons/").child(System.currentTimeMillis() + ".png");
         // Upload file to Firebase Storage
         fileRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl()
@@ -199,7 +155,7 @@ public class AddCardActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onError(Exception e) {
-                                    Toast.makeText(AddCardActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(AddCardIconActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
                                     loadingDialog.dismiss();
                                 }
                             });

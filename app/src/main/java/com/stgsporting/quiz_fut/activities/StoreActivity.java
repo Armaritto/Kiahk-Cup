@@ -79,6 +79,7 @@ public class StoreActivity extends AppCompatActivity {
                     String cardID = cardData.getKey();
                     String position = cardData.child("Position").getValue().toString();
                     if (!position.equals(selectedPosition)) continue;
+
                     Card card = new Card();
                     card.setID(cardID);
                     card.setPrice(Integer.parseInt(cardData.child("Price").getValue().toString()));
@@ -89,8 +90,11 @@ public class StoreActivity extends AppCompatActivity {
                     if (ownedData.hasChild(cardID) &&
                             Boolean.parseBoolean(ownedData.child(cardID).getValue().toString()))
                         card.setOwned(true);
-                    else
+                    else {
                         card.setOwned(false);
+                        if (cardData.hasChild("Available") && !Boolean.parseBoolean(cardData.child("Available").getValue().toString()))
+                            continue;
+                    }
                     cards.add(card);
                 }
 

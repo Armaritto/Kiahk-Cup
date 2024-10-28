@@ -244,6 +244,8 @@ public class UsersListActivity extends AppCompatActivity {
                         if (!snapshot.hasChild(n)) {
                             ref.child("elmilad25/Users").child(n).child("Passcode").setValue(passcode);
                             ref.child("elmilad25/Users").child(n).child("Owned Positions").child("position1").child("Owned").setValue(true);
+                            ref.child("elmilad25/Users").child(n).child("Owned Card Icons").child("icon0").child("Owned").setValue(true);
+                            ref.child("elmilad25/Users").child(n).child("Owned Card Icons").child("Selected").setValue("icon0");
                             ref.child("elmilad25/Users").child(n).child("Stars").setValue(0);
                             ref.child("elmilad25/Users").child(n).child("Points").setValue(0);
                             ref.child("elmilad25/Users").child(n).child("Stars").setValue(0);
