@@ -106,6 +106,8 @@ public class UsersListActivity extends AppCompatActivity {
         search.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(listAdapter == null) return;
+
                 listAdapter.getFilter().filter(s.toString());
             }
 

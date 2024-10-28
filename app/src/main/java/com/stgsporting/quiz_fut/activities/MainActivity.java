@@ -17,6 +17,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.stgsporting.quiz_fut.data.User;
 import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
@@ -34,9 +35,9 @@ public class MainActivity extends AppCompatActivity {
         LoadingDialog loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
+        Header.render(this, Objects.requireNonNull(data));
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
-        Header.render(this, Objects.requireNonNull(data));
         Button mosab2a = findViewById(R.id.mosab2a);
         Button lineup = findViewById(R.id.lineup);
         Button myCard = findViewById(R.id.myCard);

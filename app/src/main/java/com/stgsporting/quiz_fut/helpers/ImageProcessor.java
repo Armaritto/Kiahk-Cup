@@ -2,12 +2,16 @@ package com.stgsporting.quiz_fut.helpers;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 
 import java.io.*;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class ImageProcessor {
@@ -31,37 +35,70 @@ public class ImageProcessor {
             }
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 85, byteArrayOutputStream);
+            resizedBitmap.compress(Bitmap.CompressFormat.PNG, 85, byteArrayOutputStream);
+
             byte[] compressedImageBytes = byteArrayOutputStream.toByteArray();
 
-            return saveImageInMemory(compressedImageBytes);
+            return saveImageInMemory(compressedImageBytes, "png");
         } catch (Exception ignored) {return null;}
-    }
-
-    private Uri saveImageInMemory(byte[] imageBytes) {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-        values.put(MediaStore.Images.Media.DISPLAY_NAME, "compressed_image_" + System.currentTimeMillis() + ".jpg");
-        Uri imageUri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        if(imageUri == null) return null;
-
-        try(OutputStream outputStream = context.getContentResolver().openOutputStream(imageUri)) {
-            if (outputStream == null) return null;
-            outputStream.write(imageBytes);
-        } catch (Exception ignored) {}
-
-        return imageUri;
     }
 
     public void deleteImage(Uri uri) {
         context.getContentResolver().delete(uri, null, null);
     }
 
-    public CompletableFuture<Uri> removeBackground(Uri uri) {
-        return CompletableFuture.supplyAsync(() -> {
-            Uri image = removeBackgroundSync(uri);
+    public Uri saveImageInMemory(byte[] imageBytes, String type) {
+        // Determine the MIME type based on the file extension (e.g., jpg, png)
+        String mimeType = getMimeType(type.toLowerCase(Locale.ROOT));
 
-            return image == null ? uri : image;
+        if (mimeType == null) {
+            return null; // Invalid file type
+        }
+
+        // Set up content values for the image file
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.MIME_TYPE, mimeType);
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, "compressed_image_" + System.currentTimeMillis() + "." + type);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/KiahkCupImages");
+        }
+
+        // Insert the image to MediaStore
+        Uri imageUri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        if (imageUri == null) return null;
+
+        try (OutputStream outputStream = context.getContentResolver().openOutputStream(imageUri)) {
+            if (outputStream == null) return null;
+
+            outputStream.write(imageBytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return imageUri;
+    }
+
+    private String getMimeType(String type) {
+        switch (type) {
+            case "jpg":
+            case "jpeg":
+                return "image/jpeg";
+            case "png":
+                return "image/png";
+            case "webp":
+                return "image/webp";
+            default:
+                return null; // Unsupported type
+        }
+    }
+
+    public CompletableFuture<Uri> removeBackground(Uri imageUri) {
+        return CompletableFuture.supplyAsync(() -> {
+            Uri image = removeBackgroundSync(imageUri);
+
+            return image == null ? imageUri : image;
         });
     }
 
@@ -71,7 +108,6 @@ public class ImageProcessor {
                 .setConnectTimeout(60000);
         try {
             request.addImage("file", context.getContentResolver().openInputStream(uri));
-            deleteImage(uri);
         } catch (IOException e) {
             return null;
         }
@@ -91,7 +127,8 @@ public class ImageProcessor {
                 byte[] imageBytes = baos.toByteArray();
                 inputStream.close();
 
-                return saveImageInMemory(imageBytes);
+                deleteImage(uri);
+                return saveImageInMemory(imageBytes, "png");
             } catch (IOException ignored) {}
             finally {
                 request.disconnect();
@@ -102,4 +139,5 @@ public class ImageProcessor {
 
         return null;
     }
+
 }

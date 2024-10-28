@@ -1,5 +1,7 @@
 package com.stgsporting.quiz_fut.data;
 
+import androidx.annotation.NonNull;
+
 public class Card {
 
     private String ID;
@@ -46,7 +48,7 @@ public class Card {
     }
 
     public String getRating() {
-        return rating;
+        return rating == null ? "" : rating;
     }
 
     public void setRating(String rating) {
@@ -54,7 +56,7 @@ public class Card {
     }
 
     public String getPosition() {
-        return position;
+        return position == null ? "" : position;
     }
 
     public void setPosition(String position) {
@@ -83,5 +85,19 @@ public class Card {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Card{" +
+                "ID='" + ID + '\'' +
+                ", price=" + price +
+                ", imageLink='" + imageLink + '\'' +
+                ", rating='" + rating + '\'' +
+                ", position='" + position + '\'' +
+                ", owned=" + owned +
+                ", imagePath='" + imagePath + '\'' +
+                '}';
     }
 }

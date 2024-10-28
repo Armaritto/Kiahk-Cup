@@ -1,8 +1,11 @@
 package com.stgsporting.quiz_fut.activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +19,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -41,6 +45,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class UserEditorActivity extends AppCompatActivity {
@@ -49,8 +54,48 @@ public class UserEditorActivity extends AppCompatActivity {
     private String userName;
     private DatabaseReference ref;
     private ImageView img;
-
     private LoadingDialog loadingDialog;
+
+    private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    // Handle the result here
+                    Intent data = result.getData();
+                    if (data != null && data.getData() != null) {
+                        Uri imageUri = data.getData();
+                        if (imageUri == null) return;
+
+                        loadingDialog.show();
+                        ImageProcessor processor = new ImageProcessor(this);
+                        imageUri = processor.compressImage(imageUri);
+
+                        processor.removeBackground(imageUri).thenApply(
+                                image -> {
+                                    runOnUiThread(() -> uploadImage(image));
+                                    return null;
+                                }
+                        );
+                    }
+                }
+            });
+
+    private final ActivityResultLauncher<String[]> requestPermissionsLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
+            result -> {
+                for (Map.Entry<String, Boolean> entry : result.entrySet()) {
+                    Boolean isGranted = entry.getValue();
+                    if (isGranted) {
+                        System.out.println("Permission granted");
+
+                        Intent intent = new Intent(Intent.ACTION_PICK);
+                        intent.setType("image/*");
+                        pickImageLauncher.launch(intent);
+                    } else {
+                        Toast.makeText(this, "You have to enable storage permissions", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -235,36 +280,23 @@ public class UserEditorActivity extends AppCompatActivity {
         }
     }
 
-    // Inside your Activity or Fragment
-
-    private static final int PICK_IMAGE_REQUEST = 1;
-
-    // Method to open the gallery
     private void openFileChooser() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
-    }
-
-    // Handle the image selection result
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            Uri imageUri = data.getData();
-            if (imageUri == null) return;
-
-            loadingDialog.show();
-            ImageProcessor processor = new ImageProcessor(this);
-            imageUri = processor.compressImage(imageUri);
-            processor.removeBackground(imageUri).thenApply(
-                    image -> {
-                        runOnUiThread(() -> uploadImage(image));
-                        return null;
-                    }
-            );
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            // For Android 14 (API 34) and above
+            requestPermissionsLauncher.launch(new String[]{
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+            });
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // For Android 13 (API 33)
+            requestPermissionsLauncher.launch(new String[]{
+                    Manifest.permission.READ_MEDIA_IMAGES,
+            });
+        } else {
+            // For Android 12 (API 32) and below
+            requestPermissionsLauncher.launch(new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            });
         }
     }
 
@@ -274,6 +306,7 @@ public class UserEditorActivity extends AppCompatActivity {
             loadingDialog.dismiss();
             return;
         }
+
         Toast.makeText(this, "Uploading Image", Toast.LENGTH_SHORT).show();
         // Create a reference to the Firebase Storage location
         FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
@@ -299,13 +332,12 @@ public class UserEditorActivity extends AppCompatActivity {
                                     loadingDialog.dismiss();
                                 }
                             });
-                            // Use the download URL as needed
                         }))
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Upload failed\n"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
                     loadingDialog.dismiss();
-                })
-                .addOnCompleteListener(task -> {
+                }).addOnCompleteListener(task -> {
                     ImageProcessor processor = new ImageProcessor(this);
                     processor.deleteImage(imageUri);
                 });

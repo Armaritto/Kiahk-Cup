@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/row"
-    android:visibility="gone">
+    >
 
     <TextView
         android:id="@+id/rank"
@@ -18,15 +18,11 @@
 
     <include layout="@layout/activity_card_all_in_two"
         android:id="@+id/card_view"
-        android:visibility="invisible"/>
-
-     <ImageView
-         android:id="@+id/card_image"
-         android:layout_width="@dimen/_77sdp"
-         android:layout_height="@dimen/_102sdp"
-         android:scaleType="centerCrop"
-         android:src="@drawable/empty"
-         android:layout_toEndOf="@+id/rank"/>
+        android:layout_width="@dimen/_84sdp"
+        android:layout_height="@dimen/_120sdp"
+        android:scaleType="centerCrop"
+        android:layout_toEndOf="@+id/rank"
+        />
 
     <TextView
         android:id="@+id/ovr"

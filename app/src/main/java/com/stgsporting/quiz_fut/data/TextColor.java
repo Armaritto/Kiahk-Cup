@@ -32,6 +32,10 @@ public class TextColor {
         return (int) (totalLuminance / size);
     }
     public static void setColor(ImageView icon, TextView name, TextView position, TextView rating) {
+        if (icon.getDrawable() == null) {
+            return;
+        }
+
         Bitmap b = ((BitmapDrawable) icon.getDrawable()).getBitmap();
         TextColor.setTextColorBasedOnImage(b, name);
         TextColor.setTextColorBasedOnImage(b, position);

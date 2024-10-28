@@ -23,6 +23,7 @@
         android:layout_height="match_parent"
         android:padding="@dimen/_12sdp"
         android:layout_below="@id/header"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:id="@+id/recycler_view_lineups" />
 
 
