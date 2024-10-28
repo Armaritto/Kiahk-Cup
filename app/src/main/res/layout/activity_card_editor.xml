@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:background="@drawable/other_background"
+    android:padding="@dimen/_15sdp"
+    tools:context="com.stgsporting.quiz_fut.activities.CardEditorActivity">
+
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="@dimen/_180sdp"
+        android:layout_height="@dimen/_200sdp"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/profile_picture"
+        android:src="@drawable/empty"/>
+
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:padding="@dimen/_12sdp"
+        android:textSize="@dimen/_14sdp"
+        android:background="@drawable/button_background3"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:hint="Name"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:inputType="text"/>
+
+    <AutoCompleteTextView
+        android:id="@+id/position"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:padding="@dimen/_12sdp"
+        android:textSize="@dimen/_14sdp"
+        android:background="@drawable/button_background3"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:hint="Position"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:inputType="text"/>
+
+    <EditText
+        android:id="@+id/price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:padding="@dimen/_12sdp"
+        android:textSize="@dimen/_14sdp"
+        android:background="@drawable/button_background3"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:hint="Price"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:inputType="numberSigned"/>
+
+    <EditText
+        android:id="@+id/rating"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:padding="@dimen/_12sdp"
+        android:textSize="@dimen/_14sdp"
+        android:background="@drawable/button_background3"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:hint="Rating"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:inputType="numberSigned"/>
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="@dimen/_180sdp"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="Submit"
+        android:background="@drawable/button_background4"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:padding="@dimen/_9sdp"/>
+
+</LinearLayout>

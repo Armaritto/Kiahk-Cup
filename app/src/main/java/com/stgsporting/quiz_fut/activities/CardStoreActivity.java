@@ -95,8 +95,9 @@ public class CardStoreActivity extends AppCompatActivity {
                                 cards.get(j).setImageLink(downloadUrl);
                                 if (j==cards.size()-1) {
                                     CardStoreAdapter adapter = new CardStoreAdapter(
-                                            CardStoreActivity.this, cards, database, data[0], loadingDialog);
+                                            CardStoreActivity.this, cards, database, data[0]);
                                     recyclerView.setAdapter(adapter);
+                                    loadingDialog.dismiss();
                                 }
                             })
                             .addOnFailureListener(e -> Toast.makeText(CardStoreActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show());

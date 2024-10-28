@@ -23,7 +23,6 @@ import com.squareup.picasso.Picasso;
 import com.stgsporting.quiz_fut.activities.LineupActivity;
 import com.stgsporting.quiz_fut.data.Card;
 import com.stgsporting.quiz_fut.helpers.ConfirmDialog;
-import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -37,13 +36,11 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     private final FirebaseDatabase database;
     private final String name;
     private final String cardPosition;
-    private LoadingDialog loadingDialog;
-    private int imgs;
     private FirebaseStorage storage;
 
     // data is passed into the constructor
     public StoreAdapter(Context context, ArrayList<Card> cards, int points, FirebaseDatabase database,
-                        String name, String cardPosition, LoadingDialog loadingDialog, FirebaseStorage storage) {
+                        String name, String cardPosition, FirebaseStorage storage) {
         this.mInflater = LayoutInflater.from(context);
         this.cards = cards;
         this.context = context;
@@ -51,7 +48,6 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         this.database = database;
         this.name = name;
         this.cardPosition = cardPosition;
-        this.loadingDialog = loadingDialog;
         this.storage = storage;
     }
 
@@ -66,21 +62,15 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     // binds the data to the TextView in each cell
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        loadingDialog.show();
-        imgs++;
         holder.price.setText(cards.get(position).getPrice()+" €");
         Picasso.get().load(cards.get(position).getImageLink()).into(holder.img, new Callback() {
             @Override
             public void onSuccess() {
-                imgs--;
-                checkAllImgsLoaded();
             }
 
             @Override
             public void onError(Exception e) {
-                imgs--;
                 Toast.makeText(context, "Image Loading Failed", Toast.LENGTH_SHORT).show();
-                checkAllImgsLoaded();
             }
         });
         if (cards.get(position).isOwned()) {
@@ -194,10 +184,6 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         context.startActivity(intent);
         ((Activity) context).finish();
 
-    }
-
-    private void checkAllImgsLoaded() {
-        if (imgs==0) loadingDialog.dismiss();
     }
 
 }
