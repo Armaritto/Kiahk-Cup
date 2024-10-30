@@ -35,8 +35,10 @@ public class Header {
                 snapshot = snapshot.child("/elmilad25/Users");
                 Object starsObj = snapshot.child(data[0]).child("Stars").getValue();
                 Object coinsObj = snapshot.child(data[0]).child("Coins").getValue();
-                if (starsObj == null || coinsObj == null) {
+                if (starsObj == null) {
                     starsObj = 0;
+                }
+                if (coinsObj == null) {
                     coinsObj = 0;
                 }
 
