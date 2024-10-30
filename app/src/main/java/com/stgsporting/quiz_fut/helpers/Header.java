@@ -33,8 +33,15 @@ public class Header {
                 name.setText(user.getDisplayName());
 
                 snapshot = snapshot.child("/elmilad25/Users");
-                stars.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Stars").getValue()).toString());
-                coins.setText(Objects.requireNonNull(snapshot.child(data[0]).child("Coins").getValue()).toString());
+                Object starsObj = snapshot.child(data[0]).child("Stars").getValue();
+                Object coinsObj = snapshot.child(data[0]).child("Coins").getValue();
+                if (starsObj == null || coinsObj == null) {
+                    starsObj = 0;
+                    coinsObj = 0;
+                }
+
+                stars.setText(starsObj.toString());
+                coins.setText(coinsObj.toString());
             }
 
             @Override
