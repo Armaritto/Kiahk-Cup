@@ -1,5 +1,6 @@
 package com.stgsporting.quiz_fut.activities;
-
+import androidx.activity.OnBackPressedCallback;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -56,7 +57,18 @@ public class StoreActivity extends AppCompatActivity {
         else if (selectedPosition.equals("LCB") || selectedPosition.equals("RCB"))
             selectedPosition = "CB";
 
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent intent = new Intent(StoreActivity.this, LineupActivity.class);
+                intent.putExtra("Data",data);
+                intent.putExtra("OtherLineup",false);
+                startActivity(intent);
+                finish();
+            }
+        };
 
+        getOnBackPressedDispatcher().addCallback(this, callback);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         int numberOfColumns = 2;
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
