@@ -129,8 +129,8 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
 
         if (card.isOwned()) {
             userRef.child("Lineup").child(cardPosition).setValue(card.getID());
-            ((Activity) context).finish();
-        } else {
+        }
+        else {
             int price = card.getPrice();
             if (points < price) {
                 Toast.makeText(context, "Not enough coins", Toast.LENGTH_SHORT).show();
@@ -139,19 +139,18 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 userRef.child("Coins").setValue(points);
                 cardRef.setValue(true);
                 userRef.child("Lineup").child(cardPosition).setValue(card.getID());
-                Intent intent = new Intent(context, LineupActivity.class);
-                String[] data = {
-                        name,
-                        database.getReference().toString(),
-                        storage.getReference().toString()
-                };
-                intent.putExtra("Data",data);
-                intent.putExtra("OtherLineup",false);
-                context.startActivity(intent);
-                ((Activity) context).finish();
             }
         }
-
+        Intent intent = new Intent(context, LineupActivity.class);
+        String[] data = {
+                name,
+                database.getReference().toString(),
+                storage.getReference().toString()
+        };
+        intent.putExtra("Data",data);
+        intent.putExtra("OtherLineup",false);
+        context.startActivity(intent);
+        ((Activity) context).finish();
     }
 
     public void sellPlayer(Card card) {
