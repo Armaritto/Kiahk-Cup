@@ -38,7 +38,9 @@ public class AdminActivity extends AppCompatActivity {
         Button manageCardIcons = findViewById(R.id.manage_cardicons);
         Button managePositions = findViewById(R.id.manage_positions);
         Button manageRatingPrice = findViewById(R.id.manage_rating_price);
+
         Button manageButtons = findViewById(R.id.manage_buttons);
+
         Button usersList = findViewById(R.id.view_users_list);
 
         data = getIntent().getStringArrayExtra("Data");
@@ -85,11 +87,13 @@ public class AdminActivity extends AppCompatActivity {
             showDialog(ref);
         });
 
+
         manageButtons.setOnClickListener(v -> {
             Intent intent = new Intent(AdminActivity.this, ManageHome.class);
             intent.putExtra("Data", data);
             startActivity(intent);
         });
+
 
     }
 

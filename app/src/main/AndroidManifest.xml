@@ -23,6 +23,7 @@
         android:theme="@style/Theme.QuizFUTDraft"
         tools:targetApi="35">
         <activity
+
             android:name=".activities.ManageHome"
             android:exported="false" />
         <activity
