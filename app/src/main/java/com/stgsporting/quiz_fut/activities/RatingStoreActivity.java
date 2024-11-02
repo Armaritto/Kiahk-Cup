@@ -64,8 +64,8 @@ public class RatingStoreActivity extends AppCompatActivity {
                 new_rating.setText(String.valueOf(rating));
                 oldRating = rating;
                 int units;
-                if (dataS.hasChild("/elmilad25/RatingPrice")) {
-                    DataSnapshot snapshot = dataS.child("/elmilad25/RatingPrice");
+                if (dataS.hasChild("/elmilad25/Rating Price")) {
+                    DataSnapshot snapshot = dataS.child("/elmilad25/Rating Price");
                     units = Integer.parseInt(snapshot.getValue().toString());
                 }
                 else
