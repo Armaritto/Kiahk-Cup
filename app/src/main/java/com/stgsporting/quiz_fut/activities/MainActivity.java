@@ -17,7 +17,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.stgsporting.quiz_fut.data.User;
 import com.stgsporting.quiz_fut.helpers.Header;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
@@ -50,10 +49,19 @@ public class MainActivity extends AppCompatActivity {
             leaderboard.setVisibility(View.VISIBLE);
             loadingDialog.dismiss();
         }
-        database.getReference("elmilad25").child("Buttons").addValueEventListener(new ValueEventListener() {
+        database.getReference("elmilad25").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(!Objects.equals(data[0], "admin")){
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(Boolean.TRUE.equals(dataSnapshot.child("Maintenance").getValue(Boolean.class))){
+                    loadingDialog.dismiss();
+                    Intent intent = new Intent(MainActivity.this, MaintenanceActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+
+                DataSnapshot snapshot = dataSnapshot.child("Buttons");
+                if (!Objects.equals(data[0], "admin")) {
                     if (snapshot.hasChild("Leaderboard") &&
                             Boolean.parseBoolean(snapshot.child("Leaderboard").getValue().toString())) {
                         leaderboard.setVisibility(View.VISIBLE);

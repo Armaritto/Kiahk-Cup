@@ -8,21 +8,13 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.stgsporting.quiz_fut.R;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
-
-import java.util.concurrent.CountDownLatch;
 
 
 public class GradeActivity extends AppCompatActivity {
@@ -34,7 +26,6 @@ public class GradeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_grade);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -45,7 +36,7 @@ public class GradeActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("Login", MODE_PRIVATE);
         if (sharedPreferences.contains("Database") && sharedPreferences.contains("Storage")){
             loadingDialog = new LoadingDialog(this);
-            checkMaintenance(sharedPreferences.getString("Database", ""),
+            moveToLogin(sharedPreferences.getString("Database", ""),
                     sharedPreferences.getString("Storage", ""));
         }
 
@@ -103,36 +94,11 @@ public class GradeActivity extends AppCompatActivity {
         editor.putString("Storage", storageURL);
         editor.putString("school_year", schoolYear);
         editor.apply();
-        checkMaintenance(dbURL, storageURL);
-    }
-
-    private void checkMaintenance(String dbURL, String storageURL) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
-        DatabaseReference ref = database.getReference("/elmilad25");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(Boolean.TRUE.equals(snapshot.child("Maintenance").getValue(Boolean.class))){
-                    Intent intent = new Intent(GradeActivity.this, MaintenanceActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-                else {
-                    loadingDialog.dismiss();
-                    moveToLogin(dbURL, storageURL);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                loadingDialog.dismiss();
-                moveToLogin(dbURL, storageURL);
-            }
-        });
-
+        moveToLogin(dbURL, storageURL);
     }
 
     private void moveToLogin(String dbURL, String storageURL) {
+        loadingDialog.dismiss();
         Intent intent = new Intent(GradeActivity.this, LoginActivity.class);
         intent.putExtra("Database", dbURL);
         intent.putExtra("Storage", storageURL);

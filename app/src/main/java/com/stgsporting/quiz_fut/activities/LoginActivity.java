@@ -21,9 +21,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.quiz_fut.helpers.LoadingDialog;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 public class LoginActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
@@ -77,11 +74,12 @@ public class LoginActivity extends AppCompatActivity {
     private void validateLogin(String name, String passcode) {
         loadingDialog = new LoadingDialog(this);
         FirebaseDatabase database = FirebaseDatabase.getInstance(dbURL);
-        DatabaseReference ref = database.getReference("/elmilad25/Users").child(name);
+        DatabaseReference ref = database.getReference("/elmilad25");
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                DataSnapshot dataSnapshot = snapshot.child("Users").child(name);
                 if (dataSnapshot.exists()) {
                     if (!dataSnapshot.hasChild("Passcode")) {
                         Toast.makeText(LoginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
