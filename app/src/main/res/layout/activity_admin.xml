@@ -59,6 +59,12 @@
             android:text="Manage Rating Price"
             android:background="@drawable/settings"/>
 
+        <Button
+            android:id="@+id/manage_buttons"
+            style="@style/main_button"
+            android:text="Manage Home"
+            android:background="@drawable/settings"/>
+
 
     </LinearLayout>
 
