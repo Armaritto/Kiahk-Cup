@@ -3,11 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
-
 
     <application
         android:allowBackup="true"
@@ -19,6 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuizFUTDraft"
         tools:targetApi="35">
+        <activity
+            android:name=".activities.ManagePositions"
+            android:exported="false" />
         <activity
             android:name=".activities.CardIconsListActivity"
             android:exported="false" />
