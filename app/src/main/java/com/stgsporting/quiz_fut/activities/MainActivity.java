@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
             leaderboard.setVisibility(View.VISIBLE);
             loadingDialog.dismiss();
         }
-        database.getReference("elmilad25").addValueEventListener(new ValueEventListener() {
+        database.getReference("elmilad25").child("Buttons").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(!Objects.equals(data[0], "admin")){
@@ -59,6 +59,24 @@ public class MainActivity extends AppCompatActivity {
                         leaderboard.setVisibility(View.VISIBLE);
                     } else {
                         leaderboard.setVisibility(View.GONE);
+                    }
+                    if (snapshot.hasChild("Lineup") &&
+                            Boolean.parseBoolean(snapshot.child("Lineup").getValue().toString())) {
+                        lineup.setVisibility(View.VISIBLE);
+                    } else {
+                        lineup.setVisibility(View.GONE);
+                    }
+                    if (snapshot.hasChild("Mosab2a") &&
+                            Boolean.parseBoolean(snapshot.child("Mosab2a").getValue().toString())) {
+                        mosab2a.setVisibility(View.VISIBLE);
+                    } else {
+                        mosab2a.setVisibility(View.GONE);
+                    }
+                    if (snapshot.hasChild("My Card") &&
+                            Boolean.parseBoolean(snapshot.child("My Card").getValue().toString())) {
+                        myCard.setVisibility(View.VISIBLE);
+                    } else {
+                        myCard.setVisibility(View.GONE);
                     }
                     loadingDialog.dismiss();
                 }
