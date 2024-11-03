@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.stgsporting.quiz_fut.activities.UserEditorActivity">
+    tools:context="com.stgsporting.cup.activities.UserEditorActivity">
 
     <ScrollView
         android:layout_width="match_parent"

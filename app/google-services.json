@@ -27,6 +27,25 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:647723803338:android:0e6cd06b8eb4cafe8d0a33",
+        "android_client_info": {
+          "package_name": "com.stgsporting.cup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAV8Qe9ccJv2HvqGgG7u1_gEO05kn52W3A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:647723803338:android:6edfb49f754fbb5f8d0a33",
         "android_client_info": {
           "package_name": "com.stgsporting.quiz_fut"

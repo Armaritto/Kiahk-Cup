@@ -9,7 +9,7 @@
     android:paddingBottom="@dimen/_20sdp"
     android:orientation="vertical"
     android:background="@drawable/other_background"
-    tools:context="com.stgsporting.quiz_fut.activities.LoginActivity">
+    tools:context="com.stgsporting.cup.activities.LoginActivity">
 
     <TextView
         android:layout_width="match_parent"

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/other_background"
-    tools:context="com.stgsporting.quiz_fut.activities.AdminActivity">
+    tools:context="com.stgsporting.cup.activities.AdminActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
