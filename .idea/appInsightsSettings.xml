@@ -27,10 +27,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.stgsporting.cup" />
+                  <option name="mobileSdkAppId" value="1:647723803338:android:0e6cd06b8eb4cafe8d0a33" />
+                  <option name="projectId" value="j6-fut-draft" />
+                  <option name="projectNumber" value="647723803338" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
