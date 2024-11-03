@@ -18,32 +18,31 @@
             android:id="@+id/header"
             layout="@layout/header"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"/>
+            android:layout_height="wrap_content"/>
 
         <Button
             android:id="@+id/mosab2a"
             style="@style/main_button"
             android:text="Mosab2a"
-            android:background="@drawable/t1"/>
+            android:background="@drawable/p1"/>
 
         <Button
             android:id="@+id/lineup"
             style="@style/main_button"
             android:text="Lineup"
-            android:background="@drawable/t2"/>
+            android:background="@drawable/p2"/>
 
         <Button
             android:id="@+id/myCard"
             style="@style/main_button"
             android:text="My Card"
-            android:background="@drawable/r1"/>
+            android:background="@drawable/p3"/>
 
         <Button
             android:id="@+id/leaderboard"
             style="@style/main_button"
             android:text="Leaderboard"
-            android:background="@drawable/t4"
+            android:background="@drawable/p4"
             android:visibility="gone"/>
 
         <Button
@@ -51,12 +50,12 @@
             style="@style/main_button"
             android:text="Admin Settings"
             android:visibility="gone"
-            android:background="@drawable/settings"/>
+            android:background="@drawable/p5"/>
 
         <Button
             android:id="@+id/logout"
             style="@style/main_button"
-            android:background="@drawable/t5"
+            android:background="@drawable/p6"
             android:text="Logout" />
 
     </LinearLayout>
