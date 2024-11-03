@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         Button logout = findViewById(R.id.logout);
         if(Objects.equals(data[0], "admin")){
             admin.setVisibility(View.VISIBLE);
-            admin.setOnClickListener(v-> showCustomDialog());
+            admin.setOnClickListener(v-> openAdminPanel());
             leaderboard.setVisibility(View.VISIBLE);
             loadingDialog.dismiss();
         }
@@ -132,38 +132,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private android.app.AlertDialog alertDialog;
-
-    public void showCustomDialog() {
-        // Inflate the custom layout
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.password_dialog, null);
-
-        // Create the AlertDialog
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-        builder.setView(dialogView);
-
-        // Get the UI elements from the custom layout
-        EditText dialogInput = dialogView.findViewById(R.id.dialog_input);
-        Button dialogButton = dialogView.findViewById(R.id.dialog_button);
-
-        // Set up the dialog button click listener
-        dialogButton.setOnClickListener(v -> {
-            String input = dialogInput.getText().toString();
-            // Handle the input
-            if (input.equals("admin")) {
-                Intent intent = new Intent(MainActivity.this, AdminActivity.class);
-                intent.putExtra("Data", data);
-                startActivity(intent);
-            }
-            // Dismiss the dialog
-            alertDialog.dismiss();
-        });
-
-        // Show the dialog
-        alertDialog = builder.create();
-        alertDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        alertDialog.show();
+    public void openAdminPanel() {
+        Intent intent = new Intent(MainActivity.this, AdminActivity.class);
+        intent.putExtra("Data", data);
+        startActivity(intent);
     }
 
 }

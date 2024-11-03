@@ -70,7 +70,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
             List<CompletableFuture<Void>> futures = new ArrayList<>();
             for (DataSnapshot user : usersIterate) {
-                if (Objects.equals(user.getKey(), "Admin")) continue;
+                if (Objects.equals(user.getKey().toLowerCase(), "admin")) continue;
 
                 User aUser = new User();
                 aUser.setName(user.getKey());
