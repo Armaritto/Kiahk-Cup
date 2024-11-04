@@ -38,12 +38,43 @@ public class AdminActivity extends AppCompatActivity {
         Button manageCardIcons = findViewById(R.id.manage_cardicons);
         Button managePositions = findViewById(R.id.manage_positions);
         Button manageRatingPrice = findViewById(R.id.manage_rating_price);
-
         Button manageButtons = findViewById(R.id.manage_buttons);
-
         Button usersList = findViewById(R.id.view_users_list);
 
         data = getIntent().getStringArrayExtra("Data");
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
+        DatabaseReference ref = database.getReference().child("elmilad25");
+
+        LoadingDialog loading = new LoadingDialog(this);
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DataSnapshot rating = dataSnapshot.child("Rating Price");
+                manageRatingPrice.setOnClickListener(v -> {
+                    showDialog(rating, ref.child("Rating Price"));
+                });
+
+                DataSnapshot btns = dataSnapshot.child("Buttons").child("Admin");
+                checkBtn(btns, "Manage Users", usersList);
+                checkBtn(btns, "Manage Quizzes", manageQuizzes);
+                checkBtn(btns, "Manage Cards", manageCards);
+                checkBtn(btns, "Manage Stars", manageStars);
+                checkBtn(btns, "Manage Card Icons", manageCardIcons);
+                checkBtn(btns, "Manage Positions", managePositions);
+                checkBtn(btns, "Manage Rating Price", manageRatingPrice);
+                checkBtn(btns, "Manage Home", manageButtons);
+
+                loading.dismiss();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         usersList.setOnClickListener(v -> {
             Intent intent = new Intent(AdminActivity.this, UsersListActivity.class);
@@ -81,13 +112,6 @@ public class AdminActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        manageRatingPrice.setOnClickListener(v -> {
-            FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
-            DatabaseReference ref = database.getReference().child("elmilad25").child("Rating Price");
-            showDialog(ref);
-        });
-
-
         manageButtons.setOnClickListener(v -> {
             Intent intent = new Intent(AdminActivity.this, ManageHome.class);
             intent.putExtra("Data", data);
@@ -99,7 +123,7 @@ public class AdminActivity extends AppCompatActivity {
 
     private AlertDialog alertDialog;
 
-    private void showDialog(DatabaseReference ref) {
+    private void showDialog(DataSnapshot data, DatabaseReference ref) {
         // Inflate the custom layout
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.stars_dialog, null);
@@ -116,21 +140,7 @@ public class AdminActivity extends AppCompatActivity {
 
         delete.setVisibility(View.GONE);
         title.setVisibility(View.GONE);
-
-        LoadingDialog loadingDialog = new LoadingDialog(AdminActivity.this);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                stars.setText(snapshot.getValue().toString());
-                loadingDialog.dismiss();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(AdminActivity.this, "Database Error", Toast.LENGTH_SHORT).show();
-                alertDialog.dismiss();
-            }
-        });
+        stars.setText(data.getValue().toString());
 
         // Set up the dialog button click listener
         dialogButton.setOnClickListener(v -> {
@@ -148,6 +158,15 @@ public class AdminActivity extends AppCompatActivity {
         alertDialog = builder.create();
         alertDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         alertDialog.show();
+    }
+
+    private void checkBtn(DataSnapshot btns, String key, Button button) {
+        if (btns.hasChild(key) &&
+                Boolean.parseBoolean(btns.child(key).getValue().toString())) {
+            button.setVisibility(View.VISIBLE);
+        } else {
+            button.setVisibility(View.GONE);
+        }
     }
 
 }

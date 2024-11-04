@@ -223,7 +223,7 @@ public class UserEditorActivity extends AppCompatActivity {
                 coins_edittext.setError("Coins must be 4 digits");
                 return;
             }
-            ref.child("Users").child(userName).child("Coins").setValue(coins_edittext.getText().toString());
+            ref.child("Users").child(userName).child("Coins").setValue(Integer.parseInt(coins_edittext.getText().toString()));
             Toast.makeText(this, "Coins updated successfully", Toast.LENGTH_SHORT).show();
         });
 
@@ -231,7 +231,7 @@ public class UserEditorActivity extends AppCompatActivity {
             if (stars_edittext.getText().toString().equals("")) {
                 return;
             }
-            ref.child("Users").child(userName).child("Stars").setValue(stars_edittext.getText().toString());
+            ref.child("Users").child(userName).child("Stars").setValue(Integer.parseInt(stars_edittext.getText().toString()));
             Toast.makeText(this, "Stars updated successfully", Toast.LENGTH_SHORT).show();
         });
 
