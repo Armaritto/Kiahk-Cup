@@ -36,6 +36,7 @@ public class ManageHome extends AppCompatActivity {
         Switch lineup = findViewById(R.id.lineup);
         Switch myCard = findViewById(R.id.my_card);
         Switch leaderboard = findViewById(R.id.leaderboard);
+        Switch store = findViewById(R.id.store);
 
         LoadingDialog loadingDialog = new LoadingDialog(this);
 
@@ -49,6 +50,7 @@ public class ManageHome extends AppCompatActivity {
                 lineup.setChecked(Boolean.parseBoolean(snapshot.child("Lineup").getValue().toString()));
                 myCard.setChecked(Boolean.parseBoolean(snapshot.child("My Card").getValue().toString()));
                 leaderboard.setChecked(Boolean.parseBoolean(snapshot.child("Leaderboard").getValue().toString()));
+                store.setChecked(Boolean.parseBoolean(snapshot.child("Store").getValue().toString()));
                 loadingDialog.dismiss();
             }
 
@@ -63,6 +65,7 @@ public class ManageHome extends AppCompatActivity {
         lineup.setOnCheckedChangeListener((buttonView, isChecked) -> ref.child("Lineup").setValue(isChecked));
         myCard.setOnCheckedChangeListener((buttonView, isChecked) -> ref.child("My Card").setValue(isChecked));
         leaderboard.setOnCheckedChangeListener((buttonView, isChecked) -> ref.child("Leaderboard").setValue(isChecked));
+        store.setOnCheckedChangeListener((buttonView, isChecked) -> ref.child("Store").setValue(isChecked));
 
     }
 }

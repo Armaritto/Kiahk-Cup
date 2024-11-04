@@ -50,6 +50,8 @@ public class LineupActivity extends AppCompatActivity {
     private LoadingDialog loadingDialog;
     private int allImgsToLoad = 11;
     private boolean otherLineup = false;
+    private boolean storeLocked;
+    private boolean myCardLocked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,15 +94,20 @@ public class LineupActivity extends AppCompatActivity {
                     String usedPosition = userPos;
                     if (usedPosition.equals("CB")) usedPosition = "LCB";
                     if (usedPosition.equals("CM")) usedPosition = "LCM";
-                    Intent int1;
-                    if (!usedPosition.equals(cardPos))
-                        int1 = new Intent(LineupActivity.this, StoreActivity.class);
-                    else
-                        int1 = new Intent(LineupActivity.this, MyCardActivity.class);
-                    int1.putExtra("Data", data);
-                    int1.putExtra("Card", cardPos);
-                    startActivity(int1);
-                    finish();
+
+                    if (!usedPosition.equals(cardPos) && !storeLocked) {
+                        Intent int1 = new Intent(LineupActivity.this, StoreActivity.class);
+                        int1.putExtra("Data", data);
+                        int1.putExtra("Card", cardPos);
+                        startActivity(int1);
+                        finish();
+                    } else if (usedPosition.equals(cardPos) && !myCardLocked) {
+                        Intent int1 = new Intent(LineupActivity.this, MyCardActivity.class);
+                        int1.putExtra("Data", data);
+                        int1.putExtra("Card", cardPos);
+                        startActivity(int1);
+                        finish();
+                    }
                 });
         }
 
@@ -113,6 +120,12 @@ public class LineupActivity extends AppCompatActivity {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                DataSnapshot btnsLocks = snapshot.child("elmilad25").child("Buttons");
+                storeLocked = btnsLocks.hasChild("Store") &&
+                        !Boolean.parseBoolean(btnsLocks.child("Store").getValue().toString());
+                myCardLocked = btnsLocks.hasChild("My Card") &&
+                        !Boolean.parseBoolean(btnsLocks.child("My Card").getValue().toString());
 
                 DataSnapshot userData = snapshot.child("/elmilad25/Users").child(data[0]);
                 DataSnapshot storeData = snapshot.child("elmilad25").child("Store");
