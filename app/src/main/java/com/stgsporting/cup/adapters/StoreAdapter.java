@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.stgsporting.cup.R;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -128,6 +129,17 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
 
         if (card.isOwned()) {
+            userRef.child("Lineup").addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        if (snapshot1.getValue().toString().equals(card.getID()))
+                            userRef.child("Lineup").child(snapshot1.getKey()).removeValue();
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
+            });
             userRef.child("Lineup").child(cardPosition).setValue(card.getID());
         }
         else {
