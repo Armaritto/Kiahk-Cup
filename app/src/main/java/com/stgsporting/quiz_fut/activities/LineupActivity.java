@@ -254,7 +254,11 @@ public class LineupActivity extends AppCompatActivity {
                         .addOnFailureListener(e -> {
                             Toast.makeText(LineupActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
                             imagesToLoad--;
+                            checkIfAllImagesLoaded(v, imageView);
                         });
+            } else {
+                imagesToLoad--;
+                checkIfAllImagesLoaded(v, imageView);
             }
 
         } else {

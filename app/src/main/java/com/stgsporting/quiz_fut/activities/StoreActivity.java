@@ -89,6 +89,7 @@ public class StoreActivity extends AppCompatActivity {
                 ArrayList<Card> cards = new ArrayList<>();
                 for (DataSnapshot cardData : storeData.getChildren()) {
                     String cardID = cardData.getKey();
+                    if (!cardData.hasChild("Position")) continue;
                     String position = cardData.child("Position").getValue().toString();
                     if (!position.equals(selectedPosition)) continue;
 
@@ -134,6 +135,8 @@ public class StoreActivity extends AppCompatActivity {
                                 imagesToLoad--;
                             });
                 }
+
+                if (cards.size()==0) loadingDialog.dismiss();
 
             }
 

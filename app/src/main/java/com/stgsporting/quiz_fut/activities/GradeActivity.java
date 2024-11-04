@@ -61,7 +61,7 @@ public class GradeActivity extends AppCompatActivity {
                     break;
                 case "Junior 2":
                     setupDatabase("https://j2-fut-draft-default-rtdb.firebaseio.com/",
-                            "gs://j2-fut-draft.appspot.com/", "2");
+                            "gs://j2-fut-draft.appspot.com", "2");
                     break;
                 case "Junior 3":
                     setupDatabase("https://j3-fut-draft-default-rtdb.firebaseio.com/",
