@@ -3,17 +3,24 @@ package com.stgsporting.cup.helpers;
 import android.net.Uri;
 import android.os.StrictMode;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class Http {
     private HttpURLConnection connection;
@@ -62,8 +69,8 @@ public class Http {
     }
 
     public Http expectsJson() {
-        addHeader("Accept", "application/json");
-        addHeader("Content-Type", "application/json");
+        addHeader("Accept", "application/json; charset=utf-8");
+        addHeader("Content-Type", "application/json; charset=utf-8");
         return this;
     }
 
@@ -72,11 +79,47 @@ public class Http {
         return this;
     }
 
-    public Http addData(JSONObject data) {
-        try {
-            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+//    private Object encodeData(Object data) {
+//        if(data instanceof String) {
+//            try {
+//                return URLEncoder.encode((String) data, "utf-8");
+//            } catch (UnsupportedEncodingException e) {
+//                return data;
+//            }
+//        }
+//
+//        if (data instanceof JSONObject) {
+//            JSONObject dataObj = (JSONObject) data;
+//            dataObj.keys().forEachRemaining((key) -> {
+//                try {
+//                    Object value = dataObj.get(key);
+//                    dataObj.put(key, encodeData(value));
+//                } catch (JSONException ignored) {}
+//            });
+//
+//            return dataObj;
+//        }
+//
+//        if(data instanceof JSONArray) {
+//            JSONArray array = (JSONArray) data;
+//            for (int i = 0; i < array.length(); i++) {
+//                try {
+//                    array.put(i, encodeData(array.get(i)));
+//                } catch (JSONException ignored) {}
+//            }
+//
+//            return array;
+//        }
+//
+//        return data;
+//    }
 
-            wr.writeBytes(data.toString());
+    public Http addData(JSONObject data) {
+
+        try {
+            BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8));
+
+            wr.write(data.toString());
             wr.flush();
             wr.close();
         } catch (Exception ignored) {}
