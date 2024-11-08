@@ -19,12 +19,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.stgsporting.cup.data.Card;
 import com.stgsporting.cup.data.CardIcon;
 import com.stgsporting.cup.adapters.CardStoreAdapter;
 import com.stgsporting.cup.helpers.Header;
 import com.stgsporting.cup.helpers.LoadingDialog;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class CardStoreActivity extends AppCompatActivity {
@@ -95,6 +98,8 @@ public class CardStoreActivity extends AppCompatActivity {
                         cardsNames.remove(i);
                     }
                 }
+
+                Collections.sort(cards, Comparator.comparingDouble(CardIcon::getPrice));
 
                 imgsToLoad = cards.size();
                 for (int i=0;i<cards.size();i++) {

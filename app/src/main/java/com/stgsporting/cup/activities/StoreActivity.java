@@ -26,6 +26,8 @@ import com.stgsporting.cup.helpers.Header;
 import com.stgsporting.cup.helpers.LoadingDialog;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class StoreActivity extends AppCompatActivity {
@@ -111,6 +113,8 @@ public class StoreActivity extends AppCompatActivity {
                     cards.add(card);
                 }
 
+                cards.sort(Comparator.comparingInt(Card::getPrice));
+
                 imagesToLoad = cards.size();
 
                 for (int i=0;i<cards.size();i++) {
@@ -133,6 +137,12 @@ public class StoreActivity extends AppCompatActivity {
                                 Toast.makeText(StoreActivity.this,
                                         "Failed to get download URL", Toast.LENGTH_SHORT).show();
                                 imagesToLoad--;
+                                if (imagesToLoad==0) {
+                                    adapter = new StoreAdapter(
+                                            StoreActivity.this, cards, coins, database, data[0], cardPosition, storage);
+                                    recyclerView.setAdapter(adapter);
+                                    loadingDialog.dismiss();
+                                }
                             });
                 }
 
