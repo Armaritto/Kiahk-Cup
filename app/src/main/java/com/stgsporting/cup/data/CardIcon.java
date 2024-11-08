@@ -8,6 +8,7 @@ public class CardIcon {
     private boolean owned;
     private String imagePath;
     private boolean available;
+    private String cardName;
 
     public CardIcon() {
     }
@@ -58,5 +59,13 @@ public class CardIcon {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    public String getCardName() {
+        return cardName;
+    }
+
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
     }
 }

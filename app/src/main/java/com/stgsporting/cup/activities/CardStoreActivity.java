@@ -30,6 +30,7 @@ import java.util.Objects;
 public class CardStoreActivity extends AppCompatActivity {
 
     private String[] data;
+    private int imgsToLoad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +96,7 @@ public class CardStoreActivity extends AppCompatActivity {
                     }
                 }
 
+                imgsToLoad = cards.size();
                 for (int i=0;i<cards.size();i++) {
                     CardIcon c = cards.get(i);
                     StorageReference storageRef = storage.getReference().child(c.getImagePath());
@@ -103,14 +105,24 @@ public class CardStoreActivity extends AppCompatActivity {
                             .addOnSuccessListener(uri -> {
                                 String downloadUrl = uri.toString();
                                 cards.get(j).setImageLink(downloadUrl);
-                                if (j==cards.size()-1) {
+                                imgsToLoad--;
+                                if (imgsToLoad==0) {
                                     CardStoreAdapter adapter = new CardStoreAdapter(
                                             CardStoreActivity.this, cards, database, data[0]);
                                     recyclerView.setAdapter(adapter);
                                     loadingDialog.dismiss();
                                 }
                             })
-                            .addOnFailureListener(e -> Toast.makeText(CardStoreActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show());
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(CardStoreActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                                imgsToLoad--;
+                                if (imgsToLoad==0) {
+                                    CardStoreAdapter adapter = new CardStoreAdapter(
+                                            CardStoreActivity.this, cards, database, data[0]);
+                                    recyclerView.setAdapter(adapter);
+                                    loadingDialog.dismiss();
+                                }
+                            });
                 }
 
             }

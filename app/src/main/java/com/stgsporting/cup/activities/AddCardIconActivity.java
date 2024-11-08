@@ -53,6 +53,7 @@ public class AddCardIconActivity extends AppCompatActivity {
         loadingDialog.dismiss();
 
         img = findViewById(R.id.img);
+        EditText name = findViewById(R.id.name);
         EditText price = findViewById(R.id.price);
         CheckBox available = findViewById(R.id.available);
         Button submit = findViewById(R.id.submit);
@@ -91,6 +92,8 @@ public class AddCardIconActivity extends AppCompatActivity {
                     ref.child("Price").setValue(Integer.parseInt(price.getText().toString()));
                     ref.child("Available").setValue(available.isChecked());
                     ref.child("Image").setValue(imgPath);
+                    if (!name.getText().toString().equals(""))
+                        ref.child("Name").setValue(name.getText().toString());
                     loadingDialog.dismiss();
                     finish();
                 }
