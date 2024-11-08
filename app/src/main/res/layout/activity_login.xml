@@ -66,6 +66,20 @@
         android:fontFamily="@font/segoebold"
         android:textStyle="bold"
         android:textSize="@dimen/_16sdp"
+        android:layout_marginBottom="@dimen/_7sdp"
+        android:padding="@dimen/_7sdp"/>
+
+    <Button
+        android:id="@+id/back_to_grade"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back to Grade"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:background="@color/transparent"
+        android:fontFamily="@font/segoebold"
+        android:textStyle="bold"
+        android:textSize="@dimen/_14sdp"
         android:padding="@dimen/_7sdp"/>
 
 </LinearLayout>

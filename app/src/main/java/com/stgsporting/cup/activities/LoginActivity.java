@@ -57,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         EditText name_edittext = findViewById(R.id.name_edittext);
         EditText passcode_edittext = findViewById(R.id.passcode_edittext);
         Button buttonLogin = findViewById(R.id.buttonLogin);
+        Button backToGrade = findViewById(R.id.back_to_grade);
 
         buttonLogin.setOnClickListener(v -> {
             String name = name_edittext.getText().toString();
@@ -67,6 +68,15 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(LoginActivity.this, "Please enter both ID and Password", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        backToGrade.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, GradeActivity.class);
+            SharedPreferences.Editor editor = getSharedPreferences("Login", MODE_PRIVATE).edit();
+            editor.clear();
+            editor.apply();
+            startActivity(intent);
+            finish();
         });
 
     }
