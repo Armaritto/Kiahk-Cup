@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.cup.helpers.LoadingDialog;
+import com.stgsporting.cup.helpers.NetworkUtils;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -60,6 +61,10 @@ public class LoginActivity extends AppCompatActivity {
         Button backToGrade = findViewById(R.id.back_to_grade);
 
         buttonLogin.setOnClickListener(v -> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             String name = name_edittext.getText().toString();
             String passcode = passcode_edittext.getText().toString();
             if (!name.isEmpty() && !passcode.isEmpty()) {

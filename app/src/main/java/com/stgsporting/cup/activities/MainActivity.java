@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.cup.helpers.Header;
 import com.stgsporting.cup.helpers.LoadingDialog;
+import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.Objects;
 
@@ -31,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        boolean isOnline = isOnline();
         LoadingDialog loadingDialog = new LoadingDialog(this);
 
         data = getIntent().getStringArrayExtra("Data");
@@ -47,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
         if(Objects.equals(data[0], "admin")){
             admin.setVisibility(View.VISIBLE);
             admin.setOnClickListener(v-> {
-                if(!isOnline){
-                    Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                if (!NetworkUtils.isOnline(this)) {
+                    Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 openAdminPanel();
@@ -109,8 +109,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         mosab2a.setOnClickListener(v-> {
-            if(!isOnline){
-                Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
                 return;
             }
             Intent intent = new Intent(MainActivity.this, ShowQuizzesActivity.class);
@@ -118,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
         lineup.setOnClickListener(v-> {
-            if(!isOnline){
-                Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
                 return;
             }
             Intent intent = new Intent(MainActivity.this, LineupActivity.class);
@@ -128,8 +128,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
         myCard.setOnClickListener(v-> {
-            if(!isOnline){
-                Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
                 return;
             }
             Intent intent = new Intent(MainActivity.this, MyCardActivity.class);
@@ -137,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
         leaderboard.setOnClickListener(v-> {
-            if(!isOnline){
-                Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
                 return;
             }
             Intent intent = new Intent(MainActivity.this, LeaderboardActivity.class);
@@ -159,11 +159,5 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, AdminActivity.class);
         intent.putExtra("Data", data);
         startActivity(intent);
-    }
-    public boolean isOnline() {
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
     }
 }

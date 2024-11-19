@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.cup.R;
 import com.stgsporting.cup.helpers.LoadingDialog;
+import com.stgsporting.cup.helpers.NetworkUtils;
 
 
 public class AdminActivity extends AppCompatActivity {
@@ -77,42 +78,70 @@ public class AdminActivity extends AppCompatActivity {
         });
 
         usersList.setOnClickListener(v -> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(AdminActivity.this, UsersListActivity.class);
             intent.putExtra("Data", data);
             startActivity(intent);
         });
 
         manageQuizzes.setOnClickListener(v -> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(AdminActivity.this, AddQuizActivity.class);
             intent.putExtra("Data", data);
             startActivity(intent);
         });
 
         manageCards.setOnClickListener(v -> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(AdminActivity.this, CardsListActivity.class);
             intent.putExtra("Data", data);
             startActivity(intent);
         });
 
         manageStars.setOnClickListener(v -> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(AdminActivity.this, ManageStarsActivity.class);
             intent.putExtra("Data", data);
             startActivity(intent);
         });
 
         manageCardIcons.setOnClickListener(v -> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(AdminActivity.this, CardIconsListActivity.class);
             intent.putExtra("Data", data);
             startActivity(intent);
         });
 
         managePositions.setOnClickListener(v -> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(AdminActivity.this, ManagePositions.class);
             intent.putExtra("Data", data);
             startActivity(intent);
         });
 
         manageButtons.setOnClickListener(v -> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(AdminActivity.this, ManageHome.class);
             intent.putExtra("Data", data);
             startActivity(intent);

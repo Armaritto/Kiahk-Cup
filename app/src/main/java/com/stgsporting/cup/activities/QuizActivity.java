@@ -17,6 +17,7 @@ import com.stgsporting.cup.data.Quiz;
 import com.stgsporting.cup.helpers.Header;
 import com.stgsporting.cup.helpers.Http;
 import com.stgsporting.cup.helpers.LoadingDialog;
+import com.stgsporting.cup.helpers.NetworkUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,6 +68,10 @@ public class QuizActivity extends AppCompatActivity {
         FloatingActionButton submit = findViewById(R.id.submit_quiz);
 
         submit.setOnClickListener((__) -> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             JSONObject requestData = getJsonObject(data);
 
             loadingDialog.show();

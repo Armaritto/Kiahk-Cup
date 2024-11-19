@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +21,7 @@ import com.stgsporting.cup.R;
 import com.stgsporting.cup.activities.LineupActivity;
 import com.stgsporting.cup.data.TextColor;
 import com.stgsporting.cup.data.User;
+import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.List;
 
@@ -54,6 +56,10 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter<LeaderboardUser
 
         setUserCardImage(holder.cardView, user, storageRef);
         holder.button.setOnClickListener(v -> {
+            if (!NetworkUtils.isOnline(context)) {
+                Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent;
             intent = new Intent(context, LineupActivity.class);
             intent.putExtra("Data", new String[]{user.getName(), data[1], data[2], data[3]});

@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.stgsporting.cup.R;
 import com.stgsporting.cup.helpers.LoadingDialog;
+import com.stgsporting.cup.helpers.NetworkUtils;
 
 
 public class GradeActivity extends AppCompatActivity {
@@ -45,6 +46,10 @@ public class GradeActivity extends AppCompatActivity {
         Button cont = findViewById(R.id.cont);
 
         cont.setOnClickListener(v-> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             RadioButton selected = findViewById(grade_selection.getCheckedRadioButtonId());
             if (selected == null) {
                 Toast.makeText(this, "You must choose your grade", Toast.LENGTH_SHORT).show();
