@@ -87,7 +87,7 @@ public class CardEditorActivity extends AppCompatActivity {
 
         img.setOnClickListener(v-> openFileChooser());
         
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot cardData) {
                 if (cardData.hasChild("Image")) {

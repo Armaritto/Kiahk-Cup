@@ -7,11 +7,9 @@
     android:padding="16dp"
     android:textSize="16sp"
     android:button="@drawable/custom_radio_button"
-    android:background="@drawable/radio_button_background"
     android:gravity="center_vertical"
     android:textStyle="bold"
     android:layout_marginVertical="@dimen/_1sdp"
-    android:textColor="@color/black"
-    android:textColorHighlight="@color/design_default_color_secondary_variant"
+    android:textColor="@color/white"
     >
 </RadioButton>

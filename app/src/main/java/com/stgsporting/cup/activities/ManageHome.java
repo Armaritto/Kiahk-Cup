@@ -42,7 +42,7 @@ public class ManageHome extends AppCompatActivity {
         String[] data = getIntent().getStringArrayExtra("Data");
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         DatabaseReference ref = database.getReference().child("elmilad25").child("Buttons");
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 mosab2a.setChecked(Boolean.parseBoolean(snapshot.child("Mosab2a").getValue().toString()));

@@ -4,13 +4,15 @@
     android:id="@+id/question"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/_10sdp"
     android:layout_marginVertical="@dimen/_10sdp"
-    android:background="@color/white">
+    android:background="@drawable/question_view_background">
 
     <TextView
         android:id="@+id/question_title"
         style="@style/title_home_btn"
         android:paddingVertical="@dimen/_10sdp"
+        android:textColor="@color/white"
         app:flow_horizontalAlign="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -53,7 +53,7 @@ public class PositionStoreActivity extends AppCompatActivity {
 
         DatabaseReference ref = database.getReference();
 
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataS) {
                 DataSnapshot snapshot = dataS.child("elmilad25").child("CardPosition");

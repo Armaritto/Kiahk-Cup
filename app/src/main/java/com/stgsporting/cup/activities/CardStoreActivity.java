@@ -59,7 +59,7 @@ public class CardStoreActivity extends AppCompatActivity {
 
         DatabaseReference ref = database.getReference();
 
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 DataSnapshot snapshot = dataSnapshot.child("elmilad25").child("CardIcon");

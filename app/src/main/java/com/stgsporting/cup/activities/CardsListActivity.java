@@ -68,7 +68,7 @@ public class CardsListActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance(Objects.requireNonNull(data)[1]);
         DatabaseReference ref = database.getReference();
 
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
