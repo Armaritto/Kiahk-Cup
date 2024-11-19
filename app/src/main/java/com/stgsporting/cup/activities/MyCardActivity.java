@@ -26,6 +26,7 @@ import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.data.TextColor;
 import com.stgsporting.cup.helpers.Header;
 import com.stgsporting.cup.helpers.LoadingDialog;
+import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -158,18 +159,30 @@ public class MyCardActivity extends AppCompatActivity {
         });
 
         cardBtn.setOnClickListener(v-> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(MyCardActivity.this, CardStoreActivity.class);
             intent.putExtra("Data",data);
             startActivity(intent);
         });
 
         positionBtn.setOnClickListener(v-> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(MyCardActivity.this, PositionStoreActivity.class);
             intent.putExtra("Data",data);
             startActivity(intent);
         });
 
         ratingBtn.setOnClickListener(v-> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(MyCardActivity.this, RatingStoreActivity.class);
             intent.putExtra("Data",data);
             startActivity(intent);

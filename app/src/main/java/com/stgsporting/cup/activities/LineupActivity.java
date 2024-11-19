@@ -29,6 +29,7 @@ import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.data.Card;
 import com.stgsporting.cup.data.TextColor;
 import com.stgsporting.cup.helpers.LoadingDialog;
+import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,6 +87,10 @@ public class LineupActivity extends AppCompatActivity {
             String cardPos = getResources().getResourceEntryName(id);
             if(!otherLineup)
                 lineupCards[i].setOnClickListener(v-> {
+                    if (!NetworkUtils.isOnline(this)) {
+                        Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     String usedPosition = userPos;
                     if (usedPosition.equals("CB")) usedPosition = "LCB";
                     if (usedPosition.equals("CM")) usedPosition = "LCM";

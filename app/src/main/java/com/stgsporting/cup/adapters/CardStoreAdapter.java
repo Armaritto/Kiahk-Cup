@@ -22,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.data.CardIcon;
+import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.ArrayList;
 
@@ -66,6 +67,10 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
             }
         });
         holder.button.setOnClickListener(v-> {
+            if (!NetworkUtils.isOnline(context)) {
+                Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             purchaseObject(getItem(position));
         });
         if (cards.get(position).isOwned()) {

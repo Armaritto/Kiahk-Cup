@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.stgsporting.cup.R;
 import com.stgsporting.cup.activities.QuizActivity;
 import com.stgsporting.cup.data.Quiz;
+import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.List;
 
@@ -48,12 +49,14 @@ public class QuizzesAdapter extends RecyclerView.Adapter<QuizzesAdapter.ViewHold
         holder.coins.setText(coins);
 
         holder.quiz.setOnClickListener(v-> {
-            if(q.isSolved()) {
-                Toast.makeText(activity, "حليت المسابقة قبل كده", Toast.LENGTH_LONG).show();
-
+            if (!NetworkUtils.isOnline(activity)) {
+                Toast.makeText(activity, "No internet connection", Toast.LENGTH_SHORT).show();
                 return;
             }
-
+            if(q.isSolved()) {
+                Toast.makeText(activity, "حليت المسابقة قبل كده", Toast.LENGTH_LONG).show();
+                return;
+            }
             Intent intent = new Intent(activity, QuizActivity.class);
             intent.putExtra("quiz", q.toJson().toString());
             intent.putExtra("Data", activity.getIntent().getStringArrayExtra("Data"));

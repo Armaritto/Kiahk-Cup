@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.stgsporting.cup.R;
 import com.stgsporting.cup.activities.AddQuestionsToQuizActivity;
 import com.stgsporting.cup.data.Quiz;
+import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.List;
 
@@ -51,6 +53,10 @@ public class AdminQuizAdapter extends RecyclerView.Adapter<AdminQuizAdapter.View
         holder.startedAt.setText(q.getStartedAtFormatted());
 
         holder.quiz.setOnClickListener(v -> {
+            if (!NetworkUtils.isOnline(context)) {
+                Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(context, AddQuestionsToQuizActivity.class);
             intent.putExtra("quiz", q.toJson().toString());
             context.startActivity(intent);

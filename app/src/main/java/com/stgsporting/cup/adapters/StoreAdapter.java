@@ -24,6 +24,7 @@ import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.activities.LineupActivity;
 import com.stgsporting.cup.data.Card;
 import com.stgsporting.cup.helpers.ConfirmDialog;
+import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -82,10 +83,18 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             holder.sellButton.setVisibility(View.INVISIBLE);
         }
         holder.purchaseButton.setOnClickListener(v-> {
+            if (!NetworkUtils.isOnline(context)) {
+                Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
             purchasePlayer(getItem(position));
         });
         holder.sellButton.setOnClickListener(v -> {
             View.OnClickListener yesListener = v1 -> {
+                if (!NetworkUtils.isOnline(context)) {
+                    Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 sellPlayer(getItem(position));
             };
             View.OnClickListener noListener = v1 -> {};
