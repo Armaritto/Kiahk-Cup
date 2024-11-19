@@ -8,4 +8,6 @@
   <color name="semitransparent">#BFFFFFFF</color>
   <color name="transparent">#00000000</color>
   <color name="red">#FF0000</color>
+  <color name="border_color">#B0BEC5</color>
+  <color name="checked_color">#1E88E5</color>
 </resources>
