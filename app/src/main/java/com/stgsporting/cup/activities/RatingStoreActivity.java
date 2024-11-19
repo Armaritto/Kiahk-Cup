@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.cup.helpers.Header;
 import com.stgsporting.cup.helpers.LoadingDialog;
+import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.Objects;
 
@@ -86,6 +87,10 @@ public class RatingStoreActivity extends AppCompatActivity {
                     price.setText(String.valueOf(total));
                 });
                 purchase.setOnClickListener(v -> {
+                    if (!NetworkUtils.isOnline(RatingStoreActivity.this)) {
+                        Toast.makeText(RatingStoreActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     DatabaseReference userRef = database.getReference("/elmilad25/Users").child(data[0]);
                     int stars = Integer.parseInt(userData.child("Stars").getValue().toString());
                     if (stars>=total) {
