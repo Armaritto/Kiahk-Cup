@@ -48,7 +48,7 @@ public class AdminActivity extends AppCompatActivity {
 
         LoadingDialog loading = new LoadingDialog(this);
 
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 DataSnapshot rating = dataSnapshot.child("Rating Price");

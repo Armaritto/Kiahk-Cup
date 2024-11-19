@@ -55,7 +55,7 @@ public class RatingStoreActivity extends AppCompatActivity {
         Header.render(this, Objects.requireNonNull(data));
         DatabaseReference ref = database.getReference();
 
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataS) {
 

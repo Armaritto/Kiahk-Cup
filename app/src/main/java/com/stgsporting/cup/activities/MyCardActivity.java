@@ -66,7 +66,7 @@ public class MyCardActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         DatabaseReference ref = database.getReference();
         FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataS) {
                 if (dataS.child("/elmilad25/Users").child(data[0])

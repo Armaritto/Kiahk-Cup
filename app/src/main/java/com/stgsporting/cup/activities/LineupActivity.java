@@ -111,7 +111,7 @@ public class LineupActivity extends AppCompatActivity {
         DatabaseReference ref = database.getReference();
         DatabaseReference userRef = ref.child("/elmilad25/Users").child(data[0]);
 
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

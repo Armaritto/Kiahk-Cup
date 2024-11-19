@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
             leaderboard.setVisibility(View.VISIBLE);
             loadingDialog.dismiss();
         }
-        database.getReference("elmilad25").addValueEventListener(new ValueEventListener() {
+        database.getReference("elmilad25").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 

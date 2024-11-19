@@ -54,7 +54,7 @@ public class ManageStarsActivity extends AppCompatActivity {
         String[] data = getIntent().getStringArrayExtra("Data");
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         ref = database.getReference().child("elmilad25").child("Admin");
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<Option> options = new ArrayList<>();

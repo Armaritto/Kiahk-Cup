@@ -52,7 +52,7 @@ public class ManagePositions extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         ref = database.getReference().child("elmilad25").child("CardPosition");
 
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<Position> positions = new ArrayList<>();

@@ -21,16 +21,16 @@ public class Header {
         TextView stars = activity.findViewById(R.id.rating);
         TextView coins = activity.findViewById(R.id.coins);
         TextView name = activity.findViewById(R.id.nametextview);
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.child("/elmilad25/Users").child(data[0]).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = new User();
                 user.setName(data[0]);
                 name.setText(user.getDisplayName());
 
-                snapshot = snapshot.child("/elmilad25/Users");
-                Object starsObj = snapshot.child(data[0]).child("Stars").getValue();
-                Object coinsObj = snapshot.child(data[0]).child("Coins").getValue();
+//                snapshot = snapshot.child("/elmilad25/Users");
+                Object starsObj = snapshot.child("Stars").getValue();
+                Object coinsObj = snapshot.child("Coins").getValue();
                 if (starsObj == null) {
                     starsObj = 0;
                 }

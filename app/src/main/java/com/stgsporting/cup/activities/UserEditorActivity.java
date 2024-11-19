@@ -128,7 +128,7 @@ public class UserEditorActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         ref = database.getReference("elmilad25");
 
-        ref.child("Users").child(userName).addValueEventListener(new ValueEventListener() {
+        ref.child("Users").child(userName).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String new_name = snapshot.getKey();
@@ -171,7 +171,7 @@ public class UserEditorActivity extends AppCompatActivity {
             }
         });
 
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<String> titles = new ArrayList<>();
