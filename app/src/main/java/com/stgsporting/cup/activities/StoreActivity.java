@@ -87,7 +87,7 @@ public class StoreActivity extends AppCompatActivity {
                 coins = Integer.parseInt(Objects.requireNonNull(snapshot.child("elmilad25").child("Users").child(data[0]).child("Coins").getValue()).toString());
                 DataSnapshot storeData = snapshot.child("elmilad25").child("Store");
                 DataSnapshot ownedData = snapshot.child("/elmilad25/Users").child(data[0]).child("Owned Cards");
-
+                DataSnapshot userData = snapshot.child("/elmilad25/Users").child(data[0]);
                 ArrayList<Card> cards = new ArrayList<>();
                 for (DataSnapshot cardData : storeData.getChildren()) {
                     String cardID = cardData.getKey();
@@ -110,6 +110,9 @@ public class StoreActivity extends AppCompatActivity {
                         if (cardData.hasChild("Available") && !Boolean.parseBoolean(cardData.child("Available").getValue().toString()))
                             continue;
                     }
+                    if(userData.child("Lineup").child(position).getValue() != null &&
+                        userData.child("Lineup").child(position).getValue().toString().equals(cardID))
+                        card.setInLineup(true);
                     cards.add(card);
                 }
 

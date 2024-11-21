@@ -12,6 +12,7 @@ public class Card {
     private boolean owned;
     private String imagePath;
     private String name;
+    private boolean inLineup;
 
     public Card(String ID, int price, String imageLink, String rating, String position) {
         this.ID = ID;
@@ -19,6 +20,7 @@ public class Card {
         this.imageLink = imageLink;
         this.rating = rating;
         this.position = position;
+        this.inLineup = false;
     }
 
     public Card() {
@@ -85,6 +87,14 @@ public class Card {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isInLineup() {
+        return inLineup;
+    }
+
+    public void setInLineup(boolean inLineup) {
+        this.inLineup = inLineup;
     }
 
     @NonNull

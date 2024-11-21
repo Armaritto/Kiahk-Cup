@@ -3,6 +3,7 @@ package com.stgsporting.cup.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DatabaseError;
 import com.stgsporting.cup.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -76,7 +78,10 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             }
         });
         if (cards.get(position).isOwned()) {
-            holder.purchaseButton.setText("Select");
+            if(cards.get(position).isInLineup())
+                holder.purchaseButton.setText("Unselect");
+            else
+                holder.purchaseButton.setText("Select");
             holder.sellButton.setVisibility(View.VISIBLE);
         }
         else{
@@ -136,14 +141,28 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
 
         DatabaseReference userRef = database.getReference("/elmilad25/Users").child(name);
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
-
+        DatabaseReference storeRef = database.getReference("/elmilad25/Store");
         if (card.isOwned()) {
             userRef.child("Lineup").addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
-                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                        if (snapshot1.getValue().toString().equals(card.getID()))
-                            userRef.child("Lineup").child(snapshot1.getKey()).removeValue();
+                    for (DataSnapshot S : snapshot.getChildren()) {
+                        if (S.getValue().toString().equals(card.getID()))
+                            userRef.child("Lineup").child(S.getKey()).removeValue();
+                        storeRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String Sname = dataSnapshot.child(S.getValue().toString()).child("Name").getValue(String.class);
+                                card.setName(dataSnapshot.child(card.getID()).child("Name").getValue(String.class));
+                                if (card.getName().equals(Sname)) {
+                                    Log.d("TAG", "onDataChange: " + card.getName());
+                                    userRef.child("Lineup").child(S.getKey()).removeValue();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {}
+                        });
                     }
                 }
                 @Override
@@ -186,7 +205,9 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         userRef.child("Lineup").child(cardPosition).addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
             @Override
             public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
-                if(Objects.requireNonNull(snapshot.getValue()).toString().equals(card.getID()))
+                if(snapshot.getValue() == null)
+                    return;
+                if(snapshot.getValue().toString().equals(card.getID()))
                     userRef.child("Lineup").child(cardPosition).removeValue();
             }
             @Override
