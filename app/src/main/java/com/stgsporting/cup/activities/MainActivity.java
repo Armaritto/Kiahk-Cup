@@ -25,6 +25,7 @@ import com.stgsporting.cup.helpers.LoadingDialog;
 import com.stgsporting.cup.helpers.NetworkUtils;
 import com.stgsporting.cup.helpers.UpdateDialog;
 
+
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
