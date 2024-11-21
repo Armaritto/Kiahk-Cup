@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,15 +19,18 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.stgsporting.cup.helpers.ConfirmDialog;
 import com.stgsporting.cup.helpers.Header;
 import com.stgsporting.cup.helpers.LoadingDialog;
 import com.stgsporting.cup.helpers.NetworkUtils;
+import com.stgsporting.cup.helpers.UpdateDialog;
 
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
     private String[] data;
+    private static final double current_version = 0.8;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +63,13 @@ public class MainActivity extends AppCompatActivity {
         database.getReference("elmilad25").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                if(current_version < dataSnapshot.child("Version").getValue(Double.class)){
+                    View.OnClickListener updateListener = v1 -> {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.stgsporting.cup"));
+                        startActivity(intent);
+                    };
+                    new UpdateDialog(MainActivity.this,updateListener);
+                }
                 if(Boolean.TRUE.equals(dataSnapshot.child("Maintenance").getValue(Boolean.class))){
                     loadingDialog.dismiss();
                     Intent intent = new Intent(MainActivity.this, MaintenanceActivity.class);
