@@ -1,10 +1,7 @@
 package com.stgsporting.cup.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -19,7 +16,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.stgsporting.cup.helpers.ConfirmDialog;
 import com.stgsporting.cup.helpers.Header;
 import com.stgsporting.cup.helpers.LoadingDialog;
 import com.stgsporting.cup.helpers.NetworkUtils;
@@ -31,7 +27,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     private String[] data;
-    private static final double current_version = 0.8;
+    private static final double current_version = 0.9;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
