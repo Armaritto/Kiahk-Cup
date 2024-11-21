@@ -180,7 +180,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
 
         int price = card.getPrice();
-        points += price/2;
+        points += price;
         userRef.child("Coins").setValue(points);
         cardRef.removeValue();
         userRef.child("Lineup").child(cardPosition).addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
