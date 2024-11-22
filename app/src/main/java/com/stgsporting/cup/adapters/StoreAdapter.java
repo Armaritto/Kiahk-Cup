@@ -199,16 +199,41 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
 
         int price = card.getPrice();
+        int temp = points;
         points += price;
+        Log.d("HI-THERE", temp + " + " + price + " = " + points);
         userRef.child("Coins").setValue(points);
         cardRef.removeValue();
-        userRef.child("Lineup").child(cardPosition).addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+        userRef.child("Lineup").addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
             @Override
             public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
-                if(snapshot.getValue() == null)
-                    return;
-                if(snapshot.getValue().toString().equals(card.getID()))
-                    userRef.child("Lineup").child(cardPosition).removeValue();
+                if (cardPosition.equals("LCM") || cardPosition.equals("RCM")) {
+                    if(snapshot.child("LCM").exists())
+                        snapshot = snapshot.child("LCM");
+                    else if(snapshot.child("RCM").exists())
+                        snapshot = snapshot.child("RCM");
+                }
+                else if(cardPosition.equals("LCB") || cardPosition.equals("RCB")) {
+                    if(snapshot.child("LCB").exists())
+                        snapshot = snapshot.child("LCB");
+                    else if(snapshot.child("RCB").exists())
+                        snapshot = snapshot.child("RCB");
+                }
+                else
+                    snapshot = snapshot.child(cardPosition);
+                if(snapshot.exists())
+                    if(snapshot.getValue().toString().equals(card.getID())) {
+                        if (cardPosition.equals("LCM") || cardPosition.equals("RCM")) {
+                            userRef.child("Lineup").child("LCM").removeValue();
+                            userRef.child("Lineup").child("RCM").removeValue();
+                        }
+                        else if(cardPosition.equals("LCB") || cardPosition.equals("RCB")) {
+                            userRef.child("Lineup").child("LCB").removeValue();
+                            userRef.child("Lineup").child("RCB").removeValue();
+                        }
+                        else
+                            userRef.child("Lineup").child(cardPosition).removeValue();
+                    }
             }
             @Override
             public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
