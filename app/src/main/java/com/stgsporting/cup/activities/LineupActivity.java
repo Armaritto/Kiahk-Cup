@@ -16,6 +16,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,10 +26,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.data.Card;
 import com.stgsporting.cup.data.TextColor;
+import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.LoadingDialog;
 import com.stgsporting.cup.helpers.NetworkUtils;
 
@@ -43,11 +44,11 @@ public class LineupActivity extends AppCompatActivity {
     private String userRating = "0"; //Points in database
     private ImageView[] lineupCards;
     private FirebaseStorage storage;
-    private LoadingDialog loadingDialog;
-    private int allImgsToLoad = 11;
     private boolean otherLineup = false;
     private boolean storeLocked;
     private boolean myCardLocked;
+    private ImageLoader imageLoader;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +56,11 @@ public class LineupActivity extends AppCompatActivity {
 //        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_lineup);
 
-        loadingDialog = new LoadingDialog(this);
-
         data = getIntent().getStringArrayExtra("Data");
         otherLineup = getIntent().getBooleanExtra("OtherLineup", false);
+
+        loadingDialog = new LoadingDialog(this);
+        imageLoader = new ImageLoader(this);
 
         // All cards IDs
         int[] lineupViewIds = {
@@ -170,28 +172,12 @@ public class LineupActivity extends AppCompatActivity {
                         storageRef.getDownloadUrl()
                                 .addOnSuccessListener(uri -> {
                                     String downloadUrl = uri.toString();
-                                    Picasso.get().load(downloadUrl).into(cardImage, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
-                                            allImgsToLoad--;
-                                            checkAllLoaded();
-                                        }
-
-                                        @Override
-                                        public void onError(Exception e) {
-                                            allImgsToLoad--;
-                                            checkAllLoaded();
-                                        }
-                                    });
+                                    imageLoader.loadImage(downloadUrl, cardImage);
                                 })
                                 .addOnFailureListener(e -> {
                                     Toast.makeText(LineupActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
-                                    allImgsToLoad--;
                                 });
                         totalRating += (double) Integer.parseInt(c.getRating()) / 11;
-                    } else {
-                        allImgsToLoad--;
-                        checkAllLoaded();
                     }
 
                 }
@@ -250,7 +236,7 @@ public class LineupActivity extends AppCompatActivity {
                 storageRef.getDownloadUrl()
                         .addOnSuccessListener(uri -> {
                             String downloadUrl = uri.toString();
-                            Picasso.get().load(downloadUrl).into(icon, new com.squareup.picasso.Callback() {
+                            Picasso.with(this).load(downloadUrl).into(icon, new com.squareup.picasso.Callback() {
                                 @Override
                                 public void onSuccess() {
                                     imagesToLoad--;
@@ -259,29 +245,22 @@ public class LineupActivity extends AppCompatActivity {
                                 }
 
                                 @Override
-                                public void onError(Exception e) {
+                                public void onError() {
                                     imagesToLoad--;
                                     checkIfAllImagesLoaded(v, imageView);                                }
                             });
                         })
                         .addOnFailureListener(e -> {
                             Toast.makeText(LineupActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
-                            imagesToLoad--;
-                            checkIfAllImagesLoaded(v, imageView);
                         });
-            } else {
-                imagesToLoad--;
-                checkIfAllImagesLoaded(v, imageView);
             }
 
         } else {
             icon.setImageDrawable(getResources().getDrawable(R.drawable.empty));
-            imagesToLoad--;
-            checkIfAllImagesLoaded(v, imageView);
         }
         if (userData.hasChild("ImageLink")) {
             String imgLink = userData.child("ImageLink").getValue().toString();
-            Picasso.get().load(imgLink).into(img, new Callback() {
+            Picasso.with(this).load(imgLink).into(img, new Callback() {
                 @Override
                 public void onSuccess() {
                     imagesToLoad--;
@@ -289,7 +268,7 @@ public class LineupActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError() {
                     imagesToLoad--;
                     checkIfAllImagesLoaded(v, imageView);
                 }
@@ -330,8 +309,7 @@ public class LineupActivity extends AppCompatActivity {
                 v.draw(canvas);
                 imageView.setImageBitmap(bitmap);
                 imageView.setScaleX(1.05F);
-                allImgsToLoad--;
-                checkAllLoaded();
+               loadingDialog.dismiss();
             }, 100);
         }
     }
@@ -341,10 +319,6 @@ public class LineupActivity extends AppCompatActivity {
         for (ImageView img : lineupCards) {
             img.setImageDrawable(getResources().getDrawable(R.drawable.empty));
         }
-    }
-
-    private void checkAllLoaded() {
-        if (allImgsToLoad==0) loadingDialog.dismiss();
     }
 
 }

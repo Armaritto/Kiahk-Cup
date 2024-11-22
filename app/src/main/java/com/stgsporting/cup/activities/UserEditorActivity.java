@@ -38,6 +38,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.data.Option;
+import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.ImageProcessor;
 import com.stgsporting.cup.helpers.LoadingDialog;
 
@@ -55,6 +56,7 @@ public class UserEditorActivity extends AppCompatActivity {
     private DatabaseReference ref;
     private ImageView img;
     private LoadingDialog loadingDialog;
+    private ImageLoader imageLoader;
 
     private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -109,6 +111,7 @@ public class UserEditorActivity extends AppCompatActivity {
         });
 
         loadingDialog = new LoadingDialog(this);
+        imageLoader = new ImageLoader(this);
 
         TextView name = findViewById(R.id.name);
         TextView rating = findViewById(R.id.rating);
@@ -146,21 +149,10 @@ public class UserEditorActivity extends AppCompatActivity {
                     stars_edittext.setText(snapshot.child("Stars").getValue().toString());
                 if (snapshot.hasChild("ImageLink")) {
                     String imgLink = snapshot.child("ImageLink").getValue().toString();
-                    Picasso.get().load(imgLink).into(img, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            loadingDialog.dismiss();
-                        }
-
-                        @Override
-                        public void onError(Exception e) {
-                            Toast.makeText(UserEditorActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
-                            loadingDialog.dismiss();
-                        }
-                    });
-                } else {
-                    loadingDialog.dismiss();
+                    imageLoader.loadImage(imgLink, img);
                 }
+                loadingDialog.dismiss();
+
             }
 
             @Override
@@ -320,14 +312,14 @@ public class UserEditorActivity extends AppCompatActivity {
                             // Get the download URL
                             String downloadlink = uri.toString();
                             ref.child("Users").child(userName).child("ImageLink").setValue(downloadlink);
-                            Picasso.get().load(uri).into(img, new Callback() {
+                            Picasso.with(this).load(uri).into(img, new Callback() {
                                 @Override
                                 public void onSuccess() {
                                     loadingDialog.dismiss();
                                 }
 
                                 @Override
-                                public void onError(Exception e) {
+                                public void onError() {
                                     Toast.makeText(UserEditorActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
                                     loadingDialog.dismiss();
                                 }

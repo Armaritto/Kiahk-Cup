@@ -29,6 +29,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.R;
+import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.ImageProcessor;
 import com.stgsporting.cup.helpers.LoadingDialog;
 
@@ -39,6 +40,7 @@ public class CardEditorActivity extends AppCompatActivity {
     private String imgPath;
     private LoadingDialog loadingDialog;
     private FirebaseStorage storage;
+    private ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,7 @@ public class CardEditorActivity extends AppCompatActivity {
         });
 
         loadingDialog = new LoadingDialog(this);
+        imageLoader = new ImageLoader(this);
 
         String[] positions = {
                 "ST",
@@ -96,15 +99,7 @@ public class CardEditorActivity extends AppCompatActivity {
                     storageRef.getDownloadUrl()
                             .addOnSuccessListener(uri -> {
                                 String downloadUrl = uri.toString();
-                                Picasso.get().load(downloadUrl).into(img, new Callback() {
-                                    @Override
-                                    public void onSuccess() {}
-
-                                    @Override
-                                    public void onError(Exception e) {
-                                        Toast.makeText(CardEditorActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                imageLoader.loadImage(downloadUrl, img);
                             })
                             .addOnFailureListener(e -> Toast.makeText(CardEditorActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show());
                 }
@@ -211,18 +206,7 @@ public class CardEditorActivity extends AppCompatActivity {
                         .addOnSuccessListener(uri -> {
                             // Get the download URL
                             imgPath = fileRef.getPath();
-                            Picasso.get().load(uri).into(img, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    loadingDialog.dismiss();
-                                }
-
-                                @Override
-                                public void onError(Exception e) {
-                                    Toast.makeText(CardEditorActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
-                                    loadingDialog.dismiss();
-                                }
-                            });
+                            imageLoader.loadImage(uri, img);
                             // Use the download URL as needed
                         }))
                 .addOnFailureListener(e -> {

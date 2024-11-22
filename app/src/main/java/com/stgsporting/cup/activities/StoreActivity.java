@@ -23,6 +23,7 @@ import com.google.firebase.storage.StorageReference;
 import com.stgsporting.cup.data.Card;
 import com.stgsporting.cup.adapters.StoreAdapter;
 import com.stgsporting.cup.helpers.Header;
+import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.LoadingDialog;
 
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class StoreActivity extends AppCompatActivity {
     private String selectedPosition;
     private String cardPosition;
     private int imagesToLoad;
+    private ImageLoader imageLoader;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +51,7 @@ public class StoreActivity extends AppCompatActivity {
         });
 
         LoadingDialog loadingDialog = new LoadingDialog(this);
+        imageLoader = new ImageLoader(this);
 
         data = getIntent().getStringArrayExtra("Data");
         selectedPosition = getIntent().getStringExtra("Card");
@@ -131,7 +134,7 @@ public class StoreActivity extends AppCompatActivity {
                                 imagesToLoad--;
                                 if (imagesToLoad==0) {
                                     adapter = new StoreAdapter(
-                                            StoreActivity.this, cards, coins, database, data[0], cardPosition, storage);
+                                            StoreActivity.this, cards, coins, database, data[0], cardPosition, storage, imageLoader);
                                     recyclerView.setAdapter(adapter);
                                     loadingDialog.dismiss();
                                 }
@@ -142,7 +145,7 @@ public class StoreActivity extends AppCompatActivity {
                                 imagesToLoad--;
                                 if (imagesToLoad==0) {
                                     adapter = new StoreAdapter(
-                                            StoreActivity.this, cards, coins, database, data[0], cardPosition, storage);
+                                            StoreActivity.this, cards, coins, database, data[0], cardPosition, storage, imageLoader);
                                     recyclerView.setAdapter(adapter);
                                     loadingDialog.dismiss();
                                 }

@@ -34,6 +34,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.R;
 import com.stgsporting.cup.data.CardIcon;
+import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.LoadingDialog;
 
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class CardIconsListActivity extends AppCompatActivity {
     private String[] data;
     private LoadingDialog loadingDialog;
     private int imgsToLoad;
+    private ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class CardIconsListActivity extends AppCompatActivity {
         });
 
         loadingDialog = new LoadingDialog(this);
+        imageLoader = new ImageLoader(this);
 
         EditText search = findViewById(R.id.search);
         ListView cards_list = findViewById(R.id.cards_list);
@@ -187,7 +190,7 @@ public class CardIconsListActivity extends AppCompatActivity {
             purchase.setVisibility(View.GONE);
             sell.setVisibility(View.GONE);
 
-            Picasso.get().load(filteredCards.get(position).getImageLink()).into(img);
+            imageLoader.loadImage(filteredCards.get(position).getImageLink(), img);
             v.setOnClickListener(v1 -> {
                 Intent intent = new Intent(CardIconsListActivity.this, CardIconEditorActivity.class);
                 intent.putExtra("Data", data);

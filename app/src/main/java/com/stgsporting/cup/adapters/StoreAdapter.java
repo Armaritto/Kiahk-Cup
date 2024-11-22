@@ -26,6 +26,7 @@ import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.activities.LineupActivity;
 import com.stgsporting.cup.data.Card;
 import com.stgsporting.cup.helpers.ConfirmDialog;
+import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.ArrayList;
@@ -41,10 +42,11 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     private final String name;
     private final String cardPosition;
     private FirebaseStorage storage;
+    private ImageLoader imageLoader;
 
     // data is passed into the constructor
     public StoreAdapter(Context context, ArrayList<Card> cards, int points, FirebaseDatabase database,
-                        String name, String cardPosition, FirebaseStorage storage) {
+                        String name, String cardPosition, FirebaseStorage storage, ImageLoader imageLoader) {
         this.mInflater = LayoutInflater.from(context);
         this.cards = cards;
         this.context = context;
@@ -53,6 +55,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         this.name = name;
         this.cardPosition = cardPosition;
         this.storage = storage;
+        this.imageLoader = imageLoader;
     }
 
     // inflates the cell layout from xml when needed
@@ -67,16 +70,8 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.price.setText(cards.get(position).getPrice()+" €");
-        Picasso.get().load(cards.get(position).getImageLink()).into(holder.img, new Callback() {
-            @Override
-            public void onSuccess() {
-            }
+        imageLoader.loadImage(cards.get(position).getImageLink(), holder.img);
 
-            @Override
-            public void onError(Exception e) {
-                Toast.makeText(context, "Image Loading Failed", Toast.LENGTH_SHORT).show();
-            }
-        });
         if (cards.get(position).isOwned()) {
             if(cards.get(position).isInLineup())
                 holder.purchaseButton.setText("Unselect");
