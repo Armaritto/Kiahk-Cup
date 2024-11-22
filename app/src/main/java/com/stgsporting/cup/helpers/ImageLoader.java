@@ -20,7 +20,7 @@ public class ImageLoader {
 
     public void loadImage(String imageUrl, ImageView imageView) {
         Picasso picasso = Picasso.with(activity);
-        picasso.setIndicatorsEnabled(true);
+        picasso.setIndicatorsEnabled(false);
         picasso.load(imageUrl)
                 .placeholder(R.drawable.loading)
                 .error(R.drawable.emptyuser)
@@ -35,7 +35,7 @@ public class ImageLoader {
                     public void onError() {
                         //Try again online if cache failed
                         Picasso picasso1 = Picasso.with(activity);
-                        picasso1.setIndicatorsEnabled(true);
+                        picasso1.setIndicatorsEnabled(false);
                         picasso1.load(imageUrl)
                                 .placeholder(R.drawable.loading)
                                 .error(R.drawable.emptyuser)
@@ -56,7 +56,7 @@ public class ImageLoader {
 
     public void loadImage(Uri uri, ImageView imageView) {
         Picasso picasso = Picasso.with(activity);
-        picasso.setIndicatorsEnabled(true);
+        picasso.setIndicatorsEnabled(false);
         picasso.load(uri)
                 .placeholder(R.drawable.loading)
                 .error(R.drawable.emptyuser)
