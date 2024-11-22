@@ -57,6 +57,13 @@ public class UserEditorActivity extends AppCompatActivity {
     private ImageView img;
     private LoadingDialog loadingDialog;
     private ImageLoader imageLoader;
+    private TextView name;
+    private TextView rating;
+    private ListView list;
+    private LinearLayout add;
+    private EditText passcode_edittext;
+    private EditText coins_edittext;
+    private EditText stars_edittext;
 
     private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -113,17 +120,17 @@ public class UserEditorActivity extends AppCompatActivity {
         loadingDialog = new LoadingDialog(this);
         imageLoader = new ImageLoader(this);
 
-        TextView name = findViewById(R.id.name);
-        TextView rating = findViewById(R.id.rating);
-        EditText passcode_edittext = findViewById(R.id.passcode_edittext);
-        EditText coins_edittext = findViewById(R.id.coins_edittext);
-        EditText stars_edittext = findViewById(R.id.stars_edittext);
+        name = findViewById(R.id.name);
+        rating = findViewById(R.id.rating);
+        passcode_edittext = findViewById(R.id.passcode_edittext);
+        coins_edittext = findViewById(R.id.coins_edittext);
+        stars_edittext = findViewById(R.id.stars_edittext);
         ImageView conf_passcode = findViewById(R.id.conf_passcode);
         ImageView conf_coins = findViewById(R.id.conf_coins);
         ImageView conf_stars = findViewById(R.id.conf_stars);
         img = findViewById(R.id.img);
-        ListView list = findViewById(R.id.list);
-        LinearLayout add = findViewById(R.id.add);
+        list = findViewById(R.id.list);
+        add = findViewById(R.id.add);
 
         data = getIntent().getStringArrayExtra("Data");
         userName = getIntent().getStringExtra("SelectedUser");
@@ -131,6 +138,42 @@ public class UserEditorActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         ref = database.getReference("elmilad25");
 
+        refreshData();
+
+        img.setOnClickListener(v-> openFileChooser());
+
+        conf_passcode.setOnClickListener(v-> {
+            if (passcode_edittext.getText().length()<4) {
+                passcode_edittext.setError("Passcode must be 4 digits");
+                return;
+            }
+            ref.child("Users").child(userName).child("Passcode").setValue(passcode_edittext.getText().toString());
+            Toast.makeText(this, "Passcode updated successfully", Toast.LENGTH_SHORT).show();
+            refreshData();
+        });
+
+        conf_coins.setOnClickListener(v-> {
+            if (coins_edittext.getText().toString().equals("")) {
+                coins_edittext.setError("Coins must be 4 digits");
+                return;
+            }
+            ref.child("Users").child(userName).child("Coins").setValue(Integer.parseInt(coins_edittext.getText().toString()));
+            Toast.makeText(this, "Coins updated successfully", Toast.LENGTH_SHORT).show();
+            refreshData();
+        });
+
+        conf_stars.setOnClickListener(v-> {
+            if (stars_edittext.getText().toString().equals("")) {
+                return;
+            }
+            ref.child("Users").child(userName).child("Stars").setValue(Integer.parseInt(stars_edittext.getText().toString()));
+            Toast.makeText(this, "Stars updated successfully", Toast.LENGTH_SHORT).show();
+            refreshData();
+        });
+
+    }
+
+    private void refreshData() {
         ref.child("Users").child(userName).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -198,41 +241,6 @@ public class UserEditorActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-        img.setOnClickListener(v-> openFileChooser());
-
-        conf_passcode.setOnClickListener(v-> {
-            if (passcode_edittext.getText().length()<4) {
-                passcode_edittext.setError("Passcode must be 4 digits");
-                return;
-            }
-            ref.child("Users").child(userName).child("Passcode").setValue(passcode_edittext.getText().toString());
-            Toast.makeText(this, "Passcode updated successfully", Toast.LENGTH_SHORT).show();
-        });
-
-        conf_coins.setOnClickListener(v-> {
-            if (coins_edittext.getText().toString().equals("")) {
-                coins_edittext.setError("Coins must be 4 digits");
-                return;
-            }
-            ref.child("Users").child(userName).child("Coins").setValue(Integer.parseInt(coins_edittext.getText().toString()));
-            Toast.makeText(this, "Coins updated successfully", Toast.LENGTH_SHORT).show();
-        });
-
-        conf_stars.setOnClickListener(v-> {
-            if (stars_edittext.getText().toString().equals("")) {
-                return;
-            }
-            ref.child("Users").child(userName).child("Stars").setValue(Integer.parseInt(stars_edittext.getText().toString()));
-            Toast.makeText(this, "Stars updated successfully", Toast.LENGTH_SHORT).show();
-        });
-
-//        passcode.setOnClickListener(v-> {
-//            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-//            ClipData clip = ClipData.newPlainText("Passcode", passcode.getText().toString());
-//            clipboard.setPrimaryClip(clip);
-//        });
-
     }
 
     private class ListAdapter extends BaseAdapter {
@@ -417,6 +425,7 @@ public class UserEditorActivity extends AppCompatActivity {
                     ref.child("Users").child(userName).child("Attendance").child(String.valueOf(System.currentTimeMillis())).setValue(text);
                 Toast.makeText(UserEditorActivity.this, options.get(position).getStars()+" stars added",
                         Toast.LENGTH_SHORT).show();
+                refreshData();
                 loadingDialog.dismiss();
                 alertDialog.dismiss();
             });
