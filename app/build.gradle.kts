@@ -57,5 +57,7 @@ dependencies {
     implementation("com.squareup.picasso:picasso:2.5.2")
     implementation("com.squareup.okhttp3:okhttp:3.10.0")
     implementation("com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0")
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
 
 }

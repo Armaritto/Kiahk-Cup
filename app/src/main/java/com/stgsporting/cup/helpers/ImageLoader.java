@@ -22,7 +22,7 @@ public class ImageLoader {
         Picasso picasso = Picasso.with(activity);
         picasso.setIndicatorsEnabled(true);
         picasso.load(imageUrl)
-                .placeholder(R.drawable.coin)
+                .placeholder(R.drawable.loading)
                 .error(R.drawable.emptyuser)
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(imageView, new Callback() {
@@ -37,7 +37,7 @@ public class ImageLoader {
                         Picasso picasso1 = Picasso.with(activity);
                         picasso1.setIndicatorsEnabled(true);
                         picasso1.load(imageUrl)
-                                .placeholder(R.drawable.coin)
+                                .placeholder(R.drawable.loading)
                                 .error(R.drawable.emptyuser)
                                 .into(imageView, new Callback() {
                                     @Override
@@ -58,7 +58,7 @@ public class ImageLoader {
         Picasso picasso = Picasso.with(activity);
         picasso.setIndicatorsEnabled(true);
         picasso.load(uri)
-                .placeholder(R.drawable.coin)
+                .placeholder(R.drawable.loading)
                 .error(R.drawable.emptyuser)
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(imageView, new Callback() {
