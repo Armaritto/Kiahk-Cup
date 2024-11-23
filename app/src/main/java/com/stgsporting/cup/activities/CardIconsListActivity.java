@@ -31,7 +31,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.R;
 import com.stgsporting.cup.data.CardIcon;
 import com.stgsporting.cup.helpers.ImageLoader;
@@ -47,6 +46,9 @@ public class CardIconsListActivity extends AppCompatActivity {
     private LoadingDialog loadingDialog;
     private int imgsToLoad;
     private ImageLoader imageLoader;
+    private FirebaseStorage storage;
+    private DatabaseReference ref;
+    private ListView cards_list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +65,7 @@ public class CardIconsListActivity extends AppCompatActivity {
         imageLoader = new ImageLoader(this);
 
         EditText search = findViewById(R.id.search);
-        ListView cards_list = findViewById(R.id.cards_list);
+        cards_list = findViewById(R.id.cards_list);
 
         data = getIntent().getStringArrayExtra("Data");
 
@@ -75,9 +77,36 @@ public class CardIconsListActivity extends AppCompatActivity {
         });
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(Objects.requireNonNull(data)[1]);
-        FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
-        DatabaseReference ref = database.getReference();
+        storage = FirebaseStorage.getInstance(data[2]);
+        ref = database.getReference();
 
+        refreshData();
+
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                listAdapter.getFilter().filter(s.toString());
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshData();
+    }
+
+    private void refreshData() {
+        loadingDialog.show();
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -131,22 +160,6 @@ public class CardIconsListActivity extends AppCompatActivity {
                 loadingDialog.dismiss();
             }
         });
-
-        search.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                listAdapter.getFilter().filter(s.toString());
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
     }
 
     private class ListAdapter extends BaseAdapter implements Filterable {

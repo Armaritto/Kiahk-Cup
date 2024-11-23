@@ -27,12 +27,15 @@ import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.cup.R;
 import com.stgsporting.cup.data.Option;
 import com.stgsporting.cup.helpers.ConfirmDialog;
+import com.stgsporting.cup.helpers.LoadingDialog;
 
 import java.util.ArrayList;
 
 public class ManageStarsActivity extends AppCompatActivity {
 
     private DatabaseReference ref;
+    private ListView optionsList;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +48,9 @@ public class ManageStarsActivity extends AppCompatActivity {
             return insets;
         });
 
-        ListView optionsList = findViewById(R.id.options);
+        loadingDialog = new LoadingDialog(this);
+
+        optionsList = findViewById(R.id.options);
         LinearLayout add = findViewById(R.id.add);
         add.setOnClickListener(v-> {
             showDialog(true, null);
@@ -54,6 +59,19 @@ public class ManageStarsActivity extends AppCompatActivity {
         String[] data = getIntent().getStringArrayExtra("Data");
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         ref = database.getReference().child("elmilad25").child("Admin");
+
+        refreshData();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshData();
+    }
+
+    private void refreshData() {
+        loadingDialog.show();
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -66,6 +84,7 @@ public class ManageStarsActivity extends AppCompatActivity {
                 }
                 ListAdapter adapter = new ListAdapter(options);
                 optionsList.setAdapter(adapter);
+                loadingDialog.dismiss();
             }
 
             @Override
@@ -74,7 +93,6 @@ public class ManageStarsActivity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 
     private class ListAdapter extends BaseAdapter {
@@ -155,12 +173,14 @@ public class ManageStarsActivity extends AppCompatActivity {
                 return;
             }
             ref.child(title.getText().toString()).setValue(Integer.parseInt(stars.getText().toString()));
+            refreshData();
             alertDialog.dismiss();
         });
 
         View.OnClickListener listener = v -> {
             ref.child(title.getText().toString()).removeValue();
             if (confirmDialog!=null) confirmDialog.dismiss();
+            refreshData();
             alertDialog.dismiss();
         };
 

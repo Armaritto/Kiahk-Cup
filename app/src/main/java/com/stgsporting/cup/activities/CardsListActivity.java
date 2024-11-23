@@ -39,6 +39,8 @@ public class CardsListActivity extends AppCompatActivity {
     private ListAdapter listAdapter;
     private String[] data;
     private LoadingDialog loadingDialog;
+    private DatabaseReference ref;
+    private ListView cards_list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +56,7 @@ public class CardsListActivity extends AppCompatActivity {
         loadingDialog = new LoadingDialog(this);
 
         EditText search = findViewById(R.id.search);
-        ListView cards_list = findViewById(R.id.cards_list);
+        cards_list = findViewById(R.id.cards_list);
 
         data = getIntent().getStringArrayExtra("Data");
 
@@ -66,8 +68,35 @@ public class CardsListActivity extends AppCompatActivity {
         });
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(Objects.requireNonNull(data)[1]);
-        DatabaseReference ref = database.getReference();
+        ref = database.getReference();
 
+        refreshData();
+
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                listAdapter.getFilter().filter(s.toString());
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshData();
+    }
+
+    private void refreshData() {
+        loadingDialog.show();
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -103,22 +132,6 @@ public class CardsListActivity extends AppCompatActivity {
                 loadingDialog.dismiss();
             }
         });
-
-        search.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                listAdapter.getFilter().filter(s.toString());
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
     }
 
     private class ListAdapter extends BaseAdapter implements Filterable {
