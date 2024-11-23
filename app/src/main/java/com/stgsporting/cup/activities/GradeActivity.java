@@ -58,11 +58,8 @@ public class GradeActivity extends AppCompatActivity {
             loadingDialog = new LoadingDialog(this);
             switch (selected.getText().toString()) {
                 case "Junior 1":
-//                    setupDatabase("https://j1-fut-draft-default-rtdb.firebaseio.com/",
-//                            "gs://j1-fut-draft.appspot.com/", "1");
-                    Intent intent = new Intent(GradeActivity.this, MaintenanceActivity.class);
-                    startActivity(intent);
-                    finish();
+                  setupDatabase("https://quiz-fut-draft-default-rtdb.firebaseio.com/",
+                            "gs://quiz-fut-draft.appspot.com/", "1");
                     break;
                 case "Junior 2":
                     setupDatabase("https://j2-fut-draft-default-rtdb.firebaseio.com/",

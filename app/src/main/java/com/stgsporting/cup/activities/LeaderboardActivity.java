@@ -69,6 +69,9 @@ public class LeaderboardActivity extends AppCompatActivity {
                 if (user.hasChild("Points")) {
                     aUser.setPoints(Integer.parseInt(user.child("Points").getValue().toString()));
                 }
+
+                if (aUser.getPoints()<=5) continue;
+
                 if (user.hasChild("ImageLink")) {
                     aUser.setImageLink(user.child("ImageLink").getValue().toString());
                 }
