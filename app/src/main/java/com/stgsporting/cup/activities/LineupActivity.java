@@ -308,7 +308,6 @@ public class LineupActivity extends AppCompatActivity {
                 Canvas canvas = new Canvas(bitmap);
                 v.draw(canvas);
                 imageView.setImageBitmap(bitmap);
-                imageView.setScaleX(1.05F);
                loadingDialog.dismiss();
             }, 100);
         }
