@@ -160,8 +160,10 @@ public class CardIconEditorActivity extends AppCompatActivity {
                 .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl()
                         .addOnSuccessListener(uri -> {
                             // Get the download URL
+                            Toast.makeText(this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
                             imgPath = fileRef.getPath();
-                            imageLoader.loadImage(uri, img);
+                            loadingDialog.dismiss();
+                            imageLoader.loadImage(imageUri, img);
                             // Use the download URL as needed
                         }))
                 .addOnFailureListener(e -> {

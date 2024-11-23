@@ -194,6 +194,8 @@ public class AddCardActivity extends AppCompatActivity {
                         .addOnSuccessListener(uri -> {
                             // Get the download URL
                             imgPath = fileRef.getPath();
+                            Toast.makeText(this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
+                            loadingDialog.dismiss();
                             imageLoader.loadImage(uri, img);
                             // Use the download URL as needed
                         }))

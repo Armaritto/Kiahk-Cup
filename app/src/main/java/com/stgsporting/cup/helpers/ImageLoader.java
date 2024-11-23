@@ -69,7 +69,23 @@ public class ImageLoader {
 
                     @Override
                     public void onError() {
-                        Toast.makeText(activity, "Could not fetch image", Toast.LENGTH_SHORT).show();
+                        //Try again online if cache failed
+                        Picasso picasso1 = Picasso.with(activity);
+                        picasso1.setIndicatorsEnabled(false);
+                        picasso1.load(uri)
+                                .placeholder(R.drawable.loading)
+                                .error(R.drawable.emptyuser)
+                                .into(imageView, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+
+                                    }
+
+                                    @Override
+                                    public void onError() {
+                                        Toast.makeText(activity, "Could not fetch image", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     }
                 });
     }

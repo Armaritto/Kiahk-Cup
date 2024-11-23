@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -318,20 +319,11 @@ public class UserEditorActivity extends AppCompatActivity {
                 .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl()
                         .addOnSuccessListener(uri -> {
                             // Get the download URL
+                            Toast.makeText(this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
                             String downloadlink = uri.toString();
                             ref.child("Users").child(userName).child("ImageLink").setValue(downloadlink);
-                            Picasso.with(this).load(uri).into(img, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    loadingDialog.dismiss();
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Toast.makeText(UserEditorActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
-                                    loadingDialog.dismiss();
-                                }
-                            });
+                            loadingDialog.dismiss();
+                            imageLoader.loadImage(uri, img);
                         }))
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Upload failed\n"+e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -340,6 +332,7 @@ public class UserEditorActivity extends AppCompatActivity {
                 }).addOnCompleteListener(task -> {
                     ImageProcessor processor = new ImageProcessor(this);
                     processor.deleteImage(imageUri);
+                    loadingDialog.dismiss();
                 });
     }
 
