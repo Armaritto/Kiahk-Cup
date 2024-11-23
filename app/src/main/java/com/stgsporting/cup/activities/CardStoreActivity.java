@@ -23,6 +23,7 @@ import com.stgsporting.cup.data.Card;
 import com.stgsporting.cup.data.CardIcon;
 import com.stgsporting.cup.adapters.CardStoreAdapter;
 import com.stgsporting.cup.helpers.Header;
+import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.LoadingDialog;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class CardStoreActivity extends AppCompatActivity {
 
     private String[] data;
     private int imgsToLoad;
+    private ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,8 @@ public class CardStoreActivity extends AppCompatActivity {
         });
 
         LoadingDialog loadingDialog = new LoadingDialog(this);
+
+        imageLoader = new ImageLoader(CardStoreActivity.this);
 
         data = getIntent().getStringArrayExtra("Data");
         Header.render(this, Objects.requireNonNull(data));
@@ -113,7 +117,7 @@ public class CardStoreActivity extends AppCompatActivity {
                                 imgsToLoad--;
                                 if (imgsToLoad==0) {
                                     CardStoreAdapter adapter = new CardStoreAdapter(
-                                            CardStoreActivity.this, cards, database, data[0]);
+                                            CardStoreActivity.this, cards, database, data[0], imageLoader);
                                     recyclerView.setAdapter(adapter);
                                     loadingDialog.dismiss();
                                 }
@@ -123,7 +127,7 @@ public class CardStoreActivity extends AppCompatActivity {
                                 imgsToLoad--;
                                 if (imgsToLoad==0) {
                                     CardStoreAdapter adapter = new CardStoreAdapter(
-                                            CardStoreActivity.this, cards, database, data[0]);
+                                            CardStoreActivity.this, cards, database, data[0], imageLoader);
                                     recyclerView.setAdapter(adapter);
                                     loadingDialog.dismiss();
                                 }

@@ -13,6 +13,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,11 +24,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.data.TextColor;
 import com.stgsporting.cup.helpers.Header;
-import com.stgsporting.cup.helpers.LoadingDialog;
 import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.Arrays;
@@ -35,8 +35,13 @@ import java.util.stream.Collectors;
 public class MyCardActivity extends AppCompatActivity {
 
     private String[] data;
-    private int imgsToLoad = 2;
-    private LoadingDialog loadingDialog;
+    private ImageView cardIcon;
+    private ImageView img;
+    private TextView name;
+    private TextView position;
+    private TextView card_rating;
+    private DatabaseReference ref;
+    private FirebaseStorage storage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +54,6 @@ public class MyCardActivity extends AppCompatActivity {
             return insets;
         });
 
-        loadingDialog = new LoadingDialog(this);
-
         data = getIntent().getStringArrayExtra("Data");
         Header.render(this, Objects.requireNonNull(data));
 
@@ -58,105 +61,17 @@ public class MyCardActivity extends AppCompatActivity {
         Button cardBtn = findViewById(R.id.card_btn);
         Button ratingBtn = findViewById(R.id.rating_btn);
 
-        ImageView cardIcon = findViewById(R.id.card_icon);
-        ImageView img = findViewById(R.id.img);
-        TextView name = findViewById(R.id.name);
-        TextView position = findViewById(R.id.position);
-        TextView card_rating = findViewById(R.id.card_rating);
+        cardIcon = findViewById(R.id.card_icon);
+        img = findViewById(R.id.img);
+        name = findViewById(R.id.name);
+        position = findViewById(R.id.position);
+        card_rating = findViewById(R.id.card_rating);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
-        DatabaseReference ref = database.getReference();
-        FirebaseStorage storage = FirebaseStorage.getInstance(data[2]);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataS) {
-                if (dataS.child("/elmilad25/Users").child(data[0])
-                        .child("Owned Card Icons").hasChild("Selected")) {
-                    String selected = dataS.child("/elmilad25/Users").child(data[0]).child("Owned Card Icons").child("Selected").getValue().toString();
+        ref = database.getReference();
+        storage = FirebaseStorage.getInstance(data[2]);
 
-                    DataSnapshot cardRef = dataS.child("elmilad25").child("CardIcon").child(selected);
-
-                    if (cardRef.hasChild("Image")) {
-                        String cardIconName = cardRef.child("Image").getValue().toString();
-                        StorageReference storageRef = storage.getReference().child(cardIconName);
-                        storageRef.getDownloadUrl()
-                                .addOnSuccessListener(uri -> {
-                                    String downloadUrl = uri.toString();
-                                    Picasso.get().load(downloadUrl).into(cardIcon, new com.squareup.picasso.Callback() {
-                                        @Override
-                                        public void onSuccess() {
-                                            TextColor.setColor(cardIcon, name, position, card_rating);
-                                            imgsToLoad--;
-                                            checkAllImgsLoaded();
-                                        }
-
-                                        @Override
-                                        public void onError(Exception e) {
-                                            Toast.makeText(MyCardActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
-                                            imgsToLoad--;
-                                            checkAllImgsLoaded();
-                                        }
-                                    });
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(MyCardActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
-                                    imgsToLoad--;
-                                    checkAllImgsLoaded();
-                                });
-                    }
-
-                } else {
-                    cardIcon.setImageDrawable(getResources().getDrawable(R.drawable.empty));
-                    imgsToLoad--;
-                    checkAllImgsLoaded();
-                }
-
-                DataSnapshot snapshot = dataS.child("/elmilad25/Users").child(data[0]);
-                DatabaseReference userRef = ref.child("/elmilad25/Users").child(data[0]);
-                if (snapshot.hasChild("ImageLink")) {
-                    String imgLink = snapshot.child("ImageLink").getValue().toString();
-                    Picasso.get().load(imgLink).into(img, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            imgsToLoad--;
-                            checkAllImgsLoaded();
-                        }
-
-                        @Override
-                        public void onError(Exception e) {
-                            imgsToLoad--;
-                            checkAllImgsLoaded();
-                            Toast.makeText(MyCardActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
-                    imgsToLoad--;
-                    checkAllImgsLoaded();
-                }
-                String new_name = Arrays.stream(snapshot.getKey().split("\\s+"))
-                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
-                        .collect(Collectors.joining(" "));
-                name.setText(new_name);
-
-                if (snapshot.child("Card").hasChild("Position")) {
-                    position.setText(snapshot.child("Card").child("Position").getValue().toString());
-                }
-                else {
-                    userRef.child("Owned Positions").child("position1").child("Owned").setValue(true);
-                    userRef.child("Card").child("Position").setValue("GK");
-                }
-
-                if (snapshot.child("Card").hasChild("Rating"))
-                    card_rating.setText(snapshot.child("Card").child("Rating").getValue().toString());
-                else
-                    userRef.child("Card").child("Rating").setValue(50);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(MyCardActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        refreshData();
 
         cardBtn.setOnClickListener(v-> {
             if (!NetworkUtils.isOnline(this)) {
@@ -189,8 +104,118 @@ public class MyCardActivity extends AppCompatActivity {
         });
     }
 
-    private void checkAllImgsLoaded() {
-        if (imgsToLoad==0) loadingDialog.dismiss();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshData();
+    }
+
+    private void refreshData() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataS) {
+                if (dataS.child("/elmilad25/Users").child(data[0])
+                        .child("Owned Card Icons").hasChild("Selected")) {
+                    String selected = dataS.child("/elmilad25/Users").child(data[0]).child("Owned Card Icons").child("Selected").getValue().toString();
+
+                    DataSnapshot cardRef = dataS.child("elmilad25").child("CardIcon").child(selected);
+
+                    if (cardRef.hasChild("Image")) {
+                        String cardIconName = cardRef.child("Image").getValue().toString();
+                        StorageReference storageRef = storage.getReference().child(cardIconName);
+                        storageRef.getDownloadUrl()
+                                .addOnSuccessListener(uri -> {
+                                    String downloadUrl = uri.toString();
+                                    loadImage(downloadUrl, cardIcon);
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(MyCardActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                                    refreshColors();
+                                });
+                    } else {
+                        refreshColors();
+                    }
+
+                } else {
+                    cardIcon.setImageDrawable(getResources().getDrawable(R.drawable.empty));
+                    refreshColors();
+                }
+
+                DataSnapshot snapshot = dataS.child("/elmilad25/Users").child(data[0]);
+                DatabaseReference userRef = ref.child("/elmilad25/Users").child(data[0]);
+                if (snapshot.hasChild("ImageLink")) {
+                    String imgLink = snapshot.child("ImageLink").getValue().toString();
+                    loadImage(imgLink, img);
+                } else {
+                    refreshColors();
+                }
+                String new_name = Arrays.stream(snapshot.getKey().split("\\s+"))
+                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                        .collect(Collectors.joining(" "));
+                name.setText(new_name);
+
+                if (snapshot.child("Card").hasChild("Position")) {
+                    position.setText(snapshot.child("Card").child("Position").getValue().toString());
+                }
+                else {
+                    userRef.child("Owned Positions").child("position1").child("Owned").setValue(true);
+                    userRef.child("Card").child("Position").setValue("GK");
+                }
+
+                if (snapshot.child("Card").hasChild("Rating"))
+                    card_rating.setText(snapshot.child("Card").child("Rating").getValue().toString());
+                else
+                    userRef.child("Card").child("Rating").setValue(50);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(MyCardActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loadImage(String url, ImageView imageView) {
+        Picasso picasso = Picasso.with(MyCardActivity.this);
+        picasso.setIndicatorsEnabled(false);
+        picasso.load(url)
+                .placeholder(R.drawable.loading)
+                .error(R.drawable.emptyuser)
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(imageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        refreshColors();
+                    }
+
+                    @Override
+                    public void onError() {
+                        //Try again online if cache failed
+                        Picasso picasso1 = Picasso.with(MyCardActivity.this);
+                        picasso1.setIndicatorsEnabled(false);
+                        picasso1.load(url)
+                                .placeholder(R.drawable.loading)
+                                .error(R.drawable.emptyuser)
+                                .into(imageView, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        refreshColors();
+                                    }
+
+                                    @Override
+                                    public void onError() {
+                                        refreshColors();
+                                        Toast.makeText(MyCardActivity.this, "Could not fetch image", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                });
+    }
+
+    private void refreshColors() {
+//        if (imgsToLoad==0) {
+            TextColor.setColor(cardIcon, name, card_rating, position);
+//        }
     }
 
 }

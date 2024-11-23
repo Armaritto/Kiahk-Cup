@@ -27,55 +27,39 @@ import com.stgsporting.cup.helpers.NetworkUtils;
 public class AdminActivity extends AppCompatActivity {
 
     private String[] data;
+    private Button manageQuizzes;
+    private Button manageCards;
+    private Button manageStars;
+    private Button manageCardIcons;
+    private Button managePositions;
+    private Button manageRatingPrice;
+    private Button manageButtons;
+    private Button usersList;
+    private LoadingDialog loadingDialog;
+    private DatabaseReference ref;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
 
-        Button manageQuizzes = findViewById(R.id.manage_quizzes);
-        Button manageCards = findViewById(R.id.manage_cards);
-        Button manageStars = findViewById(R.id.manage_stars);
-        Button manageCardIcons = findViewById(R.id.manage_cardicons);
-        Button managePositions = findViewById(R.id.manage_positions);
-        Button manageRatingPrice = findViewById(R.id.manage_rating_price);
-        Button manageButtons = findViewById(R.id.manage_buttons);
-        Button usersList = findViewById(R.id.view_users_list);
+        manageQuizzes = findViewById(R.id.manage_quizzes);
+        manageCards = findViewById(R.id.manage_cards);
+        manageStars = findViewById(R.id.manage_stars);
+        manageCardIcons = findViewById(R.id.manage_cardicons);
+        managePositions = findViewById(R.id.manage_positions);
+        manageRatingPrice = findViewById(R.id.manage_rating_price);
+         manageButtons = findViewById(R.id.manage_buttons);
+        usersList = findViewById(R.id.view_users_list);
 
         data = getIntent().getStringArrayExtra("Data");
 
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
-        DatabaseReference ref = database.getReference().child("elmilad25");
+        ref = database.getReference().child("elmilad25");
 
-        LoadingDialog loading = new LoadingDialog(this);
+        loadingDialog = new LoadingDialog(this);
 
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                DataSnapshot rating = dataSnapshot.child("Rating Price");
-                manageRatingPrice.setOnClickListener(v -> {
-                    showDialog(rating, ref.child("Rating Price"));
-                });
-
-                DataSnapshot btns = dataSnapshot.child("Buttons").child("Admin");
-                checkBtn(btns, "Manage Users", usersList);
-                checkBtn(btns, "Manage Quizzes", manageQuizzes);
-                checkBtn(btns, "Manage Cards", manageCards);
-                checkBtn(btns, "Manage Stars", manageStars);
-                checkBtn(btns, "Manage Card Icons", manageCardIcons);
-                checkBtn(btns, "Manage Positions", managePositions);
-                checkBtn(btns, "Manage Rating Price", manageRatingPrice);
-                checkBtn(btns, "Manage Home", manageButtons);
-
-                loading.dismiss();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        refreshData();
 
         usersList.setOnClickListener(v -> {
             if (!NetworkUtils.isOnline(this)) {
@@ -150,6 +134,43 @@ public class AdminActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshData();
+    }
+
+    private void refreshData() {
+        loadingDialog.show();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DataSnapshot rating = dataSnapshot.child("Rating Price");
+                manageRatingPrice.setOnClickListener(v -> {
+                    showDialog(rating, ref.child("Rating Price"));
+                });
+
+                DataSnapshot btns = dataSnapshot.child("Buttons").child("Admin");
+                checkBtn(btns, "Manage Users", usersList);
+                checkBtn(btns, "Manage Quizzes", manageQuizzes);
+                checkBtn(btns, "Manage Cards", manageCards);
+                checkBtn(btns, "Manage Stars", manageStars);
+                checkBtn(btns, "Manage Card Icons", manageCardIcons);
+                checkBtn(btns, "Manage Positions", managePositions);
+                checkBtn(btns, "Manage Rating Price", manageRatingPrice);
+                checkBtn(btns, "Manage Home", manageButtons);
+
+                loadingDialog.dismiss();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private AlertDialog alertDialog;
 
     private void showDialog(DataSnapshot data, DatabaseReference ref) {
@@ -180,6 +201,7 @@ public class AdminActivity extends AppCompatActivity {
                 return;
             }
             ref.setValue(Integer.parseInt(stars.getText().toString()));
+            refreshData();
             alertDialog.dismiss();
         });
 

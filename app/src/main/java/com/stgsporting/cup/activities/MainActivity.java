@@ -27,7 +27,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     private String[] data;
-    private static final double current_version = 0.9;
+    private static final double current_version = 1.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

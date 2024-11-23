@@ -19,9 +19,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.data.CardIcon;
+import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.ArrayList;
@@ -33,15 +32,17 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
     private final Context context;
     private final FirebaseDatabase database;
     private final String ID;
+    private ImageLoader imageLoader;
 
     // data is passed into the constructor
     public CardStoreAdapter(Context context, ArrayList<CardIcon> cards,
-                     FirebaseDatabase database, String ID) {
+                     FirebaseDatabase database, String ID, ImageLoader imageLoader) {
         this.mInflater = LayoutInflater.from(context);
         this.cards = cards;
         this.context = context;
         this.database = database;
         this.ID = ID;
+        this.imageLoader = imageLoader;
     }
 
     // inflates the cell layout from xml when needed
@@ -56,16 +57,8 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.price.setText(String.format("%.0f", cards.get(position).getPrice())+" ★");
-        Picasso.get().load(cards.get(position).getImageLink()).into(holder.img, new Callback() {
-            @Override
-            public void onSuccess() {
-            }
+        imageLoader.loadImage(cards.get(position).getImageLink(), holder.img);
 
-            @Override
-            public void onError(Exception e) {
-                Toast.makeText(context, "Image Loading Failed", Toast.LENGTH_SHORT).show();
-            }
-        });
         holder.button.setOnClickListener(v-> {
             if (!NetworkUtils.isOnline(context)) {
                 Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();

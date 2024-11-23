@@ -100,11 +100,11 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter<LeaderboardUser
 
             Callback callback = new Callback() {
                 public void onSuccess() {TextColor.setColor(icon, name, rating, position);}
-                public void onError(Exception e) {}
+                public void onError() {}
             };
 
-            Picasso.get().load(user.getCardIcon()).placeholder(R.drawable.empty).into(icon, callback);
-            Picasso.get().load(user.getImageLink()).into(img);
+            Picasso.with(context.getApplicationContext()).load(user.getCardIcon()).placeholder(R.drawable.empty).into(icon, callback);
+            Picasso.with(context.getApplicationContext()).load(user.getImageLink()).into(img);
 
             name.setText(user.getFirstName());
             position.setText(user.getCard().getPosition());

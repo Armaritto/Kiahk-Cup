@@ -26,6 +26,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.R;
+import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.ImageProcessor;
 import com.stgsporting.cup.helpers.LoadingDialog;
 
@@ -37,6 +38,7 @@ public class AddCardIconActivity extends AppCompatActivity {
     private String imgPath;
     private LoadingDialog loadingDialog;
     private FirebaseStorage storage;
+    private ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,7 @@ public class AddCardIconActivity extends AppCompatActivity {
         });
 
         loadingDialog = new LoadingDialog(this);
+        imageLoader = new ImageLoader(this);
         loadingDialog.dismiss();
 
         img = findViewById(R.id.img);
@@ -150,18 +153,9 @@ public class AddCardIconActivity extends AppCompatActivity {
                         .addOnSuccessListener(uri -> {
                             // Get the download URL
                             imgPath = fileRef.getPath();
-                            Picasso.get().load(uri).into(img, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    loadingDialog.dismiss();
-                                }
-
-                                @Override
-                                public void onError(Exception e) {
-                                    Toast.makeText(AddCardIconActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
-                                    loadingDialog.dismiss();
-                                }
-                            });
+                            Toast.makeText(this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
+                            loadingDialog.dismiss();
+                            imageLoader.loadImage(uri, img);
                             // Use the download URL as needed
                         }))
                 .addOnFailureListener(e -> {

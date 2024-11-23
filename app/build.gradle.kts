@@ -45,7 +45,6 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.firebase.database)
-    implementation (libs.picasso)
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
@@ -55,4 +54,10 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.sdp.android)
+    implementation("com.squareup.picasso:picasso:2.5.2")
+    implementation("com.squareup.okhttp3:okhttp:3.10.0")
+    implementation("com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0")
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
+
 }

@@ -26,6 +26,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.R;
+import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.ImageProcessor;
 import com.stgsporting.cup.helpers.LoadingDialog;
 
@@ -36,6 +37,7 @@ public class CardIconEditorActivity extends AppCompatActivity {
     private String imgPath;
     private LoadingDialog loadingDialog;
     private FirebaseStorage storage;
+    private ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class CardIconEditorActivity extends AppCompatActivity {
         });
 
         loadingDialog = new LoadingDialog(this);
+        imageLoader = new ImageLoader(this);
 
         img = findViewById(R.id.img);
         EditText name = findViewById(R.id.name);
@@ -74,15 +77,7 @@ public class CardIconEditorActivity extends AppCompatActivity {
                     storageRef.getDownloadUrl()
                             .addOnSuccessListener(uri -> {
                                 String downloadUrl = uri.toString();
-                                Picasso.get().load(downloadUrl).into(img, new Callback() {
-                                    @Override
-                                    public void onSuccess() {}
-
-                                    @Override
-                                    public void onError(Exception e) {
-                                        Toast.makeText(CardIconEditorActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                imageLoader.loadImage(downloadUrl, img);
                             })
                             .addOnFailureListener(e -> Toast.makeText(CardIconEditorActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show());
                 }
@@ -165,19 +160,10 @@ public class CardIconEditorActivity extends AppCompatActivity {
                 .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl()
                         .addOnSuccessListener(uri -> {
                             // Get the download URL
+                            Toast.makeText(this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
                             imgPath = fileRef.getPath();
-                            Picasso.get().load(uri).into(img, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    loadingDialog.dismiss();
-                                }
-
-                                @Override
-                                public void onError(Exception e) {
-                                    Toast.makeText(CardIconEditorActivity.this, "Picasso Error", Toast.LENGTH_SHORT).show();
-                                    loadingDialog.dismiss();
-                                }
-                            });
+                            loadingDialog.dismiss();
+                            imageLoader.loadImage(imageUri, img);
                             // Use the download URL as needed
                         }))
                 .addOnFailureListener(e -> {

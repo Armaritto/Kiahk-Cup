@@ -26,12 +26,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.cup.R;
 import com.stgsporting.cup.data.Position;
+import com.stgsporting.cup.helpers.LoadingDialog;
 
 import java.util.ArrayList;
 
 public class ManagePositions extends AppCompatActivity {
 
     private DatabaseReference ref;
+    private ListView optionsList;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +47,9 @@ public class ManagePositions extends AppCompatActivity {
             return insets;
         });
 
-        ListView optionsList = findViewById(R.id.options);
+        loadingDialog = new LoadingDialog(this);
+
+        optionsList = findViewById(R.id.options);
         LinearLayout add = findViewById(R.id.add);
         add.setVisibility(View.GONE);
 
@@ -52,6 +57,18 @@ public class ManagePositions extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance(data[1]);
         ref = database.getReference().child("elmilad25").child("CardPosition");
 
+        refreshData();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshData();
+    }
+
+    private void refreshData() {
+        loadingDialog.show();
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -65,6 +82,7 @@ public class ManagePositions extends AppCompatActivity {
                 }
                 ListAdapter adapter = new ListAdapter(positions);
                 optionsList.setAdapter(adapter);
+                loadingDialog.dismiss();
             }
 
             @Override
@@ -73,7 +91,6 @@ public class ManagePositions extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 
     private class ListAdapter extends BaseAdapter {
@@ -150,6 +167,7 @@ public class ManagePositions extends AppCompatActivity {
             }
             ref.child(p.getId()).child("Price").setValue(Integer.parseInt(stars.getText().toString()));
             alertDialog.dismiss();
+            refreshData();
         });
 
         // Show the dialog
