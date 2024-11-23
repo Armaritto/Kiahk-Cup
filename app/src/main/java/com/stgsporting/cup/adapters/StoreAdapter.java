@@ -21,8 +21,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.activities.LineupActivity;
 import com.stgsporting.cup.data.Card;
 import com.stgsporting.cup.helpers.ConfirmDialog;
@@ -30,7 +28,6 @@ import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> {
 
@@ -137,45 +134,24 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         DatabaseReference userRef = database.getReference("/elmilad25/Users").child(name);
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
         DatabaseReference storeRef = database.getReference("/elmilad25/Store");
-        if (card.isOwned()) {
-            userRef.child("Lineup").addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
-                    for (DataSnapshot S : snapshot.getChildren()) {
-                        if (S.getValue().toString().equals(card.getID()))
-                            userRef.child("Lineup").child(S.getKey()).removeValue();
-                        storeRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                String Sname = dataSnapshot.child(S.getValue().toString()).child("Name").getValue(String.class);
-                                card.setName(dataSnapshot.child(card.getID()).child("Name").getValue(String.class));
-                                if (card.getName().equals(Sname)) {
-                                    Log.d("TAG", "onDataChange: " + card.getName());
-                                    userRef.child("Lineup").child(S.getKey()).removeValue();
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {}
-                        });
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
-            });
-            userRef.child("Lineup").child(cardPosition).setValue(card.getID());
-        }
+        if (card.isOwned())
+            addPlayerInLineup(card, userRef, storeRef);
         else {
             int price = card.getPrice();
             if (points < price) {
                 Toast.makeText(context, "Not enough coins", Toast.LENGTH_SHORT).show();
-            } else {
+            }
+            else {
                 points -= price;
                 userRef.child("Coins").setValue(points);
                 cardRef.setValue(true);
-                userRef.child("Lineup").child(cardPosition).setValue(card.getID());
+//                userRef.child("Lineup").child(cardPosition).setValue(card.getID());
+                addPlayerInLineup(card, userRef, storeRef);
             }
         }
+    }
+
+    private void gotoLineup() {
         Intent intent = new Intent(context, LineupActivity.class);
         String[] data = {
                 name,
@@ -188,63 +164,82 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         ((Activity) context).finish();
     }
 
-    public void sellPlayer(Card card) {
+    private void sellPlayer(Card card) {
 
         DatabaseReference userRef = database.getReference("/elmilad25/Users").child(name);
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
 
-        int price = card.getPrice();
-        int temp = points;
-        points += price;
-        Log.d("HI-THERE", temp + " + " + price + " = " + points);
-        userRef.child("Coins").setValue(points);
-        cardRef.removeValue();
         userRef.child("Lineup").addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
             @Override
             public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
-                if (cardPosition.equals("LCM") || cardPosition.equals("RCM")) {
-                    if(snapshot.child("LCM").exists())
-                        snapshot = snapshot.child("LCM");
-                    else if(snapshot.child("RCM").exists())
-                        snapshot = snapshot.child("RCM");
-                }
-                else if(cardPosition.equals("LCB") || cardPosition.equals("RCB")) {
-                    if(snapshot.child("LCB").exists())
-                        snapshot = snapshot.child("LCB");
-                    else if(snapshot.child("RCB").exists())
-                        snapshot = snapshot.child("RCB");
-                }
-                else
-                    snapshot = snapshot.child(cardPosition);
-                if(snapshot.exists())
-                    if(snapshot.getValue().toString().equals(card.getID())) {
-                        if (cardPosition.equals("LCM") || cardPosition.equals("RCM")) {
-                            userRef.child("Lineup").child("LCM").removeValue();
-                            userRef.child("Lineup").child("RCM").removeValue();
-                        }
-                        else if(cardPosition.equals("LCB") || cardPosition.equals("RCB")) {
-                            userRef.child("Lineup").child("LCB").removeValue();
-                            userRef.child("Lineup").child("RCB").removeValue();
-                        }
-                        else
-                            userRef.child("Lineup").child(cardPosition).removeValue();
+//                if (cardPosition.equals("LCM") || cardPosition.equals("RCM")) {
+//                    if(snapshot.child("LCM").exists())
+//                        snapshot = snapshot.child("LCM");
+//                    else if(snapshot.child("RCM").exists())
+//                        snapshot = snapshot.child("RCM");
+//                }
+//                else if(cardPosition.equals("LCB") || cardPosition.equals("RCB")) {
+//                    if(snapshot.child("LCB").exists())
+//                        snapshot = snapshot.child("LCB");
+//                    else if(snapshot.child("RCB").exists())
+//                        snapshot = snapshot.child("RCB");
+//                }
+//                else
+//                    snapshot = snapshot.child(cardPosition);
+//                if(snapshot.exists())
+//                    if(snapshot.getValue().toString().equals(card.getID())) {
+//                        if (cardPosition.equals("LCM") || cardPosition.equals("RCM")) {
+//                            userRef.child("Lineup").child("LCM").removeValue();
+//                            userRef.child("Lineup").child("RCM").removeValue();
+//                        }
+//                        else if(cardPosition.equals("LCB") || cardPosition.equals("RCB")) {
+//                            userRef.child("Lineup").child("LCB").removeValue();
+//                            userRef.child("Lineup").child("RCB").removeValue();
+//                        }
+//                        else
+//                            userRef.child("Lineup").child(cardPosition).removeValue();
+//                    }
+                for (DataSnapshot S : snapshot.getChildren()) {
+                    if (S.getValue().toString().equals(card.getID())){
+                        userRef.child("Lineup").child(S.getKey()).removeValue();
                     }
+                }
+                cardRef.removeValue();
+                card.setOwned(false);
+                int price = card.getPrice();
+                points += price;
+                userRef.child("Coins").setValue(points);
+                gotoLineup();
             }
             @Override
             public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
         });
-        card.setOwned(false);
-        Intent intent = new Intent(context, LineupActivity.class);
-        String[] data = {
-                name,
-                database.getReference().toString(),
-                storage.getReference().toString()
-        };
-        intent.putExtra("Data",data);
-        intent.putExtra("OtherLineup",false);
-        context.startActivity(intent);
-        ((Activity) context).finish();
-
     }
+    public void addPlayerInLineup(Card card, DatabaseReference userRef, DatabaseReference storeRef) {
 
+        database.getReference("elmilad25").addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot allData) {
+                
+                DataSnapshot LineupData = allData.child("Users").child(name).child("Lineup");
+                DataSnapshot storeData = allData.child("Store");
+
+                card.setName(storeData.child(card.getID()).child("Name").getValue(String.class));
+                for (DataSnapshot S : LineupData.getChildren()) {
+                    if (S.getValue().toString().equals(card.getID())){
+                        userRef.child("Lineup").child(S.getKey()).removeValue();
+                        continue;
+                    }
+                    String Sname = storeData.child(S.getValue().toString()).child("Name").getValue(String.class);
+
+                    if (card.getName().equals(Sname))
+                        userRef.child("Lineup").child(S.getKey()).removeValue();
+                }
+                userRef.child("Lineup").child(cardPosition).setValue(card.getID());
+                gotoLineup();
+        }
+            @Override
+            public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
+        });    userRef.child("Lineup").child(cardPosition).setValue(card.getID());
+    }
 }
