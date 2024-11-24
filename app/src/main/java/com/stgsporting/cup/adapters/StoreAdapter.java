@@ -71,7 +71,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
 
         if (cards.get(position).isOwned()) {
             if(cards.get(position).isInLineup())
-                holder.purchaseButton.setText("Unselect");
+                holder.purchaseButton.setText("Selected");
             else
                 holder.purchaseButton.setText("Select");
             holder.sellButton.setVisibility(View.VISIBLE);
