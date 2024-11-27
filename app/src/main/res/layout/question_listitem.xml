@@ -8,14 +8,19 @@
     android:layout_marginVertical="@dimen/_10sdp"
     android:background="@drawable/question_view_background">
 
-    <TextView
+    <EditText
         android:id="@+id/question_title"
-        style="@style/title_home_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:background="@color/transparent"
+        android:textStyle="bold"
+        android:fontFamily="@font/segoebold"
+        android:paddingHorizontal="@dimen/_15sdp"
         android:paddingVertical="@dimen/_10sdp"
+        android:textSize="@dimen/_18sdp"
         android:textColor="@color/white"
-        android:layout_width="wrap_content"
-        android:gravity="end"
-        android:textDirection="rtl"
+        android:textDirection="anyRtl"
         app:flow_horizontalAlign="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
