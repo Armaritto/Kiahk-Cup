@@ -22,16 +22,20 @@ public class QuestionsQuizAdapter extends RecyclerView.Adapter<QuestionsQuizAdap
     private final Quiz quiz;
     private final LayoutInflater mInflater;
     private final Context context;
-    private final List<ItemClickListener> optionSelected;
-    private final List<OptionsAdapter> adapter;
+    private ItemClickListener[] optionSelected;
+    private OptionsAdapter[] adapter;
+//    private final List<ItemClickListener> optionSelected;
+//    private final List<OptionsAdapter> adapter;
 
     public QuestionsQuizAdapter(Context context, Quiz quiz) {
         this.mInflater = LayoutInflater.from(context);
         this.quiz = quiz;
         this.context = context;
 
-        optionSelected = new ArrayList<>();
-        adapter = new ArrayList<>();
+        optionSelected = new ItemClickListener[quiz.getQuestions().size()];
+        adapter = new OptionsAdapter[quiz.getQuestions().size()];
+//        optionSelected = new ArrayList<>(quiz.getQuestions().size());
+//        adapter = new ArrayList<>(quiz.getQuestions().size());
     }
 
     @Override
@@ -47,14 +51,21 @@ public class QuestionsQuizAdapter extends RecyclerView.Adapter<QuestionsQuizAdap
 
         holder.title.setText(q.getTitle());
 
-        optionSelected.add((optionPosition) -> {
-            holder.options.post(() -> adapter.get(position).notifyDataSetChanged());
+//        optionSelected.add((optionPosition) -> {
+//            holder.options.post(() -> adapter.get(position).notifyDataSetChanged());
+//            q.setSelectedOption(optionPosition);
+//        });
+//
+//        adapter.add(new OptionsAdapter(context, q.getOptions(), optionSelected.get(position)));
+
+        optionSelected[position] = (optionPosition) -> {
+            holder.options.post(() -> adapter[position].notifyDataSetChanged());
             q.setSelectedOption(optionPosition);
-        });
+        };
 
-        adapter.add(new OptionsAdapter(context, q.getOptions(), optionSelected.get(position)));
+        adapter[position] = new OptionsAdapter(context, q.getOptions(), optionSelected[position]);
 
-        holder.options.setAdapter(adapter.get(position));
+        holder.options.setAdapter(adapter[position]);
     }
 
     @Override
