@@ -53,6 +53,13 @@
             android:background="@drawable/p5"/>
 
         <Button
+            android:id="@+id/change_pic"
+            style="@style/main_button"
+            android:background="@drawable/p8"
+            android:visibility="gone"
+            android:text="Change Picture" />
+
+        <Button
             android:id="@+id/logout"
             style="@style/main_button"
             android:background="@drawable/p6"
