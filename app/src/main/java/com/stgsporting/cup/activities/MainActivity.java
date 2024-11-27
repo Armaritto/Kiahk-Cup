@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.stgsporting.cup.LogsActivity;
 import com.stgsporting.cup.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         Button leaderboard = findViewById(R.id.leaderboard);
         Button admin = findViewById(R.id.admin);
         Button change_pic = findViewById(R.id.change_pic);
+        Button logs = findViewById(R.id.logs);
         Button logout = findViewById(R.id.logout);
         if(Objects.equals(data[0], "admin")){
             admin.setVisibility(View.VISIBLE);
@@ -159,6 +161,13 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         change_pic.setVisibility(View.GONE);
                     }
+                    DataSnapshot userData = dataSnapshot.child("Users").child(data[0]);
+                    if (userData.hasChild("Logs") &&
+                            Boolean.parseBoolean(userData.child("Logs").getValue().toString())) {
+                        logs.setVisibility(View.VISIBLE);
+                    } else {
+                        logs.setVisibility(View.GONE);
+                    }
                     loadingDialog.dismiss();
                 }
             }
@@ -212,6 +221,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
         change_pic.setOnClickListener(v-> openFileChooser());
+        logs.setOnClickListener(v-> {
+            Intent intent = new Intent(MainActivity.this, LogsActivity.class);
+            intent.putExtra("Data", data);
+            startActivity(intent);
+        });
         logout.setOnClickListener(v-> {
             Intent intent = new Intent(MainActivity.this, GradeActivity.class);
             SharedPreferences.Editor editor = getSharedPreferences("Login", MODE_PRIVATE).edit();

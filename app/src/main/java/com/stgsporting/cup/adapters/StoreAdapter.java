@@ -15,6 +15,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseError;
 import com.stgsporting.cup.R;
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +27,7 @@ import com.stgsporting.cup.activities.LineupActivity;
 import com.stgsporting.cup.data.Card;
 import com.stgsporting.cup.helpers.ConfirmDialog;
 import com.stgsporting.cup.helpers.ImageLoader;
+import com.stgsporting.cup.helpers.Logs;
 import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.ArrayList;
@@ -134,19 +137,25 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         DatabaseReference userRef = database.getReference("/elmilad25/Users").child(name);
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
         DatabaseReference storeRef = database.getReference("/elmilad25/Store");
-        if (card.isOwned())
+        Logs.log(context, "Purchasing "+card.getID());
+        if (card.isOwned()) {
             addPlayerInLineup(card, userRef, storeRef);
-        else {
+            Logs.log(context, card.getID() + " owned, added to lineup.");
+        } else {
             int price = card.getPrice();
             if (points < price) {
                 Toast.makeText(context, "Not enough coins", Toast.LENGTH_SHORT).show();
+                Logs.log(context, "Not enough coins: "+points+", price: "+price);
             }
             else {
                 points -= price;
+                Logs.log(context, price+" coins paid");
                 userRef.child("Coins").setValue(points);
+                Logs.log(context, "New coins: "+points);
                 cardRef.setValue(true);
 //                userRef.child("Lineup").child(cardPosition).setValue(card.getID());
                 addPlayerInLineup(card, userRef, storeRef);
+                Logs.log(context, "Purchased successfully and added to lineup\n------------");
             }
         }
     }
@@ -172,43 +181,20 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         userRef.child("Lineup").addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
             @Override
             public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
-//                if (cardPosition.equals("LCM") || cardPosition.equals("RCM")) {
-//                    if(snapshot.child("LCM").exists())
-//                        snapshot = snapshot.child("LCM");
-//                    else if(snapshot.child("RCM").exists())
-//                        snapshot = snapshot.child("RCM");
-//                }
-//                else if(cardPosition.equals("LCB") || cardPosition.equals("RCB")) {
-//                    if(snapshot.child("LCB").exists())
-//                        snapshot = snapshot.child("LCB");
-//                    else if(snapshot.child("RCB").exists())
-//                        snapshot = snapshot.child("RCB");
-//                }
-//                else
-//                    snapshot = snapshot.child(cardPosition);
-//                if(snapshot.exists())
-//                    if(snapshot.getValue().toString().equals(card.getID())) {
-//                        if (cardPosition.equals("LCM") || cardPosition.equals("RCM")) {
-//                            userRef.child("Lineup").child("LCM").removeValue();
-//                            userRef.child("Lineup").child("RCM").removeValue();
-//                        }
-//                        else if(cardPosition.equals("LCB") || cardPosition.equals("RCB")) {
-//                            userRef.child("Lineup").child("LCB").removeValue();
-//                            userRef.child("Lineup").child("RCB").removeValue();
-//                        }
-//                        else
-//                            userRef.child("Lineup").child(cardPosition).removeValue();
-//                    }
+                Logs.log(context, "---------\nSelling "+card.getID());
                 for (DataSnapshot S : snapshot.getChildren()) {
                     if (S.getValue().toString().equals(card.getID())){
                         userRef.child("Lineup").child(S.getKey()).removeValue();
                     }
                 }
+                Logs.log(context, "doesn't exist in lineup");
                 cardRef.removeValue();
                 card.setOwned(false);
+                Logs.log(context, "removed from owned cards");
                 int price = card.getPrice();
                 points += price;
                 userRef.child("Coins").setValue(points);
+                Logs.log(context, price+" coins added, total="+points+"\n--------");
                 gotoLineup();
             }
             @Override

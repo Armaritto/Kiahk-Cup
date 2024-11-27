@@ -24,7 +24,9 @@
         android:theme="@style/Theme.QuizFUTDraft"
         tools:targetApi="35">
         <activity
-
+            android:name=".LogsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.ManageHome"
             android:exported="false" />
         <activity
