@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 }
+                if (dataSnapshot.hasChild("Storage")) data[2] = dataSnapshot.child("Storage").getValue().toString();
 
                 DataSnapshot snapshot = dataSnapshot.child("Buttons");
                 if (!Objects.equals(data[0], "admin")) {
