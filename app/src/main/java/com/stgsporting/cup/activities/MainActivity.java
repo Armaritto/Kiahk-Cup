@@ -37,7 +37,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     private String[] data;
-    private static final double current_version = 1.0;
+    private static final double current_version = 1.1;
     private LoadingDialog loadingDialog;
     private FirebaseDatabase database;
 
