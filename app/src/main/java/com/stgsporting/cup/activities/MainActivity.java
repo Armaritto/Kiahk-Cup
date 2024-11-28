@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.stgsporting.cup.LogsActivity;
 import com.stgsporting.cup.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,7 +36,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     private String[] data;
-    private static final double current_version = 1.1;
+    private static final double current_version = 1.11;
     private LoadingDialog loadingDialog;
     private FirebaseDatabase database;
 

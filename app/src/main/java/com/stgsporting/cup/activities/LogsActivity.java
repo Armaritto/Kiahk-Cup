@@ -1,14 +1,18 @@
-package com.stgsporting.cup;
+package com.stgsporting.cup.activities;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.stgsporting.cup.R;
 import com.stgsporting.cup.helpers.Logs;
 
 public class LogsActivity extends AppCompatActivity {
@@ -36,6 +40,13 @@ public class LogsActivity extends AppCompatActivity {
             sb.append(s).append("\n");
         }
         logs.setText(sb.toString());
+
+        user.setOnClickListener(v-> {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Logs", logs.getText().toString());
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(this, "Logs copied successfully", Toast.LENGTH_SHORT).show();
+        });
 
     }
 }
