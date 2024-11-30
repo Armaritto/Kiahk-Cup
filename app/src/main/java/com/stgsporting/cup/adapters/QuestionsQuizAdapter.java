@@ -58,12 +58,15 @@ public class QuestionsQuizAdapter extends RecyclerView.Adapter<QuestionsQuizAdap
 //
 //        adapter.add(new OptionsAdapter(context, q.getOptions(), optionSelected.get(position)));
 
-        optionSelected[position] = (optionPosition) -> {
-            holder.options.post(() -> adapter[position].notifyDataSetChanged());
-            q.setSelectedOption(optionPosition);
-        };
+        if (optionSelected[position] == null) {
+            optionSelected[position] = (optionPosition) -> {
+                holder.options.post(() -> adapter[position].notifyDataSetChanged());
+                q.setSelectedOption(optionPosition);
+            };
+        }
 
-        adapter[position] = new OptionsAdapter(context, q.getOptions(), optionSelected[position]);
+        if (adapter[position] == null)
+            adapter[position] = new OptionsAdapter(context, q.getOptions(), optionSelected[position]);
 
         holder.options.setAdapter(adapter[position]);
     }
