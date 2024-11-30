@@ -87,11 +87,14 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             holder.sellButton.setVisibility(View.INVISIBLE);
         }
         holder.purchaseButton.setOnClickListener(v-> {
-            if (!NetworkUtils.isOnline(context)) {
-                Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            purchasePlayer(getItem(position));
+            View.OnClickListener yesListener = view -> {
+                if (!NetworkUtils.isOnline(context)) {
+                    Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                purchasePlayer(getItem(position));
+            };
+            new ConfirmDialog(context, yesListener);
         });
         holder.sellButton.setOnClickListener(v -> {
             View.OnClickListener yesListener = v1 -> {
@@ -101,7 +104,6 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 }
                 sellPlayer(getItem(position));
             };
-            View.OnClickListener noListener = v1 -> {};
             new ConfirmDialog(context,yesListener);
         });
     }
@@ -137,6 +139,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     }
 
     public void purchasePlayer(Card card) {
+        loadingDialog = new LoadingDialog(context);
 
         DatabaseReference userRef = database.getReference("/elmilad25/Users").child(name);
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
@@ -250,6 +253,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                         userRef.child("Lineup").child(S.getKey()).removeValue();
                 }
                 userRef.child("Lineup").child(cardPosition).setValue(card.getID());
+                loadingDialog.dismiss();
                 gotoLineup();
         }
             @Override
