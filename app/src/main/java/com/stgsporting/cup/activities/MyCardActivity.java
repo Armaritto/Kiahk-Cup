@@ -14,8 +14,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,6 +24,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.stgsporting.cup.data.TextColor;
 import com.stgsporting.cup.helpers.Header;
+import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.Arrays;
@@ -42,6 +41,7 @@ public class MyCardActivity extends AppCompatActivity {
     private TextView card_rating;
     private DatabaseReference ref;
     private FirebaseStorage storage;
+    private ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +60,8 @@ public class MyCardActivity extends AppCompatActivity {
         Button positionBtn = findViewById(R.id.position_btn);
         Button cardBtn = findViewById(R.id.card_btn);
         Button ratingBtn = findViewById(R.id.rating_btn);
+
+        imageLoader = new ImageLoader(MyCardActivity.this);
 
         cardIcon = findViewById(R.id.card_icon);
         img = findViewById(R.id.img);
@@ -176,46 +178,24 @@ public class MyCardActivity extends AppCompatActivity {
     }
 
     private void loadImage(String url, ImageView imageView) {
-        Picasso picasso = Picasso.with(MyCardActivity.this);
-        picasso.setIndicatorsEnabled(false);
-        picasso.load(url)
-                .placeholder(R.drawable.loading)
-                .error(R.drawable.emptyuser)
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(imageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        refreshColors();
-                    }
+        Callback onlineCallback = new Callback() {
+            public void onSuccess() {refreshColors();}
+            public void onError() {
+                refreshColors();
+                Toast.makeText(MyCardActivity.this, "Could not fetch image", Toast.LENGTH_SHORT).show();
+            }
+        };
 
-                    @Override
-                    public void onError() {
-                        //Try again online if cache failed
-                        Picasso picasso1 = Picasso.with(MyCardActivity.this);
-                        picasso1.setIndicatorsEnabled(false);
-                        picasso1.load(url)
-                                .placeholder(R.drawable.loading)
-                                .error(R.drawable.emptyuser)
-                                .into(imageView, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-                                        refreshColors();
-                                    }
+        Callback offlineCallback = new Callback() {
+            public void onSuccess() {refreshColors();}
+            public void onError() {imageLoader.loadImageOnline(url, imageView, onlineCallback);}
+        };
 
-                                    @Override
-                                    public void onError() {
-                                        refreshColors();
-                                        Toast.makeText(MyCardActivity.this, "Could not fetch image", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
-                });
+        imageLoader.loadImageOffline(url, imageView, offlineCallback);
     }
 
     private void refreshColors() {
-//        if (imgsToLoad==0) {
-            TextColor.setColor(cardIcon, name, card_rating, position);
-//        }
+        TextColor.setColor(cardIcon, name, card_rating, position);
     }
 
 }

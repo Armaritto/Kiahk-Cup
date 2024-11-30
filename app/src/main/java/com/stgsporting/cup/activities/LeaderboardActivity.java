@@ -20,6 +20,7 @@ import com.stgsporting.cup.adapters.LeaderboardUserAdapter;
 import com.stgsporting.cup.data.Card;
 import com.stgsporting.cup.data.User;
 import com.stgsporting.cup.helpers.Header;
+import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.LoadingDialog;
 
 import java.util.ArrayList;
@@ -137,7 +138,8 @@ public class LeaderboardActivity extends AppCompatActivity {
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
             loadingDialog.dismiss();
-            RecyclerView.Adapter<LeaderboardUserAdapter.ViewHolder> adapter = new LeaderboardUserAdapter(this, users, data, storageRef);
+            RecyclerView.Adapter<LeaderboardUserAdapter.ViewHolder> adapter = new LeaderboardUserAdapter(
+                    this, users, data, new ImageLoader(LeaderboardActivity.this));
             lineupsView.setAdapter(adapter);
 
         });
