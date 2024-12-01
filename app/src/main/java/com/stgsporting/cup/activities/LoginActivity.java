@@ -69,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
             String passcode = passcode_edittext.getText().toString();
             if (!name.isEmpty() && !passcode.isEmpty()) {
                 name = name.toLowerCase();
+                name = name.strip();
                 validateLogin(name, passcode);
             } else {
                 Toast.makeText(LoginActivity.this, "Please enter both ID and Password", Toast.LENGTH_SHORT).show();
