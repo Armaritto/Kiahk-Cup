@@ -157,12 +157,13 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             else {
                 points -= price;
                 Logs.log(context, price+" coins paid", 3);
-                userRef.child("Coins").setValue(points);
-                Logs.log(context, "New coins: "+points, 4);
-                cardRef.setValue(true);
-//                userRef.child("Lineup").child(cardPosition).setValue(card.getID());
-                addPlayerInLineup(card, userRef, storeRef);
-                Logs.log(context, "Purchase success., added to lineup\n------------", 5);
+                userRef.child("Coins").setValue(points).addOnSuccessListener(unused -> {
+                    Logs.log(context, "New coins: "+points, 4);
+                    cardRef.setValue(true).addOnSuccessListener(unused1 -> {
+                        addPlayerInLineup(card, userRef, storeRef);
+                        Logs.log(context, "Purchase success., added to lineup\n------------", 5);
+                    });
+                });
             }
         }
     }
