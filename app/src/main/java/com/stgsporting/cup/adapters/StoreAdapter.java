@@ -190,41 +190,13 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             @Override
             public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
                 Logs.log(context, "Selling "+card.getID(), 0);
+                ArrayList<DataSnapshot> snapshots = new ArrayList<>();
                 for (DataSnapshot S : snapshot.getChildren()) {
                     if (S.getValue().toString().equals(card.getID())){
-                        userRef.child("Lineup").child(S.getKey()).removeValue();
+                        snapshots.add(S);
                     }
                 }
-                Logs.log(context, "doesn't exist in lineup", 1);
-                cardRef.removeValue().addOnSuccessListener(unused -> {
-                    card.setOwned(false);
-                    Logs.log(context, "removed from owned cards", 2);
-                    int price = card.getPrice();
-                    points += price;
-                    userRef.child("Coins").setValue(points).addOnSuccessListener(unused1 -> {
-                        Logs.log(context, price+" coins added, total="+points+"\n--------", 3);
-                        loadingDialog.dismiss();
-                        gotoLineup();
-                    }).addOnFailureListener(e -> {
-                        Logs.log(context, "cannot add "+price+" coins, total should be="+points+"\n--------", 3);
-                        Logs.log(context, e.toString(), 4);
-                        cardRef.setValue(true).addOnSuccessListener(unused12 -> {
-                            Logs.log(context, "added back to owned cards", 5);
-                            loadingDialog.dismiss();
-                            gotoLineup();
-                        }).addOnFailureListener(e1 -> {
-                            Logs.log(context, "cannot add it back to owned cards", 5);
-                            Logs.log(context, e1.toString(), 6);
-                            loadingDialog.dismiss();
-                            gotoLineup();
-                        });
-                    });
-                }).addOnFailureListener(e -> {
-                    Logs.log(context, "cannot remove from owned card", 2);
-                    Logs.log(context, e.toString(), 3);
-                    loadingDialog.dismiss();
-                    gotoLineup();
-                });
+                removeFromLineup(0, snapshots, userRef, cardRef, card);
             }
             @Override
             public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {
@@ -232,6 +204,57 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             }
         });
     }
+
+    private void removeFromLineup(int index, ArrayList<DataSnapshot> snapshots, DatabaseReference userRef,
+                                  DatabaseReference cardRef, Card card) {
+        DataSnapshot S = snapshots.get(index);
+        userRef.child("Lineup").child(S.getKey()).removeValue().addOnSuccessListener(unused -> {
+            int nextIndex = index+1;
+            if (nextIndex<snapshots.size())
+                removeFromLineup(nextIndex, snapshots, userRef, cardRef, card);
+            else {
+                Logs.log(context, "doesn't exist in lineup", 1);
+                continueSelling(cardRef, userRef, card);
+            }
+        }).addOnFailureListener(e -> {
+            Logs.log(context, "Cannot remove from lineup", 1);
+            Toast.makeText(context, "Selling Failed", Toast.LENGTH_SHORT).show();
+            loadingDialog.dismiss();
+        });
+    }
+
+    private void continueSelling(DatabaseReference cardRef, DatabaseReference userRef, Card card) {
+        cardRef.removeValue().addOnSuccessListener(unused -> {
+            card.setOwned(false);
+            Logs.log(context, "removed from owned cards", 2);
+            int price = card.getPrice();
+            points += price;
+            userRef.child("Coins").setValue(points).addOnSuccessListener(unused1 -> {
+                Logs.log(context, price+" coins added, total="+points+"\n--------", 3);
+                loadingDialog.dismiss();
+                gotoLineup();
+            }).addOnFailureListener(e -> {
+                Logs.log(context, "cannot add "+price+" coins, total should be="+points, 3);
+                Logs.log(context, e.toString(), 4);
+                cardRef.setValue(true).addOnSuccessListener(unused12 -> {
+                    Logs.log(context, "added back to owned cards"+"\n--------", 5);
+                    loadingDialog.dismiss();
+                    gotoLineup();
+                }).addOnFailureListener(e1 -> {
+                    Logs.log(context, "cannot add it back to owned cards", 5);
+                    Logs.log(context, e1 +"\n--------", 6);
+                    loadingDialog.dismiss();
+                    gotoLineup();
+                });
+            });
+        }).addOnFailureListener(e -> {
+            Logs.log(context, "cannot remove from owned card"+"\n--------", 2);
+            Logs.log(context, e.toString(), 3);
+            loadingDialog.dismiss();
+            gotoLineup();
+        });
+    }
+
     public void addPlayerInLineup(Card card, DatabaseReference userRef, DatabaseReference storeRef) {
 
         database.getReference("elmilad25").addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
