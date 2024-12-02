@@ -10,8 +10,11 @@ import com.stgsporting.cup.R;
 
 public class LoadingDialog extends Dialog {
 
+    private final Context context;
+
     public LoadingDialog(@NonNull Context context) {
         super(context);
+        this.context = context;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.loading_dialog);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -21,11 +24,11 @@ public class LoadingDialog extends Dialog {
 
     @Override
     public void dismiss() {
-        if (isShowing()) super.dismiss();
+        if (isShowing() && context!=null) super.dismiss();
     }
 
     @Override
     public void show() {
-        if (!isShowing()) super.show();
+        if (!isShowing() && context!= null) super.show();
     }
 }

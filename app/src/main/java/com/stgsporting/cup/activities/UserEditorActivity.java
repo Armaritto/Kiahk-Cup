@@ -3,6 +3,7 @@ package com.stgsporting.cup.activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -23,11 +24,14 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.stgsporting.cup.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,6 +43,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.data.Option;
+import com.stgsporting.cup.helpers.ConfirmDialog;
 import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.ImageProcessor;
 import com.stgsporting.cup.helpers.LoadingDialog;
@@ -244,6 +249,8 @@ public class UserEditorActivity extends AppCompatActivity {
         });
     }
 
+    private ConfirmDialog confirmDialog;
+
     private class ListAdapter extends BaseAdapter {
 
         private final ArrayList<String> titles;
@@ -277,6 +284,46 @@ public class UserEditorActivity extends AppCompatActivity {
             TextView content = v.findViewById(R.id.content);
             title.setText(titles.get(position));
             content.setText(contents.get(position));
+
+            View.OnClickListener yesListener = view -> {
+                loadingDialog.show();
+                ref.child("Users").child(userName).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.hasChild("Stars")) {
+                            int totalStars = Integer.parseInt(snapshot.child("Stars").getValue().toString());
+                            int stars = Integer.parseInt(contents.get(position).replaceAll("[\\D]", ""));
+                            totalStars-=stars;
+                            ref.child("Users").child(userName).child("Stars").setValue(totalStars).addOnSuccessListener(unused -> ref.child("Users").child(userName).child("Attendance").child(titles.get(position)).removeValue((error, ref) -> {
+                                Toast.makeText(UserEditorActivity.this, stars+" stars removed", Toast.LENGTH_SHORT).show();
+                                refreshData();
+                                loadingDialog.dismiss();
+                                if (confirmDialog!=null) confirmDialog.dismiss();
+                            })).addOnFailureListener(e -> {
+                                Toast.makeText(UserEditorActivity.this, "Operation Failed", Toast.LENGTH_SHORT).show();
+                                loadingDialog.dismiss();
+                                if (confirmDialog!=null) confirmDialog.dismiss();
+                            });
+                        } else {
+                            Toast.makeText(UserEditorActivity.this, "Operation Failed", Toast.LENGTH_SHORT).show();
+                            loadingDialog.dismiss();
+                            if (confirmDialog!=null) confirmDialog.dismiss();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(UserEditorActivity.this, "Operation Failed", Toast.LENGTH_SHORT).show();
+                        loadingDialog.dismiss();
+                        confirmDialog.dismiss();
+                    }
+                });
+            };
+
+            v.setOnLongClickListener(view -> {
+               confirmDialog = new ConfirmDialog(UserEditorActivity.this, yesListener);
+                return true;
+            });
             return v;
         }
     }
@@ -336,7 +383,7 @@ public class UserEditorActivity extends AppCompatActivity {
                 });
     }
 
-    private android.app.AlertDialog alertDialog;
+    private AlertDialog alertDialog;
 
     private void showAddDialog(DataSnapshot snapshot) {
         loadingDialog.show();
@@ -345,7 +392,7 @@ public class UserEditorActivity extends AppCompatActivity {
         View dialogView = inflater.inflate(R.layout.admin_dialog, null);
 
         // Create the AlertDialog
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(dialogView);
 
         // Get the UI elements from the custom layout
@@ -410,7 +457,7 @@ public class UserEditorActivity extends AppCompatActivity {
                 stars+=options.get(position).getStars();
                 ref.child("Users").child(userName).child("Stars").setValue(stars);
                 DateTimeFormatter formatter;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     String formattedDate = LocalDateTime.now().format(formatter);
                     ref.child("Users").child(userName).child("Attendance").child(formattedDate).setValue(text);

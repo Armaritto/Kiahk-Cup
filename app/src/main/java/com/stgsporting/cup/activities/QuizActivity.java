@@ -2,6 +2,8 @@ package com.stgsporting.cup.activities;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -9,11 +11,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stgsporting.cup.R;
 import com.stgsporting.cup.adapters.QuestionsQuizAdapter;
 import com.stgsporting.cup.data.Question;
 import com.stgsporting.cup.data.Quiz;
+import com.stgsporting.cup.helpers.ConfirmDialog;
 import com.stgsporting.cup.helpers.Header;
 import com.stgsporting.cup.helpers.Http;
 import com.stgsporting.cup.helpers.LoadingDialog;
@@ -65,33 +67,39 @@ public class QuizActivity extends AppCompatActivity {
                     return null;
                 });
 
-        FloatingActionButton submit = findViewById(R.id.submit_quiz);
+        Button submit = findViewById(R.id.submit_quiz);
 
         submit.setOnClickListener((__) -> {
             if (!NetworkUtils.isOnline(this)) {
                 Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
                 return;
             }
-            JSONObject requestData = getJsonObject(data);
 
-            loadingDialog.show();
-            Http.post(Uri.parse(Http.URL + "/quizzes/" + quiz.getId() + "/submit"))
-                    .expectsJson()
-                    .addData(requestData)
-                    .sendAsync().thenApply((res) -> {
-                        runOnUiThread(() -> {
-                            loadingDialog.dismiss();
+            View.OnClickListener yesListener = position -> {
+                JSONObject requestData = getJsonObject(data);
 
-                            Toast.makeText(
-                                    this,
-                                    res.getCode() == 200 ? "تم ارسال الاجابات" : "حليت المسابقة قبل كده",
-                                    Toast.LENGTH_LONG
-                            ).show();
+                loadingDialog.show();
+                Http.post(Uri.parse(Http.URL + "/quizzes/" + quiz.getId() + "/submit"))
+                        .expectsJson()
+                        .addData(requestData)
+                        .sendAsync().thenApply((res) -> {
+                            runOnUiThread(() -> {
+                                loadingDialog.dismiss();
 
-                            finish();
+                                Toast.makeText(
+                                        QuizActivity.this,
+                                        res.getCode() == 200 ? "تم ارسال الاجابات" : "حليت المسابقة قبل كده",
+                                        Toast.LENGTH_LONG
+                                ).show();
+
+                                finish();
+                            });
+                            return null;
                         });
-                        return null;
-                    });
+            };
+
+            new ConfirmDialog(this, yesListener);
+
         });
     }
 

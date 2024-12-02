@@ -236,19 +236,33 @@ public class LineupActivity extends AppCompatActivity {
                 storageRef.getDownloadUrl()
                         .addOnSuccessListener(uri -> {
                             String downloadUrl = uri.toString();
-                            Picasso.with(this).load(downloadUrl).into(icon, new com.squareup.picasso.Callback() {
-                                @Override
+
+                            Callback onlineCallback = new Callback() {
                                 public void onSuccess() {
                                     imagesToLoad--;
                                     TextColor.setColor(icon, name, position, rating);
                                     checkIfAllImagesLoaded(v, imageView);
                                 }
-
-                                @Override
                                 public void onError() {
+                                    Toast.makeText(LineupActivity.this, "Could not fetch image", Toast.LENGTH_SHORT).show();
                                     imagesToLoad--;
-                                    checkIfAllImagesLoaded(v, imageView);                                }
-                            });
+                                    checkIfAllImagesLoaded(v, imageView);
+                                }
+                            };
+
+                            Callback offlineCallback = new Callback() {
+                                public void onSuccess() {
+                                    imagesToLoad--;
+                                    TextColor.setColor(icon, name, position, rating);
+                                    checkIfAllImagesLoaded(v, imageView);
+                                }
+                                public void onError() {
+                                    imageLoader.loadImageOnline(downloadUrl, icon, onlineCallback);
+                                }
+                            };
+
+                            imageLoader.loadImageOffline(downloadUrl, icon, offlineCallback);
+
                         })
                         .addOnFailureListener(e -> {
                             Toast.makeText(LineupActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
@@ -260,19 +274,31 @@ public class LineupActivity extends AppCompatActivity {
         }
         if (userData.hasChild("ImageLink")) {
             String imgLink = userData.child("ImageLink").getValue().toString();
-            Picasso.with(this).load(imgLink).into(img, new Callback() {
-                @Override
+
+            Callback onlineCallback = new Callback() {
                 public void onSuccess() {
                     imagesToLoad--;
                     checkIfAllImagesLoaded(v, imageView);
                 }
-
-                @Override
                 public void onError() {
+                    Toast.makeText(LineupActivity.this, "Could not fetch image", Toast.LENGTH_SHORT).show();
                     imagesToLoad--;
                     checkIfAllImagesLoaded(v, imageView);
                 }
-            });
+            };
+
+            Callback offlineCallback = new Callback() {
+                public void onSuccess() {
+                    imagesToLoad--;
+                    checkIfAllImagesLoaded(v, imageView);
+                }
+                public void onError() {
+                    imageLoader.loadImageOnline(imgLink, img, onlineCallback);
+                }
+            };
+
+            imageLoader.loadImageOffline(imgLink, img, offlineCallback);
+
         } else {
             imagesToLoad--;
             checkIfAllImagesLoaded(v, imageView);

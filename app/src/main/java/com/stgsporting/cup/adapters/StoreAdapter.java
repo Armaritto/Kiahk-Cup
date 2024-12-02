@@ -87,11 +87,14 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             holder.sellButton.setVisibility(View.INVISIBLE);
         }
         holder.purchaseButton.setOnClickListener(v-> {
-            if (!NetworkUtils.isOnline(context)) {
-                Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            purchasePlayer(getItem(position));
+            View.OnClickListener yesListener = view -> {
+                if (!NetworkUtils.isOnline(context)) {
+                    Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                purchasePlayer(getItem(position));
+            };
+            new ConfirmDialog(context, yesListener);
         });
         holder.sellButton.setOnClickListener(v -> {
             View.OnClickListener yesListener = v1 -> {
@@ -101,7 +104,6 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 }
                 sellPlayer(getItem(position));
             };
-            View.OnClickListener noListener = v1 -> {};
             new ConfirmDialog(context,yesListener);
         });
     }
@@ -137,6 +139,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     }
 
     public void purchasePlayer(Card card) {
+        loadingDialog = new LoadingDialog(context);
 
         DatabaseReference userRef = database.getReference("/elmilad25/Users").child(name);
         DatabaseReference cardRef = userRef.child("Owned Cards").child(card.getID());
@@ -154,12 +157,27 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             else {
                 points -= price;
                 Logs.log(context, price+" coins paid", 3);
-                userRef.child("Coins").setValue(points);
-                Logs.log(context, "New coins: "+points, 4);
-                cardRef.setValue(true);
-//                userRef.child("Lineup").child(cardPosition).setValue(card.getID());
-                addPlayerInLineup(card, userRef, storeRef);
-                Logs.log(context, "Purchase success., added to lineup\n------------", 5);
+                userRef.child("Coins").setValue(points).addOnSuccessListener(unused -> {
+                    Logs.log(context, "New coins: "+points, 4);
+                    cardRef.setValue(true).addOnSuccessListener(unused1 -> {
+                        addPlayerInLineup(card, userRef, storeRef);
+                        Logs.log(context, "Purchase success., added to lineup\n------------", 5);
+                    }).addOnFailureListener(e -> {
+                        points += price;
+                        Logs.log(context, price+" coins returned", 5);
+                        userRef.child("Coins").setValue(points).addOnSuccessListener(unused12 -> {
+                            Logs.log(context, "Total = "+ points, 6);
+                            Logs.log(context, "Purchase failed successfully"+"\n------------", 7);
+                            gotoLineup();
+                            loadingDialog.dismiss();
+                        }).addOnFailureListener(e1 -> {
+                            Logs.log(context, "Purchase failed", 6);
+                            Logs.log(context, e1 +"\n------------", 7);
+                            gotoLineup();
+                            loadingDialog.dismiss();
+                        });
+                    });
+                });
             }
         }
     }
@@ -187,41 +205,13 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             @Override
             public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
                 Logs.log(context, "Selling "+card.getID(), 0);
+                ArrayList<DataSnapshot> snapshots = new ArrayList<>();
                 for (DataSnapshot S : snapshot.getChildren()) {
                     if (S.getValue().toString().equals(card.getID())){
-                        userRef.child("Lineup").child(S.getKey()).removeValue();
+                        snapshots.add(S);
                     }
                 }
-                Logs.log(context, "doesn't exist in lineup", 1);
-                cardRef.removeValue().addOnSuccessListener(unused -> {
-                    card.setOwned(false);
-                    Logs.log(context, "removed from owned cards", 2);
-                    int price = card.getPrice();
-                    points += price;
-                    userRef.child("Coins").setValue(points).addOnSuccessListener(unused1 -> {
-                        Logs.log(context, price+" coins added, total="+points+"\n--------", 3);
-                        loadingDialog.dismiss();
-                        gotoLineup();
-                    }).addOnFailureListener(e -> {
-                        Logs.log(context, "cannot add "+price+" coins, total should be="+points+"\n--------", 3);
-                        Logs.log(context, e.toString(), 4);
-                        cardRef.setValue(true).addOnSuccessListener(unused12 -> {
-                            Logs.log(context, "added back to owned cards", 5);
-                            loadingDialog.dismiss();
-                            gotoLineup();
-                        }).addOnFailureListener(e1 -> {
-                            Logs.log(context, "cannot add it back to owned cards", 5);
-                            Logs.log(context, e1.toString(), 6);
-                            loadingDialog.dismiss();
-                            gotoLineup();
-                        });
-                    });
-                }).addOnFailureListener(e -> {
-                    Logs.log(context, "cannot remove from owned card", 2);
-                    Logs.log(context, e.toString(), 3);
-                    loadingDialog.dismiss();
-                    gotoLineup();
-                });
+                removeFromLineup(0, snapshots, userRef, cardRef, card);
             }
             @Override
             public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {
@@ -229,6 +219,57 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             }
         });
     }
+
+    private void removeFromLineup(int index, ArrayList<DataSnapshot> snapshots, DatabaseReference userRef,
+                                  DatabaseReference cardRef, Card card) {
+        DataSnapshot S = snapshots.get(index);
+        userRef.child("Lineup").child(S.getKey()).removeValue().addOnSuccessListener(unused -> {
+            int nextIndex = index+1;
+            if (nextIndex<snapshots.size())
+                removeFromLineup(nextIndex, snapshots, userRef, cardRef, card);
+            else {
+                Logs.log(context, "doesn't exist in lineup", 1);
+                continueSelling(cardRef, userRef, card);
+            }
+        }).addOnFailureListener(e -> {
+            Logs.log(context, "Cannot remove from lineup", 1);
+            Toast.makeText(context, "Selling Failed", Toast.LENGTH_SHORT).show();
+            loadingDialog.dismiss();
+        });
+    }
+
+    private void continueSelling(DatabaseReference cardRef, DatabaseReference userRef, Card card) {
+        cardRef.removeValue().addOnSuccessListener(unused -> {
+            card.setOwned(false);
+            Logs.log(context, "removed from owned cards", 2);
+            int price = card.getPrice();
+            points += price;
+            userRef.child("Coins").setValue(points).addOnSuccessListener(unused1 -> {
+                Logs.log(context, price+" coins added, total="+points+"\n--------", 3);
+                loadingDialog.dismiss();
+                gotoLineup();
+            }).addOnFailureListener(e -> {
+                Logs.log(context, "cannot add "+price+" coins, total should be="+points, 3);
+                Logs.log(context, e.toString(), 4);
+                cardRef.setValue(true).addOnSuccessListener(unused12 -> {
+                    Logs.log(context, "added back to owned cards"+"\n--------", 5);
+                    loadingDialog.dismiss();
+                    gotoLineup();
+                }).addOnFailureListener(e1 -> {
+                    Logs.log(context, "cannot add it back to owned cards", 5);
+                    Logs.log(context, e1 +"\n--------", 6);
+                    loadingDialog.dismiss();
+                    gotoLineup();
+                });
+            });
+        }).addOnFailureListener(e -> {
+            Logs.log(context, "cannot remove from owned card"+"\n--------", 2);
+            Logs.log(context, e.toString(), 3);
+            loadingDialog.dismiss();
+            gotoLineup();
+        });
+    }
+
     public void addPlayerInLineup(Card card, DatabaseReference userRef, DatabaseReference storeRef) {
 
         database.getReference("elmilad25").addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
@@ -250,6 +291,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                         userRef.child("Lineup").child(S.getKey()).removeValue();
                 }
                 userRef.child("Lineup").child(cardPosition).setValue(card.getID());
+                loadingDialog.dismiss();
                 gotoLineup();
         }
             @Override

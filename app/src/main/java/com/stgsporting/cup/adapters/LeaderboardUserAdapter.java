@@ -14,13 +14,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.R;
 import com.stgsporting.cup.activities.LineupActivity;
 import com.stgsporting.cup.data.TextColor;
 import com.stgsporting.cup.data.User;
+import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.List;
@@ -31,14 +30,14 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter<LeaderboardUser
     private final Context context;
     private final List<User> users;
     private final String[] data;
-    private final StorageReference storageRef;
+    private final ImageLoader imageLoader;
 
-    public LeaderboardUserAdapter(Context context, List<User> users, String[] data, StorageReference storageRef) {
+    public LeaderboardUserAdapter(Context context, List<User> users, String[] data, ImageLoader imageLoader) {
         this.mInflater = LayoutInflater.from(context);
         this.users = users;
         this.context = context;
         this.data = data;
-        this.storageRef = storageRef;
+        this.imageLoader = imageLoader;
     }
 
     @Override
@@ -54,7 +53,7 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter<LeaderboardUser
         User user = users.get(i);
         holder.ovr.setText(String.format("%s", user.getPoints()));
 
-        setUserCardImage(holder.cardView, user, storageRef);
+        setUserCardImage(holder.cardView, user);
         holder.button.setOnClickListener(v -> {
             if (!NetworkUtils.isOnline(context)) {
                 Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
@@ -90,21 +89,25 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter<LeaderboardUser
         }
     }
 
-    private void setUserCardImage(RelativeLayout parent, User user, StorageReference storageRef) {
+    private void setUserCardImage(RelativeLayout parent, User user) {
             ImageView icon = parent.findViewById(R.id.card_icon);
             ImageView img = parent.findViewById(R.id.img);
             TextView name = parent.findViewById(R.id.name);
             TextView rating = parent.findViewById(R.id.card_rating);
             TextView position = parent.findViewById(R.id.position);
 
-
-            Callback callback = new Callback() {
+            Callback onlineCallback = new Callback() {
                 public void onSuccess() {TextColor.setColor(icon, name, rating, position);}
-                public void onError() {}
+                public void onError() {Toast.makeText(context, "Could not fetch image", Toast.LENGTH_SHORT).show();}
             };
 
-            Picasso.with(context.getApplicationContext()).load(user.getCardIcon()).placeholder(R.drawable.empty).into(icon, callback);
-            Picasso.with(context.getApplicationContext()).load(user.getImageLink()).into(img);
+            Callback offlineCallback = new Callback() {
+                public void onSuccess() {TextColor.setColor(icon, name, rating, position);}
+                public void onError() {imageLoader.loadImageOnline(user.getCardIcon(), icon, onlineCallback);}
+            };
+
+            imageLoader.loadImageOffline(user.getCardIcon(), icon, offlineCallback);
+            imageLoader.loadImage(user.getImageLink(), img);
 
             name.setText(user.getFirstName());
             position.setText(user.getCard().getPosition());
