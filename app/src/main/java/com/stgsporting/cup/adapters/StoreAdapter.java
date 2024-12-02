@@ -162,6 +162,20 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                     cardRef.setValue(true).addOnSuccessListener(unused1 -> {
                         addPlayerInLineup(card, userRef, storeRef);
                         Logs.log(context, "Purchase success., added to lineup\n------------", 5);
+                    }).addOnFailureListener(e -> {
+                        points += price;
+                        Logs.log(context, price+" coins returned", 5);
+                        userRef.child("Coins").setValue(points).addOnSuccessListener(unused12 -> {
+                            Logs.log(context, "Total = "+ points, 6);
+                            Logs.log(context, "Purchase failed successfully"+"\n------------", 7);
+                            gotoLineup();
+                            loadingDialog.dismiss();
+                        }).addOnFailureListener(e1 -> {
+                            Logs.log(context, "Purchase failed", 6);
+                            Logs.log(context, e1 +"\n------------", 7);
+                            gotoLineup();
+                            loadingDialog.dismiss();
+                        });
                     });
                 });
             }
