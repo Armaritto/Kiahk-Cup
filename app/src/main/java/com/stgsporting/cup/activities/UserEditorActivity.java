@@ -70,6 +70,7 @@ public class UserEditorActivity extends AppCompatActivity {
     private EditText passcode_edittext;
     private EditText coins_edittext;
     private EditText stars_edittext;
+    private TextView cards_t, t_coins;
 
     private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -137,6 +138,8 @@ public class UserEditorActivity extends AppCompatActivity {
         img = findViewById(R.id.img);
         list = findViewById(R.id.list);
         add = findViewById(R.id.add);
+        cards_t = findViewById(R.id.cards_t);
+        t_coins = findViewById(R.id.t_coins);
 
         data = getIntent().getStringArrayExtra("Data");
         userName = getIntent().getStringExtra("SelectedUser");
@@ -180,9 +183,11 @@ public class UserEditorActivity extends AppCompatActivity {
     }
 
     private void refreshData() {
-        ref.child("Users").child(userName).addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot data) {
+                DataSnapshot snapshot = data.child("Users").child(userName);
+
                 String new_name = snapshot.getKey();
                 new_name = Arrays.stream(new_name.split("\\s+"))
                         .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
@@ -200,6 +205,23 @@ public class UserEditorActivity extends AppCompatActivity {
                     String imgLink = snapshot.child("ImageLink").getValue().toString();
                     imageLoader.loadImage(imgLink, img);
                 }
+
+                ArrayList<String> cardsIDs = new ArrayList<>();
+
+                for (DataSnapshot s : snapshot.child("Owned Cards").getChildren()) {
+                    if (Boolean.parseBoolean(s.getValue().toString()))
+                        cardsIDs.add(s.getKey());
+                }
+
+                int cardsPrice = 0;
+                for (String cardID : cardsIDs) {
+                    int price = Integer.parseInt(data.child("Store").child(cardID).child("Price").getValue().toString());
+                    cardsPrice+=price;
+                }
+
+                int totalGainedCoins = Integer.parseInt(coins_edittext.getText().toString())+cardsPrice;
+                cards_t.setText(String.valueOf(cardsPrice));
+                t_coins.setText(String.valueOf(totalGainedCoins));
                 loadingDialog.dismiss();
 
             }
