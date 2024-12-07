@@ -12,7 +12,7 @@ public class User {
     private String passcode;
     private String name;
     private String imageLink;
-    private int points = 0;
+    private double points = 0;
     private int stars;
 
     private Card card;
@@ -72,11 +72,11 @@ public class User {
         this.imageLink = imageLink;
     }
 
-    public int getPoints() {
+    public double getPoints() {
         return points;
     }
 
-    public void setPoints(int points) {
+    public void setPoints(double points) {
         this.points = points;
     }
 

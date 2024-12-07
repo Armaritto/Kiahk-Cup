@@ -119,7 +119,7 @@ public class StoreActivity extends AppCompatActivity {
                     cards.add(card);
                 }
 
-                cards.sort(Comparator.comparingInt(Card::getPrice));
+                cards.sort(Comparator.comparingInt(Card::getPrice).reversed());
 
                 imagesToLoad = cards.size();
 

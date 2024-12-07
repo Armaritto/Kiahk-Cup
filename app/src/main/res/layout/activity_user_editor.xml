@@ -239,9 +239,9 @@
                         android:gravity="center"
                         android:textColor="@color/black"
                         android:padding="@dimen/_7sdp"
-                        android:textSize="@dimen/_14sdp"
+                        android:textSize="@dimen/_13sdp"
                         android:fontFamily="@font/segoebold"
-                        android:text="Cards T:"
+                        android:text="Cards Value:"
                         android:textStyle="bold"/>
 
                     <TextView
@@ -278,7 +278,7 @@
                         android:padding="@dimen/_7sdp"
                         android:textSize="@dimen/_14sdp"
                         android:fontFamily="@font/segoebold"
-                        android:text="T Coins:"
+                        android:text="Total Coins:"
                         android:textStyle="bold"/>
 
                     <TextView

@@ -196,7 +196,7 @@ public class UserEditorActivity extends AppCompatActivity {
                 if (snapshot.hasChild("Passcode"))
                     passcode_edittext.setText(snapshot.child("Passcode").getValue().toString());
                 if (snapshot.hasChild("Points"))
-                    rating.setText(snapshot.child("Points").getValue().toString());
+                    rating.setText(String.format("%.3f", Double.parseDouble(snapshot.child("Points").getValue().toString())));
                 if (snapshot.hasChild("Coins"))
                     coins_edittext.setText(snapshot.child("Coins").getValue().toString());
                 if (snapshot.hasChild("Stars"))
@@ -240,14 +240,14 @@ public class UserEditorActivity extends AppCompatActivity {
                 ArrayList<String> titles = new ArrayList<>();
                 ArrayList<String> contents = new ArrayList<>();
 
-                for (DataSnapshot s : snapshot.child("Users").child(userName).child("Mosab2at").getChildren()) {
-                    String mosab2aKey = s.getKey();
-                    String title = snapshot.child("Mosab2at").child(mosab2aKey).child("Title").getValue().toString();
-                    String max = snapshot.child("Mosab2at").child(mosab2aKey).child("Points").getValue().toString();
-                    String score = s.child("Score").getValue().toString();
-                    titles.add(title);
-                    contents.add(score+"/"+max);
-                }
+//                for (DataSnapshot s : snapshot.child("Users").child(userName).child("Mosab2at").getChildren()) {
+//                    String mosab2aKey = s.getKey();
+//                    String title = snapshot.child("Mosab2at").child(mosab2aKey).child("Title").getValue().toString();
+//                    String max = snapshot.child("Mosab2at").child(mosab2aKey).child("Points").getValue().toString();
+//                    String score = s.child("Score").getValue().toString();
+//                    titles.add(title);
+//                    contents.add(score+"/"+max);
+//                }
 
                 for (DataSnapshot s : snapshot.child("Users").child(userName).child("Attendance").getChildren()) {
                     titles.add(s.getKey());
