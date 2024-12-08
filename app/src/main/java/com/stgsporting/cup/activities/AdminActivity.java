@@ -2,7 +2,9 @@ package com.stgsporting.cup.activities;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -20,8 +22,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.cup.R;
+import com.stgsporting.cup.helpers.Http;
 import com.stgsporting.cup.helpers.LoadingDialog;
 import com.stgsporting.cup.helpers.NetworkUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 
 public class AdminActivity extends AppCompatActivity {
@@ -35,6 +43,7 @@ public class AdminActivity extends AppCompatActivity {
     private Button manageRatingPrice;
     private Button manageButtons;
     private Button usersList;
+    private Button errors;
     private LoadingDialog loadingDialog;
     private DatabaseReference ref;
 
@@ -49,8 +58,9 @@ public class AdminActivity extends AppCompatActivity {
         manageCardIcons = findViewById(R.id.manage_cardicons);
         managePositions = findViewById(R.id.manage_positions);
         manageRatingPrice = findViewById(R.id.manage_rating_price);
-         manageButtons = findViewById(R.id.manage_buttons);
+        manageButtons = findViewById(R.id.manage_buttons);
         usersList = findViewById(R.id.view_users_list);
+        errors = findViewById(R.id.errors);
 
         data = getIntent().getStringArrayExtra("Data");
 
@@ -131,6 +141,14 @@ public class AdminActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        errors.setOnClickListener(v -> {
+            if (!NetworkUtils.isOnline(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            calculateErrors();
+        });
+
 
     }
 
@@ -159,6 +177,7 @@ public class AdminActivity extends AppCompatActivity {
                 checkBtn(btns, "Manage Positions", managePositions);
                 checkBtn(btns, "Manage Rating Price", manageRatingPrice);
                 checkBtn(btns, "Manage Home", manageButtons);
+                checkBtn(btns, "View Errors", errors);
 
                 loadingDialog.dismiss();
 
@@ -218,6 +237,79 @@ public class AdminActivity extends AppCompatActivity {
         } else {
             button.setVisibility(View.GONE);
         }
+    }
+
+    private JSONObject allCoins;
+
+    private void calculateErrors() {
+        loadingDialog.show();
+
+        Http.get(Uri.parse("https://cup.stgsporting.com/api/coins/"+data[3]))
+                .expectsJson()
+                .sendAsync().thenApply((res) -> {
+                    allCoins = res.getJson();
+                    return null;
+                });
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                DataSnapshot usersData = snapshot.child("Users");
+
+                StringBuilder allErrors = new StringBuilder();
+
+                for (DataSnapshot userData : usersData.getChildren()) {
+                    if (userData.getKey().equals("admin")) continue;
+                    ArrayList<String> cardsIDs = new ArrayList<>();
+                    for (DataSnapshot s : userData.child("Owned Cards").getChildren()) {
+                        if (Boolean.parseBoolean(s.getValue().toString()))
+                            cardsIDs.add(s.getKey());
+                    }
+
+                    int cardsPrice = 0;
+                    for (String cardID : cardsIDs) {
+                        int price = Integer.parseInt(snapshot.child("Store").child(cardID).child("Price").getValue().toString());
+                        cardsPrice+=price;
+                    }
+                    int cash;
+                    if (userData.hasChild("Coins"))
+                        cash = Integer.parseInt(userData.child("Coins").getValue().toString());
+                    else cash = 0;
+
+                    int totalGainedCoins = cash+cardsPrice;
+                    if (data[3].equals("5")) totalGainedCoins-=1000;
+                    try {
+                        while (allCoins==null) Thread.sleep(100);
+                        int qCoins;
+                        if (allCoins.has(userData.getKey()))
+                            qCoins = Integer.parseInt(allCoins.get(userData.getKey()).toString());
+                        else
+                            qCoins = 0;
+
+                        if (qCoins!=totalGainedCoins) {
+                            int diff = totalGainedCoins - qCoins;
+                            if (data[3].equals("5") && diff==100) continue;
+                            if (data[3].equals("3") && (diff==300 || diff==400)) continue;
+                            StringBuilder bd = new StringBuilder();
+                            bd.append(userData.getKey()).append(" ");
+                            if (diff>0) bd.append("+");
+                            bd.append(diff);
+                            allErrors.append(bd).append("\n");
+                        }
+                    } catch (Exception e) {
+                        Log.e("AAA", e.toString());
+                        Toast.makeText(AdminActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+                if (loadingDialog.isShowing()) loadingDialog.dismiss();
+                new com.stgsporting.cup.helpers.AlertDialog(AdminActivity.this, allErrors.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(AdminActivity.this, "Database Error", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

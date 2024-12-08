@@ -43,10 +43,15 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.data.Option;
+import com.stgsporting.cup.data.Quiz;
 import com.stgsporting.cup.helpers.ConfirmDialog;
+import com.stgsporting.cup.helpers.Http;
 import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.ImageProcessor;
 import com.stgsporting.cup.helpers.LoadingDialog;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -70,7 +75,7 @@ public class UserEditorActivity extends AppCompatActivity {
     private EditText passcode_edittext;
     private EditText coins_edittext;
     private EditText stars_edittext;
-    private TextView cards_t, t_coins;
+    private TextView cards_t, t_coins, q_coins;
 
     private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -140,6 +145,7 @@ public class UserEditorActivity extends AppCompatActivity {
         add = findViewById(R.id.add);
         cards_t = findViewById(R.id.cards_t);
         t_coins = findViewById(R.id.t_coins);
+        q_coins = findViewById(R.id.q_coins);
 
         data = getIntent().getStringArrayExtra("Data");
         userName = getIntent().getStringExtra("SelectedUser");
@@ -183,6 +189,20 @@ public class UserEditorActivity extends AppCompatActivity {
     }
 
     private void refreshData() {
+
+        Http.get(Uri.parse("https://cup.stgsporting.com/api/coins/"+data[3]+"/"+userName))
+                .expectsJson()
+                .sendAsync().thenApply((res) -> {
+                    JSONObject responseData = res.getJson();
+                    try {
+                        String coins = responseData.get("coins").toString();
+                        q_coins.setText(coins);
+                    } catch (JSONException e) {
+                        Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                    return null;
+                });
+
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot data) {
