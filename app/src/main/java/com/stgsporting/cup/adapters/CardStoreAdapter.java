@@ -20,7 +20,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.cup.data.CardIcon;
+import com.stgsporting.cup.helpers.ConfirmDialog;
 import com.stgsporting.cup.helpers.ImageLoader;
+import com.stgsporting.cup.helpers.ItemClickListener;
 import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.ArrayList;
@@ -60,11 +62,14 @@ public class CardStoreAdapter extends RecyclerView.Adapter<CardStoreAdapter.View
         imageLoader.loadImage(cards.get(position).getImageLink(), holder.img);
 
         holder.button.setOnClickListener(v-> {
-            if (!NetworkUtils.isOnline(context)) {
-                Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            purchaseObject(getItem(position));
+            View.OnClickListener listener = view -> {
+                if (!NetworkUtils.isOnline(context)) {
+                    Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                purchaseObject(getItem(position));
+            };
+            new ConfirmDialog(context, listener);
         });
         if (cards.get(position).isOwned()) {
             holder.button.setText("Select");
