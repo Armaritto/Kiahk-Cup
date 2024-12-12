@@ -211,7 +211,14 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                         snapshots.add(S);
                     }
                 }
-                removeFromLineup(0, snapshots, userRef, cardRef, card);
+
+                if (!snapshots.isEmpty())
+                    removeFromLineup(0, snapshots, userRef, cardRef, card);
+                else {
+                    Logs.log(context, "doesn't exist in lineup", 1);
+                    continueSelling(cardRef, userRef, card);
+                }
+
             }
             @Override
             public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {

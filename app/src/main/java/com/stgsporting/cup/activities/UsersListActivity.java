@@ -95,11 +95,11 @@ public class UsersListActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        refreshData();
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        refreshData();
+//    }
 
     private void refreshData() {
         loadingDialog.show();

@@ -183,25 +183,27 @@ public class LineupActivity extends AppCompatActivity {
                 }
 
                 // set Rating value & store it into database
+                userRef.child("Points").setValue(totalRating);
                 int userRatingInt = (int) Math.round(totalRating);
                 userRating = String.valueOf(userRatingInt);
                 points.setText(String.valueOf(userRatingInt));
-                userRef.child("Points").setValue(userRatingInt);
 
                 // assign average & highest
-                ArrayList<Integer> allUsersRatings = new ArrayList<>();
+                ArrayList<Double> allUsersRatings = new ArrayList<>();
                 int sum = 0;
                 int numOfUsers = 0;
                 for (DataSnapshot aUserData : snapshot.child("/elmilad25/Users").getChildren()) {
+                    if (aUserData.getKey().equals("admin")) continue;
                     numOfUsers++;
                     if (aUserData.hasChild("Points")) {
-                        int aUserPoints = Integer.parseInt(aUserData.child("Points").getValue().toString());
+                        double aUserPoints = Double.parseDouble(aUserData.child("Points").getValue().toString());
                         allUsersRatings.add(aUserPoints);
                         sum+=aUserPoints;
                     }
                 }
 
-                highest.setText(String.valueOf(Collections.max(allUsersRatings)));
+                int max = (int) Math.round(Collections.max(allUsersRatings));
+                highest.setText(String.valueOf(max));
                 double avg = (double) sum /numOfUsers;
                 average.setText(String.valueOf((int) Math.round(avg)));
 

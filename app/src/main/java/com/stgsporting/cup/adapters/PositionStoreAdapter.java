@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.stgsporting.cup.data.Position;
+import com.stgsporting.cup.helpers.ConfirmDialog;
 import com.stgsporting.cup.helpers.NetworkUtils;
 
 import java.util.ArrayList;
@@ -55,11 +56,14 @@ public class PositionStoreAdapter extends RecyclerView.Adapter<PositionStoreAdap
         holder.price.setText(positions.get(i).getPrice()+" ★");
         holder.position.setText(positions.get(i).getPosition());
         holder.button.setOnClickListener(v-> {
-            if (!NetworkUtils.isOnline(context)) {
-                Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            purchaseObject(getItem(i));
+            View.OnClickListener listener = view -> {
+                if (!NetworkUtils.isOnline(context)) {
+                    Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                purchaseObject(getItem(i));
+            };
+            new ConfirmDialog(context, listener);
         });
         if (positions.get(i).isOwned()) {
             holder.button.setText("Select");

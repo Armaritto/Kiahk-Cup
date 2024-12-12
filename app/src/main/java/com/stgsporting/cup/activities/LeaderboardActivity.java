@@ -24,6 +24,7 @@ import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.LoadingDialog;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -68,7 +69,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                 User aUser = new User();
                 aUser.setName(user.getKey());
                 if (user.hasChild("Points")) {
-                    aUser.setPoints(Integer.parseInt(user.child("Points").getValue().toString()));
+                    aUser.setPoints(Double.parseDouble(user.child("Points").getValue().toString()));
                 }
 
                 if (aUser.getPoints()<=5) continue;
@@ -133,7 +134,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                 users.add(aUser);
             }
 
-            users.sort((o1, o2) -> o2.getPoints() - o1.getPoints());
+            users.sort(Comparator.comparingDouble(User::getPoints).reversed());
 
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 

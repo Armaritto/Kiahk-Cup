@@ -1,6 +1,7 @@
 package com.stgsporting.cup.activities;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.stgsporting.cup.helpers.ConfirmDialog;
 import com.stgsporting.cup.helpers.Header;
 import com.stgsporting.cup.helpers.LoadingDialog;
 import com.stgsporting.cup.helpers.NetworkUtils;
@@ -87,21 +89,27 @@ public class RatingStoreActivity extends AppCompatActivity {
                     price.setText(String.valueOf(total));
                 });
                 purchase.setOnClickListener(v -> {
-                    if (!NetworkUtils.isOnline(RatingStoreActivity.this)) {
-                        Toast.makeText(RatingStoreActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    DatabaseReference userRef = database.getReference("/elmilad25/Users").child(data[0]);
-                    int stars = Integer.parseInt(userData.child("Stars").getValue().toString());
-                    if (stars>=total) {
-                        stars-=total;
-                        userRef.child("Stars").setValue(stars);
-                        userRef.child("Card").child("Rating").setValue(rating);
-                        Toast.makeText(RatingStoreActivity.this, "Rating purchased successfully", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                    else
-                        Toast.makeText(RatingStoreActivity.this, "Not enough Stars", Toast.LENGTH_SHORT).show();
+                    View.OnClickListener listener = new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (!NetworkUtils.isOnline(RatingStoreActivity.this)) {
+                                Toast.makeText(RatingStoreActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            DatabaseReference userRef = database.getReference("/elmilad25/Users").child(data[0]);
+                            int stars = Integer.parseInt(userData.child("Stars").getValue().toString());
+                            if (stars>=total) {
+                                stars-=total;
+                                userRef.child("Stars").setValue(stars);
+                                userRef.child("Card").child("Rating").setValue(rating);
+                                Toast.makeText(RatingStoreActivity.this, "Rating purchased successfully", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                            else
+                                Toast.makeText(RatingStoreActivity.this, "Not enough Stars", Toast.LENGTH_SHORT).show();
+                        }
+                    };
+                    new ConfirmDialog(RatingStoreActivity.this, listener);
                 });
 
                 loadingDialog.dismiss();

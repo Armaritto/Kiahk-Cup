@@ -43,10 +43,15 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.stgsporting.cup.data.Option;
+import com.stgsporting.cup.data.Quiz;
 import com.stgsporting.cup.helpers.ConfirmDialog;
+import com.stgsporting.cup.helpers.Http;
 import com.stgsporting.cup.helpers.ImageLoader;
 import com.stgsporting.cup.helpers.ImageProcessor;
 import com.stgsporting.cup.helpers.LoadingDialog;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -70,6 +75,7 @@ public class UserEditorActivity extends AppCompatActivity {
     private EditText passcode_edittext;
     private EditText coins_edittext;
     private EditText stars_edittext;
+    private TextView cards_t, t_coins, q_coins;
 
     private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -137,6 +143,9 @@ public class UserEditorActivity extends AppCompatActivity {
         img = findViewById(R.id.img);
         list = findViewById(R.id.list);
         add = findViewById(R.id.add);
+        cards_t = findViewById(R.id.cards_t);
+        t_coins = findViewById(R.id.t_coins);
+        q_coins = findViewById(R.id.q_coins);
 
         data = getIntent().getStringArrayExtra("Data");
         userName = getIntent().getStringExtra("SelectedUser");
@@ -180,9 +189,25 @@ public class UserEditorActivity extends AppCompatActivity {
     }
 
     private void refreshData() {
-        ref.child("Users").child(userName).addListenerForSingleValueEvent(new ValueEventListener() {
+
+        Http.get(Uri.parse("https://cup.stgsporting.com/api/coins/"+data[3]+"/"+userName))
+                .expectsJson()
+                .sendAsync().thenApply((res) -> {
+                    JSONObject responseData = res.getJson();
+                    try {
+                        String coins = responseData.get("coins").toString();
+                        q_coins.setText(coins);
+                    } catch (JSONException e) {
+                        Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                    return null;
+                });
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot data) {
+                DataSnapshot snapshot = data.child("Users").child(userName);
+
                 String new_name = snapshot.getKey();
                 new_name = Arrays.stream(new_name.split("\\s+"))
                         .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
@@ -191,7 +216,7 @@ public class UserEditorActivity extends AppCompatActivity {
                 if (snapshot.hasChild("Passcode"))
                     passcode_edittext.setText(snapshot.child("Passcode").getValue().toString());
                 if (snapshot.hasChild("Points"))
-                    rating.setText(snapshot.child("Points").getValue().toString());
+                    rating.setText(String.format("%.3f", Double.parseDouble(snapshot.child("Points").getValue().toString())));
                 if (snapshot.hasChild("Coins"))
                     coins_edittext.setText(snapshot.child("Coins").getValue().toString());
                 if (snapshot.hasChild("Stars"))
@@ -200,6 +225,23 @@ public class UserEditorActivity extends AppCompatActivity {
                     String imgLink = snapshot.child("ImageLink").getValue().toString();
                     imageLoader.loadImage(imgLink, img);
                 }
+
+                ArrayList<String> cardsIDs = new ArrayList<>();
+
+                for (DataSnapshot s : snapshot.child("Owned Cards").getChildren()) {
+                    if (Boolean.parseBoolean(s.getValue().toString()))
+                        cardsIDs.add(s.getKey());
+                }
+
+                int cardsPrice = 0;
+                for (String cardID : cardsIDs) {
+                    int price = Integer.parseInt(data.child("Store").child(cardID).child("Price").getValue().toString());
+                    cardsPrice+=price;
+                }
+
+                int totalGainedCoins = Integer.parseInt(coins_edittext.getText().toString())+cardsPrice;
+                cards_t.setText(String.valueOf(cardsPrice));
+                t_coins.setText(String.valueOf(totalGainedCoins));
                 loadingDialog.dismiss();
 
             }
@@ -218,14 +260,14 @@ public class UserEditorActivity extends AppCompatActivity {
                 ArrayList<String> titles = new ArrayList<>();
                 ArrayList<String> contents = new ArrayList<>();
 
-                for (DataSnapshot s : snapshot.child("Users").child(userName).child("Mosab2at").getChildren()) {
-                    String mosab2aKey = s.getKey();
-                    String title = snapshot.child("Mosab2at").child(mosab2aKey).child("Title").getValue().toString();
-                    String max = snapshot.child("Mosab2at").child(mosab2aKey).child("Points").getValue().toString();
-                    String score = s.child("Score").getValue().toString();
-                    titles.add(title);
-                    contents.add(score+"/"+max);
-                }
+//                for (DataSnapshot s : snapshot.child("Users").child(userName).child("Mosab2at").getChildren()) {
+//                    String mosab2aKey = s.getKey();
+//                    String title = snapshot.child("Mosab2at").child(mosab2aKey).child("Title").getValue().toString();
+//                    String max = snapshot.child("Mosab2at").child(mosab2aKey).child("Points").getValue().toString();
+//                    String score = s.child("Score").getValue().toString();
+//                    titles.add(title);
+//                    contents.add(score+"/"+max);
+//                }
 
                 for (DataSnapshot s : snapshot.child("Users").child(userName).child("Attendance").getChildren()) {
                     titles.add(s.getKey());

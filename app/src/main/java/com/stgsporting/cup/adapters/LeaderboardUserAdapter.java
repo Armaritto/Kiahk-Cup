@@ -51,7 +51,7 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter<LeaderboardUser
     public void onBindViewHolder(@NonNull ViewHolder holder, int i) {
         holder.rank.setText(String.valueOf(i+1));
         User user = users.get(i);
-        holder.ovr.setText(String.format("%s", user.getPoints()));
+        holder.ovr.setText(String.format("%s", (int) Math.round(user.getPoints())));
 
         setUserCardImage(holder.cardView, user);
         holder.button.setOnClickListener(v -> {

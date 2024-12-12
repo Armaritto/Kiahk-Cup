@@ -73,6 +73,13 @@
             android:background="@drawable/p5"
             android:visibility="gone"/>
 
+        <Button
+            android:id="@+id/errors"
+            style="@style/main_button"
+            android:text="View Errors"
+            android:background="@drawable/p1"
+            android:visibility="gone"/>
+
     </LinearLayout>
 
 </ScrollView>
