@@ -83,7 +83,8 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 holder.purchaseButton.setText("Select");
             holder.sellButton.setVisibility(View.VISIBLE);
         }
-        else{
+        else {
+            holder.purchaseButton.setText("Purchase");
             holder.sellButton.setVisibility(View.INVISIBLE);
         }
         holder.purchaseButton.setOnClickListener(v-> {
