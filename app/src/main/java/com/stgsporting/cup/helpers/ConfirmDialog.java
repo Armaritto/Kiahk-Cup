@@ -21,7 +21,10 @@ public class ConfirmDialog extends Dialog {
         Button yesButton = findViewById(R.id.yes);
         Button noButton = findViewById(R.id.no);
 
-        yesButton.setOnClickListener(yesListener);
+        yesButton.setOnClickListener(view -> {
+            yesButton.setEnabled(false);
+            yesListener.onClick(view);
+        });
         noButton.setOnClickListener(view -> dismiss());
         show();
     }
